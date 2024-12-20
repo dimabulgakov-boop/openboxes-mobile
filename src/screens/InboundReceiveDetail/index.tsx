@@ -16,7 +16,7 @@ import Radio from '../../components/Radio';
 import CLEAR from '../../assets/images/icon_clear.png';
 import SelectDropdown from 'react-native-select-dropdown';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
-import DetailsTable from "../../components/DetailsTable";
+import DetailsTable from '../../components/DetailsTable';
 
 const renderIcon = () => {
   return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
@@ -56,9 +56,14 @@ const InboundReceiveDetail = () => {
       errorMessage = 'Please fill the Quantity to Receive';
     }
 
+    if (Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)) {
+      errorTitle = 'You are receiving more than the remaining quantity';
+      errorMessage = 'It is not possible to receive more than the remaining quantity';
+    }
+
     if (Number(state.quantityToReceive) === 0 && !cancelRemaining) {
       errorTitle = 'Quantity to receive is 0';
-      errorMessage = 'You can\'t receive 0 without cancelling remaining';
+      errorMessage = 'You cannot receive 0 without cancelling remaining';
     }
 
     if (state.expirationDate && !state.lotNumber) {
@@ -69,8 +74,7 @@ const InboundReceiveDetail = () => {
     if (errorTitle !== '') {
       showPopup({
         title: errorTitle,
-        message: errorMessage,
-        negativeButtonText: 'Cancel'
+        message: errorMessage
       });
       return Promise.resolve(null);
     }
@@ -103,19 +107,6 @@ const InboundReceiveDetail = () => {
         }
       ]
     };
-
-    if (Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)) {
-      showPopup({
-        title: 'Quantity to receive is greater than quantity remaining',
-        message: 'Are you sure you want to receive more?',
-        negativeButtonText: 'No',
-        positiveButton: {
-          text: 'Yes',
-          callback: () => submitReceiving(shipmentId, request)
-        }
-      });
-      return Promise.resolve(null);
-    }
 
     submitReceiving(shipmentId, request);
   };
