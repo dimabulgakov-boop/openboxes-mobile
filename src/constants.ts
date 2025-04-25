@@ -14,3 +14,5 @@ export const ratio = {
 };
 
 export const appHeaderHeight = 56;
+
+export const HYPHEN = '-';
