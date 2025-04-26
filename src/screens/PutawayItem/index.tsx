@@ -86,20 +86,20 @@ class PutawayItem extends Component<Props, State> {
       putawayStatus: 'PENDING',
       putawayDate: '',
       putawayAssignee: '',
-      'origin.id': currentLocation?.id,
-      'destination.id': currentLocation?.id,
+      origin: currentLocation?.id,
+      destination: currentLocation?.id,
       putawayItems: [
         {
           putawayStatus: 'PENDING',
-          'product.id': item['product.id'],
-          'inventoryItem.id': item['inventoryItem.id'],
-          'putawayFacility.id': currentLocation?.id,
-          'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state.selectedLocation?.id || item['putawayLocation.id'] || '',
+          product: item['product.id'],
+          inventoryItem: item['inventoryItem.id'],
+          putawayFacility: currentLocation?.id,
+          currentLocation: item['currentLocation.id'],
+          putawayLocation: this.state.selectedLocation?.id || item['putawayLocation.id'] || '',
           quantity: this.state?.quantity
         }
       ],
-      'orderedBy.id': '',
+      orderedBy: '',
       sortBy: null
     };
 
