@@ -118,7 +118,7 @@ class ProductDetails extends React.Component<Props, State> {
           <View style={styles.rowItem}>
             <RenderData
               title={'Lot Number'}
-              subText={item?.inventoryItem?.lotNumber ?? 'Default'}
+              subText={item?.lotNumber || 'Default'}
             />
             {item.quantityAvailable ? (
               <RenderData
@@ -267,7 +267,7 @@ class ProductDetails extends React.Component<Props, State> {
             </Card>
             <Text style={styles.boxHeading}>Available Items</Text>
             <Card>
-              {vm?.availableItems?.map((item, index) => {
+              {vm?.availableItems?.filter(item => item.quantityOnHand > 0 || item.quantityAvailable > 0).map((item, index) => {
                 return this.renderListItem(item, index);
               })}
               <Button

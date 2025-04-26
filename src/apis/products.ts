@@ -5,7 +5,7 @@ export function getProducts() {
 }
 
 export function searchProductsByName(name: string) {
-  return apiClient.post('/generic/product/search', {
+  return apiClient.post('/mobile/products/search', {
     searchAttributes: [
       {
         property: 'name',
@@ -29,7 +29,7 @@ export function searchProductByCode(productCode: string) {
 }
 
 export function searchProductGlobally(value: string) {
-  return apiClient.post('/products/search', { value: `${value}` });
+  return apiClient.post('/mobile/products/search', { value: `${value}` });
 }
 
 export function searchProductsByCategory(category: any) {
@@ -45,7 +45,7 @@ export function searchProductsByCategory(category: any) {
 }
 
 export function getProductById(id: any) {
-  return apiClient.get(`/products/${id}/details`);
+  return apiClient.get(`/mobile/products/${id}/details`);
 }
 
 export function printLabel(data: any) {
