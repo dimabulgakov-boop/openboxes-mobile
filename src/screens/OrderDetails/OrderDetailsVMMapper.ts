@@ -18,7 +18,7 @@ export const orderDetailsVMMapper = (props: Props): OrderDetailsVm => {
     packingLocation: _.get(props, 'order.packingLocation', null),
     loadingLocation: _.get(props, 'order.loadingLocation', null),
     datePicked: _.get(props, 'order.pickList.pickList', null),
-    picker: _.get(props, 'order.pickList.picker', null),
+    pickedBy: _.get(props, 'order.pickList.pickedBy', null),
     requisition: _.get(props, 'order.pickList.requisition', ''),
     picklistItems: _.get(props, 'order.picklistItems', [])
   };

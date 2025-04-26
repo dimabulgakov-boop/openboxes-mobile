@@ -10,7 +10,7 @@ export interface OrderDetailsVm {
   name: string;
   status: string;
   description: string;
-  picker: Person;
+  pickedBy: Person;
   datePicked: Date;
   requisition: Requisition;
   origin: Location;

@@ -38,8 +38,8 @@ export interface PicklistItem {
   inventoryItemId: string;
   quantity: number;
   quantityToPick: number;
-  'picker.id': string | null;
-  'picker.name': string | null;
+  pickedBy: string | null;
+  pickerName: string | null;
   datePicked: null;
   quantityOnHand: number;
   quantityAvailableToPromise: number;

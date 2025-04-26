@@ -60,7 +60,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
       title: 'Shortage Details',
       message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}\nReason: ${
         item?.reasonCodeMessage ?? 'None'
-      }\nPicker: ${item?.picker?.name ?? 'Unassigned'}`,
+      }\nPicker: ${item?.pickerName ?? 'Unassigned'}`,
       positiveButton: { text: 'Ok' }
     });
   };
@@ -175,7 +175,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
                   : {
                       label: 'Picked by',
                       defaultValue: 'Unassigned',
-                      value: item?.picker?.name
+                      value: item?.pickerName
                     }
               ]}
             />

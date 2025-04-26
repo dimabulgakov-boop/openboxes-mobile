@@ -6,7 +6,7 @@ interface PickList {
   id: string;
   name: string;
   description: string;
-  picker: Person;
+  pickedBy: Person;
   datePicked: Date;
   requisition: Requisition;
   picklistItems: PicklistItem[];
