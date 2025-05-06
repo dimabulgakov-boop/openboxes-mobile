@@ -1,17 +1,13 @@
-/* eslint-disable react-native/no-unused-styles */
-import {
-  ListRenderItemInfo,
-  StyleSheet,
-  Text,
-  View,
-  FlatList
-} from 'react-native';
 import React, { ReactElement } from 'react';
-import Theme from '../../utils/Theme';
-import { Order } from '../../data/order/Order';
-import EmptyView from '../../components/EmptyView';
-import { Card } from 'react-native-paper';
+import { FlatList, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
+import { Card, Chip, Divider, Subheading } from 'react-native-paper';
+
 import { LayoutStyle } from '../../assets/styles';
+import EmptyView from '../../components/EmptyView';
+import { HYPHEN } from '../../constants';
+import { Order } from '../../data/order/Order';
+import Theme from '../../utils/Theme';
+
 export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;
@@ -21,12 +17,8 @@ export default function OrdersList(props: Props) {
   return props.orders ? (
     <FlatList
       data={props.orders}
-      renderItem={(item: ListRenderItemInfo<Order>) =>
-        renderOrder(item.item, () => props.onOrderTapped(item.item))
-      }
-      ListEmptyComponent={
-        <EmptyView title="Picking" description="There are no items to pick" />
-      }
+      renderItem={(item: ListRenderItemInfo<Order>) => renderOrder(item.item, () => props.onOrderTapped(item.item))}
+      ListEmptyComponent={<EmptyView title="Picking" description="There are no items to pick" />}
       keyExtractor={(order) => order.id}
       style={styles.list}
     />
@@ -35,42 +27,37 @@ export default function OrdersList(props: Props) {
 
 function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
   return (
-    <Card
-      style={LayoutStyle.listItemContainer}
-      onPress={() => onOrderTapped()}
-    >
+    <Card style={LayoutStyle.listItemContainer} onPress={() => onOrderTapped()}>
       <Card.Content>
-        <View style={styles.row}>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Identifier</Text>
+        <View style={styles.headerRow}>
+          <View style={styles.dividedValues}>
             <Text style={styles.value}>{order.identifier}</Text>
           </View>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Status Code</Text>
-            <Text style={styles.value}>{order.statusCode}</Text>
-          </View>
+          <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+            {order.statusCode}
+          </Chip>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Destination</Text>
-            <Text style={styles.value}>{order.destination?.name}</Text>
-          </View>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Expected Shipping Date</Text>
-            <Text style={styles.value}>{order.expectedShippingDate}</Text>
-          </View>
+        <Divider style={styles.dividerHorizontal} />
+
+        <Subheading style={styles.subheading}> {`Destination: ${order.destination?.name}`} </Subheading>
+        <View style={styles.additionalInfoRow}>
+          <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+            {`Expected Shipping: ${order.expectedShippingDate}`}
+          </Chip>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col50}>
+        <Divider style={styles.dividerHorizontal} />
+
+        <View style={styles.rowItem}>
+          <View style={styles.columnItem}>
             <Text style={styles.label}>Packing Location</Text>
-            <Text style={styles.value}>{order?.packingLocation?.name ?? 'Unassigned'}</Text>
+            <Text style={styles.value}>{order.packingLocation ?? HYPHEN}</Text>
           </View>
-          <View style={styles.col50}>
+
+          <View style={styles.columnItem}>
             <Text style={styles.label}>Loading Location</Text>
-            <Text style={styles.value}>{order?.loadingLocation?.name ?? 'Unassigned'}</Text>
+            <Text style={styles.value}>{order.loadingLocation ?? HYPHEN}</Text>
           </View>
         </View>
-        <View style={styles.row} />
       </Card.Content>
     </Card>
   );
@@ -80,55 +67,66 @@ const styles = StyleSheet.create({
   list: {
     width: '100%'
   },
-  listItemNameContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4
+  chipWarning: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    backgroundColor: Theme.colors.warning
   },
-  listItemNameLabel: {
+  chipWarningText: {
     fontSize: 12,
-    color: Theme.colors.placeholder
-  },
-  listItemName: {
-    fontSize: 16,
     color: Theme.colors.text
   },
-  listItemCategoryContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    marginTop: 4
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8
   },
-  listItemCategoryLabel: {
+  chipDefaultText: {
     fontSize: 12,
-    color: Theme.colors.placeholder
-  },
-  listItemCategory: {
-    fontSize: 16,
     color: Theme.colors.text
   },
-  row: {
+  dividerHorizontal: {
+    marginVertical: 8
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    marginTop: 8
+  },
+  rowItem: {
     flexDirection: 'row',
     borderColor: Theme.colors.background,
-    marginTop: 1,
-    //padding: 2,
-    width: '100%'
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
-  col50: {
+  value: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  dividedValues: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  subheading: {
+    fontWeight: 'bold'
+  },
+  columnItem: {
     display: 'flex',
     flexDirection: 'column',
     flex: 0,
-    marginStart: 4,
-    width: '50%'
+    justifyContent: 'space-between'
   },
   label: {
-    fontSize: 12,
+    fontSize: 10,
     color: Theme.colors.placeholder
-  },
-  value: {
-    fontSize: 14,
-    color: Theme.colors.text
   }
 });

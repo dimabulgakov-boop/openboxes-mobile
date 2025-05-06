@@ -85,8 +85,6 @@ const InboundOrderList = () => {
           <View style={styles.headerRow}>
             <View style={styles.dividedValues}>
               <Text style={styles.value}>{item.shipmentNumber}</Text>
-              <Divider style={styles.dividerVertical} />
-              <Text style={styles.value}>{item.expectedDeliveryDate}</Text>
             </View>
             <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
               {item.status}
