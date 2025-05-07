@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import styles from './styles';
-import { Text, View, TouchableOpacity } from 'react-native';
-import showPopup from '../../components/Popup';
-import Button from '../../components/Button';
-import InputBox from '../../components/InputBox';
-import { colors } from '../../constants';
-import { PicklistItem } from '../../data/picklist/PicklistItem';
-import InputSpinner from '../../components/InputSpinner';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Card } from 'react-native-paper';
-import SCAN from '../../assets/images/scan.jpg';
-import TICK from '../../assets/images/tick.png';
-import CLEAR from '../../assets/images/icon_clear.png';
-import Radio from '../../components/Radio';
 import DropDown from 'react-native-paper-dropdown';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import DetailsTable from '../DetailsTable';
-import { Props } from './types';
+
+import CLEAR from '../../assets/images/icon_clear.png';
+import SCAN from '../../assets/images/scan.jpg';
+import TICK from '../../assets/images/tick.png';
+import Button from '../../components/Button';
+import InputBox from '../../components/InputBox';
+import InputSpinner from '../../components/InputSpinner';
+import showPopup from '../../components/Popup';
+import Radio from '../../components/Radio';
+import { PicklistItem } from '../../data/picklist/PicklistItem';
 import Theme from '../../utils/Theme';
+import DetailsTable from '../DetailsTable';
+import styles from './styles';
+import { Props } from './types';
 
 // TODO: Refactor (pull from api, when shortage reason codes will be available)
 const SHORTAGE_REASON_CODES = [
@@ -35,7 +35,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
   const [scannedLotNumber, setScannedLotNumber] = useState<string>('');
   const [scannedBinLocation, setScannedBinLocation] = useState<string>('');
 
-  const isPropertyValid = (itemValue?: string, value?: string) => {
+  const isPropertyValid = (itemValue?: string, value?: string | null) => {
     if (!itemValue && !value) {
       return true;
     }
@@ -43,7 +43,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
     return itemValue === value;
   };
 
-  const getIcon = (value?: string, itemValue?: string) => {
+  const getIcon = (value?: string, itemValue?: string | null) => {
     const isScannedPropertyValid = isPropertyValid(itemValue, value);
 
     if ((!itemValue && !value) || isScannedPropertyValid) {
@@ -66,18 +66,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
   };
 
   return (
-    <Card>
-      <Card.Title
-        title={<Text>Pick Task ({item?.indexString ?? ''}) </Text>}
-        subtitle={<Text>{item?.pickTypeClassification ?? ''}</Text>}
-        right={(props) => (
-          <Text style={styles.status} {...props}>
-            {item?.statusMessage ?? ''}
-          </Text>
-        )}
-        style={styles.cardTitle}
-        titleStyle={styles.cardTitleString}
-      />
+    <Card style={styles.card}>
       <Card.Content>
         <View style={styles.inputContainer}>
           <DetailsTable
@@ -209,7 +198,9 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
             )}
             <Button
               title="Pick Item"
+              size="100%"
               disabled={!item?.quantityRemaining}
+              style={styles.submitButton}
               onPress={() =>
                 onPickItem({
                   ...item,

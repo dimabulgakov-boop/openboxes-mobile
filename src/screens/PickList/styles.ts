@@ -5,6 +5,7 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    flex: 1
+    flex: 1,
+    marginTop: 10
   }
 });
