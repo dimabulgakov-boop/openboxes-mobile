@@ -1,13 +1,14 @@
 import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
-import styles from './styles';
+import React, { useEffect, useState } from 'react';
 import { Image, TextInput, TouchableOpacity, View } from 'react-native';
-import { Props } from './types';
+import { useDispatch } from 'react-redux';
+
 import ModalSelector from 'react-native-modal-selector-searchable';
 import CLEAR from '../../assets/images/icon_clear.png';
-import useDebounce from '../../hooks/useDebounce';
-import { useDispatch } from 'react-redux';
+import { appConfig } from '../../constants';
 import showPopup from '../Popup';
+import styles from './styles';
+import { Props } from './types';
 
 const AsyncModalSelect = ({
   initialData,
@@ -20,16 +21,15 @@ const AsyncModalSelect = ({
   const [label, setLabel] = useState(initValue);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const debouncedSearchTerm: string = useDebounce<string>(searchTerm, 500);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (debouncedSearchTerm) {
-      dispatch(searchAction(debouncedSearchTerm, searchActionParams, callback));
+    if (searchTerm) {
+      dispatch(searchAction(searchTerm, searchActionParams, callback));
     } else {
       setData(initialData);
     }
-  }, [debouncedSearchTerm, initialData]);
+  }, [searchTerm, initialData, dispatch, searchAction, searchActionParams]);
 
   const callback = (data: any) => {
     if (data?.error) {
@@ -55,6 +55,8 @@ const AsyncModalSelect = ({
     onSelect?.({ id: '', name: '' });
   };
 
+  const debounceOnSearchTerm = _.debounce((term: string) => setSearchTerm(term), appConfig.DEFAULT_DEBOUNCE_TIME);
+
   return (
     <View style={styles.mainContainer}>
       <ModalSelector
@@ -75,7 +77,7 @@ const AsyncModalSelect = ({
           onSelect?.({ id: option.key, name: option.label });
         }}
         onSearchFilterer={(searchText, unfilteredData) => unfilteredData}
-        onChangeSearch={(searchData: string) => setSearchTerm(searchData)}
+        onChangeSearch={debounceOnSearchTerm}
       >
         <TextInput style={styles.textInput} editable={false} placeholder={placeholder || ''} value={label} />
       </ModalSelector>

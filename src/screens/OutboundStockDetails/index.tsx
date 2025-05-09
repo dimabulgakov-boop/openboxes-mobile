@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
-import { HYPHEN } from '../../constants';
+import { appConfig, HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Shipment';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
@@ -28,7 +28,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
       matchingShipmentItemIds: [],
       matchingContainerIds: []
     };
-    this.onScan = _.debounce(this.onScan, 500);
+    this.onScan = _.debounce(this.onScan, appConfig.DEFAULT_DEBOUNCE_TIME);
   }
 
   componentDidMount() {
