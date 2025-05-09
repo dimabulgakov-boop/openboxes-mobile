@@ -1,18 +1,21 @@
 import _ from 'lodash';
-import { DispatchProps, Props, State, SectionData } from './types';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
+import { Chip, Divider, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { RootState } from '../../redux/reducers';
-import styles from './styles';
-import { getShipment } from '../../redux/actions/packing';
-import ContainerDetails from './ContainerDetails';
+
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
-import ShipmentItems from '../../data/inbound/ShipmentItems';
-import { Container } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
+import { HYPHEN } from '../../constants';
+import { Container } from '../../data/container/Shipment';
+import ShipmentItems from '../../data/inbound/ShipmentItems';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getShipment } from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
+import ContainerDetails from './ContainerDetails';
+import styles from './styles';
+import { DispatchProps, Props, SectionData, State } from './types';
 
 // Shipment packing (Packing Order Details)
 class OutboundStockDetails extends React.Component<Props, State> {
@@ -162,45 +165,43 @@ class OutboundStockDetails extends React.Component<Props, State> {
   };
 
   render() {
+    const { shipment } = this.state;
+
     return (
       <>
         <ScrollView style={styles.screenContainer}>
           <View style={styles.contentContainer}>
-            <View style={styles.row}>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Shipment Number</Text>
-                <Text style={styles.value}>{this.state.shipment?.shipmentNumber}</Text>
+            <View style={styles.headerRow}>
+              <View style={styles.identifierContainer}>
+                <Text style={styles.value}>{shipment?.shipmentNumber}</Text>
               </View>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Status</Text>
-                <Text style={styles.value}>{this.state.shipment?.displayStatus}</Text>
-              </View>
+              <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+                {shipment?.status}
+              </Chip>
             </View>
-            <View style={styles.row}>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Destination</Text>
-                <Text style={styles.value}>{this.state.shipment?.destination.name}</Text>
-              </View>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Expected Shipping Date</Text>
-                <Text style={styles.value}>{this.state.shipment?.expectedShippingDate}</Text>
-              </View>
+            <Divider style={styles.contentDivider} />
+
+            <Subheading style={styles.destinationSubheading}>{`Destination: ${shipment?.destination.name}`}</Subheading>
+
+            <View style={styles.additionalInfoRow}>
+              <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                {`Expected Shipping: ${shipment?.expectedShippingDate}`}
+              </Chip>
             </View>
-            <View style={styles.row}>
-              <View style={styles.col50}>
+
+            <View style={styles.rowItem}>
+              <View style={styles.columnItem}>
                 <Text style={styles.label}>Packing Location</Text>
-                <Text style={styles.value}>
-                  {this.state.shipment?.packingLocation ?? 'Unassigned'}
-                </Text>
+                <Text style={styles.value}>{shipment?.packingLocation ?? HYPHEN}</Text>
               </View>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Items Packed</Text>
-                <Text style={styles.value}>
-                  {this.state.shipment?.packingStatusDetails?.statusMessage}
-                </Text>
+
+              <View style={styles.columnItem}>
+                <Text style={styles.label}>Loading Location</Text>
+                <Text style={styles.value}>{shipment?.packingStatusDetails?.statusMessage ?? HYPHEN}</Text>
               </View>
             </View>
           </View>
+          <Divider />
           <InputBox
             style={styles.scanSearch}
             value={this.state.scannedValue}
