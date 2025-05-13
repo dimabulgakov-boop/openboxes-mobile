@@ -4,8 +4,9 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { Card, Chip, Divider, Headline, Subheading } from 'react-native-paper';
+import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
@@ -55,11 +56,11 @@ const InboundOrderList = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.inboundOrders = data.filter(
-            (item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
-          );
+          setState((prevState: any) => ({
+            ...prevState,
+            inboundOrders: data.filter((item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED')
+          }));
         }
-        setState({ ...state });
       }
     };
     dispatch(fetchInboundOrderList(callback, id));
@@ -95,7 +96,7 @@ const InboundOrderList = () => {
           <Subheading style={{ fontWeight: 'bold' }}> {item.name} </Subheading>
           <View style={styles.additionalInfoRow}>
             <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-              {`${item.shipmentItems.length} Items`}
+              {item.shipmentItems.length === 1 ? '1 Item' : `${item.shipmentItems.length} Items`}
             </Chip>
             <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
               {`Due: ${item.expectedDeliveryDate}`}

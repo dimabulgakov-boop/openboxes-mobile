@@ -1,20 +1,21 @@
-/* eslint-disable complexity */
 /* eslint-disable no-shadow */
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { DispatchProps, Props, State } from './types';
-import { View, Text, ToastAndroid, ScrollView } from 'react-native';
+import { ScrollView, Text, ToastAndroid, View } from 'react-native';
+import { connect } from 'react-redux';
+
+import AsyncModalSelect from '../../components/AsyncModalSelect';
+import Button from '../../components/Button';
+import InputBox from '../../components/InputBox';
+import InputSpinner from '../../components/InputSpinner';
+import showPopup from '../../components/Popup';
+import { searchInternalLocations } from '../../redux/actions/locations';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { createPutawayOderAction } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { connect } from 'react-redux';
-import { searchInternalLocations } from '../../redux/actions/locations';
-import { createPutawayOderAction } from '../../redux/actions/putaways';
-import InputSpinner from '../../components/InputSpinner';
-import InputBox from '../../components/InputBox';
-import Button from '../../components/Button';
-import showPopup from '../../components/Popup';
-import AsyncModalSelect from '../../components/AsyncModalSelect';
+import { DispatchProps, Props, State } from './types';
+import { Divider } from 'react-native-paper';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -160,7 +161,7 @@ class PutawayItem extends Component<Props, State> {
             />
             <InputBox disabled label="Received Quantity" value={item.quantity.toString() ?? '0'} editable={false} />
 
-            <View style={styles.divider} />
+            <Divider style={styles.divider} />
             <View>
               <Text>Putaway Location</Text>
               <AsyncModalSelect
@@ -182,6 +183,7 @@ class PutawayItem extends Component<Props, State> {
           <Button
             disabled={quantity > item.quantity || Number(quantity) <= 0}
             title="Create Putaway"
+            size="100%"
             onPress={this.create}
           />
         </View>

@@ -1,16 +1,17 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
-import { DispatchProps, Props, State } from './types';
-import { FlatList, Text, SafeAreaView, RefreshControl, Alert } from 'react-native';
-import { RootState } from '../../redux/reducers';
-import styles from './styles';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { Alert, FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
-import { getCandidates } from '../../redux/actions/putaways';
-import EmptyView from '../../components/EmptyView';
-import { Card } from 'react-native-paper';
+
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
-import _ from 'lodash';
+import EmptyView from '../../components/EmptyView';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getCandidates } from '../../redux/actions/putaways';
+import { RootState } from '../../redux/reducers';
+import styles from './styles';
+import { DispatchProps, Props, State } from './types';
 
 class PutawayCandidates extends Component<Props, State> {
   constructor(props: Props) {
@@ -56,22 +57,36 @@ class PutawayCandidates extends Component<Props, State> {
     return (
       <Card
         style={LayoutStyle.listItemContainer}
-        onPress={() => {
-          if (item.id) {
-            Alert.alert('Item is already in a pending putaway');
-          } else {
-            this.props.navigation.navigate('PutawayItem', { item });
-          }
-        }}
+        onPress={() =>
+          item.id
+            ? Alert.alert('Item is already in a pending putaway')
+            : this.props.navigation.navigate('PutawayItem', { item })
+        }
       >
         <Card.Content>
-          <Text>{`Status - ${item.putawayStatus}`}</Text>
-          <Text>{`Product Code - ${item['product.productCode']}`}</Text>
-          <Text>{`Product Name - ${item['product.name']}`}</Text>
-          <Text>{`Current Location - ${item['currentLocation.name']}`}</Text>
-          <Text>{`Lot Number - ${item['inventoryItem.lotNumber'] ?? 'Default'}`}</Text>
-          <Text>{`Expiry Date - ${item['inventoryItem.expirationDate'] ?? 'Never'}`}</Text>
-          <Text>{`Quantity - ${item.quantity}`}</Text>
+          <View style={styles.headerRow}>
+            <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+              {`Location: ${item['currentLocation.name']}`}
+            </Chip>
+            <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+              {item.putawayStatus}
+            </Chip>
+          </View>
+          <Divider style={styles.contentDivider} />
+
+          <Subheading style={styles.destinationSubheading}>
+            {`${item['product.productCode']} - ${item['product.name']}`}
+          </Subheading>
+          <Caption style={styles.caption}> {`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Defaults'}`}</Caption>
+
+          <View style={styles.additionalInfoRow}>
+            <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+              {`Expiration Date: ${item['inventoryItem.expirationDate'] ?? 'Never'}`}
+            </Chip>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+              {`Quantity: ${item.quantity}`}
+            </Chip>
+          </View>
         </Card.Content>
       </Card>
     );
@@ -79,7 +94,7 @@ class PutawayCandidates extends Component<Props, State> {
 
   naviageteToPutawayITem = (item: any) => {
     this.props.navigation.navigate('PutawayItem', { item });
-  }
+  };
 
   filterPutawayCandidates = (searchTerm: string) => {
     if (searchTerm) {
@@ -93,11 +108,12 @@ class PutawayCandidates extends Component<Props, State> {
         this.resetFiltering();
         this.naviageteToPutawayITem(exactPutawayCandidate[0]);
       } else {
-        const filteredPutawayCandidates = _.filter(this.state.putawayCandidates, (putawayCandidate: any) =>
-          putawayCandidate['inventoryItem.lotNumber']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          putawayCandidate['currentLocation.name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          putawayCandidate['currentLocation.id']?.toLowerCase().includes(searchTerm.toLowerCase())
-
+        const filteredPutawayCandidates = _.filter(
+          this.state.putawayCandidates,
+          (putawayCandidate: any) =>
+            putawayCandidate['inventoryItem.lotNumber']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            putawayCandidate['currentLocation.name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            putawayCandidate['currentLocation.id']?.toLowerCase().includes(searchTerm.toLowerCase())
         );
         this.setState({
           ...this.state,
@@ -136,7 +152,11 @@ class PutawayCandidates extends Component<Props, State> {
             renderItem={({ item }) => this.renderItem(item)}
           />
         ) : (
-          <EmptyView title="Putaway Candidates" description="There are no candidate items to Putaway" isRefresh={false} />
+          <EmptyView
+            title="Putaway Candidates"
+            description="There are no candidate items to Putaway"
+            isRefresh={false}
+          />
         )}
       </SafeAreaView>
     );

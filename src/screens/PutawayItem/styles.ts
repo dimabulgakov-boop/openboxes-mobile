@@ -35,7 +35,8 @@ export default StyleSheet.create({
   },
   inputSpinner: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 10
   },
   divider: {
     marginVertical: 8
