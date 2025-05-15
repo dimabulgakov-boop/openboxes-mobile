@@ -108,16 +108,19 @@ class PutawayList extends React.Component<Props, State> {
       <View style={styles.screenContainer}>
         {showList ? (
           <View style={styles.contentContainer}>
-            {putAwayList?.length ? (
-              <InputBox
-                style={styles.lpnFilter}
-                value={lpnFilter}
-                disabled={false}
-                editable={false}
-                label={'Scan Lot Number'}
-                onChange={this.onChangeLpnFilter}
-              />
-            ) : null}
+            <View style={styles.headerContainer}>
+              {putAwayList?.length ? (
+                <InputBox
+                  style={styles.lpnFilter}
+                  value={lpnFilter}
+                  disabled={false}
+                  editable={false}
+                  label={'Scan Lot Number'}
+                  onChange={this.onChangeLpnFilter}
+                />
+              ) : null}
+            </View>
+            <Divider />
             <FlatList
               data={putAwayListFiltered?.length ? putAwayListFiltered : putAwayList}
               ListEmptyComponent={
