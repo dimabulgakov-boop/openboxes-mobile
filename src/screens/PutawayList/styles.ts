@@ -10,8 +10,7 @@ export default StyleSheet.create({
   contentContainer: {
     display: 'flex',
     flex: 1,
-    flexDirection: 'column',
-    paddingHorizontal: 8
+    flexDirection: 'column'
   },
   lpnFilter: {
     marginHorizontal: 4,

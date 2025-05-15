@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
-import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import showPopup from '../../components/Popup';
 import { submitPutawayItem } from '../../redux/actions/putaways';
 import styles from './styles';
@@ -102,17 +101,6 @@ const PutawayItemDetail = () => {
     setState({ ...state, scannedPutawayLocation: text });
   };
 
-  const detailsData: LabeledDataType[] = [
-    { label: 'Putaway Identifier', value: state.putAway?.putawayNumber },
-    { label: 'Quantity to Putaway', value: state.putAwayItem?.quantity.toString() },
-    { label: 'Product Code', value: state.putAwayItem?.['product.productCode'] },
-    { label: 'Product Name', value: state.putAwayItem?.['product.name'] },
-    { label: 'Lot Number', value: state.putAwayItem?.['inventoryItem.lotNumber'], defaultValue: 'Default' },
-    { label: 'Expiry Date', value: state.putAwayItem?.['inventoryItem.expiryDate'], defaultValue: 'Never' },
-    { label: 'Current Location', value: state.putAwayItem?.['currentLocation.name'], defaultValue: 'Default' },
-    { label: 'Putaway Location', value: state.putAwayItem?.['putawayLocation.name'], defaultValue: 'Default' }
-  ];
-
   return (
     <ScrollView>
       <View style={styles.dataContainer}>
@@ -151,17 +139,21 @@ const PutawayItemDetail = () => {
       </View>
       <Divider />
       <View style={styles.contentContainer}>
-        <View style={styles.from}>
-          <InputBox
-            label={'Scan Putaway Location'}
-            value={state.scannedPutawayLocation}
-            onChange={onChangeScannedPutawayLocation}
-            editable={false}
-            disabled={false}
-          />
-        </View>
+        <InputBox
+          label={'Scan Putaway Location'}
+          value={state.scannedPutawayLocation}
+          onChange={onChangeScannedPutawayLocation}
+          editable={false}
+          disabled={false}
+        />
+        <Button
+          size="100%"
+          title="Confirm Putaway"
+          style={styles.buttonContainer}
+          onPress={formSubmit}
+          disabled={false}
+        />
       </View>
-      <Button title="Confirm Putaway" style={styles.buttonContainer} onPress={formSubmit} disabled={false} />
     </ScrollView>
   );
 };

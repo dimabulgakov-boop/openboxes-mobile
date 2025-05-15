@@ -6,7 +6,7 @@ export default StyleSheet.create({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: 8
+    padding: 16
   },
   dataContainer: {
     padding: 16,
@@ -42,8 +42,7 @@ export default StyleSheet.create({
     flex: 0
   },
   buttonContainer: {
-    marginTop: 4,
-    marginBottom: 8
+    marginTop: 8
   },
   headerRow: {
     flexDirection: 'row',
