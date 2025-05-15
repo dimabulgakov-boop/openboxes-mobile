@@ -1,15 +1,15 @@
-/* eslint-disable complexity */
 import React from 'react';
-import styles from './styles';
+import { View } from 'react-native';
 import { connect } from 'react-redux';
-import { Text, View } from 'react-native';
-import showPopup from '../../components/Popup';
-import { DispatchProps, Props, State } from './types';
-import OrdersList from './OrdersList';
-import { Order } from '../../data/order/Order';
-import { getOrdersAction } from '../../redux/actions/orders';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import showPopup from '../../components/Popup';
+import { Order } from '../../data/order/Order';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getOrdersAction } from '../../redux/actions/orders';
+import OrdersList from './OrdersList';
+import styles from './styles';
+import { DispatchProps, Props, State } from './types';
 
 class Index extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -88,14 +88,8 @@ class Index extends React.Component<Props, State> {
           searchBox={false}
           onSearchTermSubmit={this.searchOrders}
         />
-        <Text style={styles.label}>
-          Returned {this.state.resultCount} results
-        </Text>
         <View style={styles.content}>
-          <OrdersList
-            orders={this.state.allOrders}
-            onOrderTapped={this.goToOrderDetailsScreen}
-          />
+          <OrdersList orders={this.state.allOrders} onOrderTapped={this.goToOrderDetailsScreen} />
         </View>
       </View>
     );

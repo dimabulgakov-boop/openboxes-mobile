@@ -1,58 +1,59 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { Component } from 'react';
-import * as NavigationService from './NavigationService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Login from './screens/Login';
-import Orders from './screens/Orders';
-import OrderDetails from './screens/OrderDetails';
-import ProductDetails from './screens/ProductDetails';
-import Dashboard from './screens/Dashboard';
-import Transfers from './screens/Transfers';
-import InboundReceiveDetail from './screens/InboundReceiveDetail';
-import Products from './screens/Products';
-import PutawayItem from './screens/PutawayItem';
-import DrawerNavigator from './screens/DrawerNavigator';
-import PickOrderItem from './screens/PickList';
-import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
-import { RootState } from './redux/reducers';
-import { connect } from 'react-redux';
-import SplashScreen from 'react-native-splash-screen';
+import React, { Component } from 'react';
 import { SafeAreaView } from 'react-native';
-import Location from './data/location/Location';
-import { Session } from './data/auth/Session';
-import { getSessionAction } from './redux/actions/main';
+import { Provider } from 'react-native-paper';
+import SplashScreen from 'react-native-splash-screen';
+import { connect } from 'react-redux';
+
+import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
+import OptionMenu from './components/OptionMenu';
 import showPopup from './components/Popup';
-import { appHeaderHeight } from './constants';
-import Scan from './screens/Scan';
-import PutawayList from './screens/PutawayList';
-import Settings from './screens/Settings';
-import PutawayItemDetail from './screens/PutawayItemDetail';
-import InboundOrderList from './screens/InboundOrderList';
+import { appConfig } from './constants';
+import { Session } from './data/auth/Session';
+import Location from './data/location/Location';
+import * as NavigationService from './NavigationService';
+import { getSessionAction } from './redux/actions/main';
+import { RootState } from './redux/reducers';
+import AdjustStock from './screens/AdjustStock';
+import AppInfoScreen from './screens/AppInfo/AppInfoScreen';
+import Dashboard from './screens/Dashboard';
+import DrawerNavigator from './screens/DrawerNavigator';
 import InboundDetails from './screens/InboundDetails';
+import InboundOrderList from './screens/InboundOrderList';
+import InboundReceiveDetail from './screens/InboundReceiveDetail';
+import InternalLocationDetails from './screens/InternalLocationDetails';
+import Login from './screens/Login';
 import CreateLpn from './screens/Lpn/Create';
 import LpnDetail from './screens/LpnDetail/Index';
-import PutawayCandidates from './screens/PutawayCandidates';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import InternalLocationDetails from './screens/InternalLocationDetails';
-import OutboundStockList from './screens/OutboundStockList';
-import OutboundStockDetails from './screens/OutboundStockDetails';
-import ProductSummary from './screens/ProductSummary';
-import TransferDetails from './screens/TransfersDetails';
-import AdjustStock from './screens/AdjustStock';
-import Transfer from './screens/Transfer';
-import ShipItemDetails from './screens/ShipItemDetails';
-import ApiClient from './utils/ApiClient';
-import OptionMenu from './components/OptionMenu';
-import ViewAvailableItem from './screens/ViewAvailableItem';
-import PutawayDetails from './screens/PutawayDetails';
-import Placeholder from './screens/Placeholder';
-import { Provider } from 'react-native-paper';
-import AppInfoScreen from './screens/AppInfo/AppInfoScreen';
-import PackingLocationPage from './screens/PackingLocationPage';
-import OutboundLoadingList from './screens/OutboundLoadingList/OutboundLoadingList';
-import OutboundLoadingDetails from './screens/OutboundLoadingDetails';
+import OrderDetails from './screens/OrderDetails';
+import Orders from './screens/Orders';
 import OutboundLoadingContainer from './screens/OutboundLoadingContainer';
+import OutboundLoadingDetails from './screens/OutboundLoadingDetails';
+import OutboundLoadingList from './screens/OutboundLoadingList/OutboundLoadingList';
+import OutboundStockDetails from './screens/OutboundStockDetails';
+import OutboundStockList from './screens/OutboundStockList';
+import PackingLocationPage from './screens/PackingLocationPage';
+import PickOrderItem from './screens/PickList';
+import Placeholder from './screens/Placeholder';
+import ProductDetails from './screens/ProductDetails';
+import Products from './screens/Products';
+import ProductSummary from './screens/ProductSummary';
+import PutawayCandidates from './screens/PutawayCandidates';
+import PutawayDetails from './screens/PutawayDetails';
+import PutawayItem from './screens/PutawayItem';
+import PutawayItemDetail from './screens/PutawayItemDetail';
+import PutawayList from './screens/PutawayList';
+import Scan from './screens/Scan';
+import Settings from './screens/Settings';
+import ShipItemDetails from './screens/ShipItemDetails';
+import Transfer from './screens/Transfer';
+import Transfers from './screens/Transfers';
+import TransferDetails from './screens/TransfersDetails';
+import ViewAvailableItem from './screens/ViewAvailableItem';
+import ApiClient from './utils/ApiClient';
 import Theme from './utils/Theme';
 
 const Stack = createStackNavigator();
@@ -150,7 +151,7 @@ class Main extends Component<Props, State> {
                 headerTintColor: Theme.colors.surface,
                 headerStyle: {
                   backgroundColor: Theme.colors.primary,
-                  height: appHeaderHeight
+                  height: appConfig.APP_HEADER_HEIGHT
                 }
               })}
             >

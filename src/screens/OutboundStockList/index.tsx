@@ -1,20 +1,22 @@
-import { DispatchProps, Props, State } from './types';
+import _ from 'lodash';
 import React from 'react';
-import { View, FlatList, ListRenderItemInfo, Text } from 'react-native';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
-import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
-import { RootState } from '../../redux/reducers';
-import styles from './styles';
-import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
-import { Shipment } from '../../data/container/Shipment';
-import showPopup from '../../components/Popup';
-import EmptyView from '../../components/EmptyView';
-import { Card } from 'react-native-paper';
+
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
-import _ from 'lodash';
-import ShipmentItems from '../../data/inbound/ShipmentItems';
+import EmptyView from '../../components/EmptyView';
+import showPopup from '../../components/Popup';
+import { HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Container';
+import { Shipment } from '../../data/container/Shipment';
+import ShipmentItems from '../../data/inbound/ShipmentItems';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
+import styles from './styles';
+import { DispatchProps, Props, State } from './types';
 
 // List of shipments ready for packing
 class OutboundStockList extends React.Component<Props, State> {
@@ -28,13 +30,10 @@ class OutboundStockList extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.props.navigation.addListener('focus', () => {
-      this.fetchPacking();
-    });
+    this.fetchPacking();
   }
 
   fetchPacking = () => {
-    // eslint-disable-next-line complexity
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
         showPopup({
@@ -96,8 +95,9 @@ class OutboundStockList extends React.Component<Props, State> {
           );
 
           const matchingLotNumberOrProduct = _.find(shipment?.shipmentItems, (item: ShipmentItems) => {
-            const matchingLotNumber = item.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-                item.inventoryItem?.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
+            const matchingLotNumber =
+              item.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+              item.inventoryItem?.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
             const matchingCode = item.inventoryItem?.product?.productCode
               ?.toLowerCase()
               ?.includes(searchTerm.toLowerCase());
@@ -106,16 +106,23 @@ class OutboundStockList extends React.Component<Props, State> {
           });
 
           const matchingPackingLocation =
-            shipment?.packingStatusDetails?.packingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+            shipment?.packingStatusDetails?.packingLocation?.locationNumber
+              ?.toLowerCase()
+              ?.includes(searchTerm.toLowerCase()) ||
             shipment?.packingStatusDetails?.packingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
           // Return as bool
-          return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct || matchingPackingLocation);
+          return !!(
+            matchingShipmentNumber ||
+            matchingContainer ||
+            matchingLotNumberOrProduct ||
+            matchingPackingLocation
+          );
         });
 
         if (filteredShipments?.length === 0) {
           showPopup({
-            message: `No shipment associated with the given identifier: ${searchTerm}`,
+            message: `No shipment associated with the given identifier: ${searchTerm}`
           });
           this.resetFiltering();
           return;
@@ -162,34 +169,35 @@ class OutboundStockList extends React.Component<Props, State> {
                 onPress={() => this.showShipmentReadyToPackScreen(shipment.item)}
               >
                 <Card.Content>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Shipment Number</Text>
+                  <View style={styles.headerRow}>
+                    <View style={styles.dividedValues}>
                       <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
                     </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>{shipment.item.displayStatus}</Text>
-                    </View>
+                    <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+                      {shipment.item.status}
+                    </Chip>
                   </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Destination</Text>
-                      <Text style={styles.value}>{shipment.item.destination.name}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Expected Shipping Date</Text>
-                      <Text style={styles.value}>{shipment.item.expectedShippingDate}</Text>
-                    </View>
+                  <Divider style={styles.dividerHorizontal} />
+
+                  <Subheading style={styles.subheading}>
+                    {`Destination: ${shipment.item?.destination?.name}`}
+                  </Subheading>
+                  <View style={styles.additionalInfoRow}>
+                    <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                      {`Expected Shipping: ${shipment.item.expectedShippingDate}`}
+                    </Chip>
                   </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
+                  <Divider style={styles.dividerHorizontal} />
+
+                  <View style={styles.rowItem}>
+                    <View style={styles.columnItem}>
                       <Text style={styles.label}>Packing Location</Text>
-                      <Text style={styles.value}>{shipment.item.packingLocation ?? 'Unassigned'}</Text>
+                      <Text style={styles.value}>{shipment.item.packingLocation ?? HYPHEN}</Text>
                     </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Items Packed</Text>
-                      <Text style={styles.value}>{shipment.item.packingStatusDetails?.statusMessage ?? 'Not Available'}</Text>
+
+                    <View style={styles.columnItem}>
+                      <Text style={styles.label}>Loading Location</Text>
+                      <Text style={styles.value}>{shipment.item.packingStatusDetails?.statusMessage ?? HYPHEN}</Text>
                     </View>
                   </View>
                 </Card.Content>

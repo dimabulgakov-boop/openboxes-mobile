@@ -1,10 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Props } from './types';
+
 import LabeledData from '../LabeledData';
+import { Props as LabeledDataProps } from '../LabeledData/types';
 import styles, { columnStyle } from './styles';
 
-const DetailsTable: React.FC<Props> = ({ style, data, columns = 2 }) => {
+interface DetailsTableProps {
+  data: LabeledDataProps[];
+  columns?: number;
+  style?: any;
+}
+
+const DetailsTable: React.FC<DetailsTableProps> = ({ style, data, columns = 2 }) => {
   return (
     <View style={[style, styles.container]}>
       {data.map((dataProps) => (

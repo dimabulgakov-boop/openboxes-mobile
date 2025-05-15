@@ -6,13 +6,8 @@ export default StyleSheet.create({
     marginRight: 20,
     color: Theme.colors.text
   },
-  cardTitle: {
-    backgroundColor: Theme.colors.background
-  },
-  cardTitleString: {
-    padding: 0,
-    fontSize: 16,
-    marginRight: 10
+  card: {
+    borderRadius: 8
   },
   inputContainer: {
     display: 'flex',
@@ -33,6 +28,9 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   dataTable: {
-    marginTop: 10
+    marginTop: 0
+  },
+  submitButton: {
+    marginTop: 16
   }
 });

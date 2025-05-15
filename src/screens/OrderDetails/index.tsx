@@ -1,22 +1,20 @@
 import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Alert, View } from 'react-native';
+import { Chip, Divider, Subheading, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import { Props } from './types';
+import Button from '../../components/Button';
+import { ContentBody, ContentContainer, ContentFooter, ContentHeader } from '../../components/ContentLayout';
+import showPopup from '../../components/Popup';
 import PickList from '../../data/picklist/PickList';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
-import { Props as LabeledDataType } from '../../components/LabeledData/types';
-
-import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getPickListAction } from '../../redux/actions/orders';
-
-import { Alert } from 'react-native';
+import styles from './styles';
 import PickOrderItem from '../PickList';
-import Button from '../../components/Button';
-import { ContentContainer, ContentHeader, ContentFooter, ContentBody } from '../../components/ContentLayout';
-import DetailsTable from '../../components/DetailsTable';
-import showPopup from '../../components/Popup';
 import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
+import { Props } from './types';
 
 const OrderDetails: React.FC<Props> = (props) => {
   const [pickList, setPickList] = useState<PickList | null>(null);
@@ -106,17 +104,28 @@ const OrderDetails: React.FC<Props> = (props) => {
 
   const statusMessage = _.get(pickList, 'statusMessage', '0');
 
-  const detailsData: LabeledDataType[] = [
-    { label: 'Identifier', value: identifier },
-    { label: 'Status', value: `${status} (Picked ${statusMessage})` },
-    { label: 'Destination', value: `${destination?.locationNumber}-${destination?.name}` },
-    { label: 'Expected Shipping Date', value: `${expectedShippingDate}` }
-  ];
-
   return (
     <ContentContainer>
-      <ContentHeader>
-        <DetailsTable data={detailsData} />
+      <ContentHeader style={styles.contentHeader}>
+        <View style={styles.headerRow}>
+          <View style={styles.identifierContainer}>
+            <Text style={styles.value}>{identifier}</Text>
+          </View>
+          <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+            {`${status} (Picked ${statusMessage})`}
+          </Chip>
+        </View>
+        <Divider style={styles.contentDivider} />
+
+        <Subheading style={styles.destinationSubheading}>
+          {`Destination: ${destination?.locationNumber} - ${destination?.name}`}
+        </Subheading>
+
+        <View style={styles.additionalInfoRow}>
+          <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+            {`Expected Shipping: ${expectedShippingDate}`}
+          </Chip>
+        </View>
       </ContentHeader>
       <ContentBody>
         {!_.isEmpty(pickListItems) && (

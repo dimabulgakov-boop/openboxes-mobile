@@ -1,20 +1,21 @@
-/* eslint-disable complexity */
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-shadow */
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { DispatchProps, Props, State } from './types';
-import { View, Text, ToastAndroid, ScrollView } from 'react-native';
+import { ScrollView, Text, ToastAndroid, View } from 'react-native';
+import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
+import { connect } from 'react-redux';
+
+import AsyncModalSelect from '../../components/AsyncModalSelect';
+import Button from '../../components/Button';
+import InputSpinner from '../../components/InputSpinner';
+import showPopup from '../../components/Popup';
+import { searchInternalLocations } from '../../redux/actions/locations';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { createPutawayOderAction } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { connect } from 'react-redux';
-import { searchInternalLocations } from '../../redux/actions/locations';
-import { createPutawayOderAction } from '../../redux/actions/putaways';
-import InputSpinner from '../../components/InputSpinner';
-import InputBox from '../../components/InputBox';
-import Button from '../../components/Button';
-import showPopup from '../../components/Popup';
-import AsyncModalSelect from '../../components/AsyncModalSelect';
+import { DispatchProps, Props, State } from './types';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -143,47 +144,55 @@ class PutawayItem extends Component<Props, State> {
     return (
       <ScrollView keyboardShouldPersistTaps style={{ width: '100%', height: '100%' }}>
         <View style={styles.container}>
-          <View style={styles.childContainer}>
-            <InputBox disabled label="Product Code" value={item['product.productCode']} editable={false} />
-            <InputBox disabled label="Product Name" value={item['product.name']} editable={false} />
-            <InputBox
-              disabled
-              label="Lot Number"
-              value={item['inventoryItem.lotNumber'] ?? 'Default'}
-              editable={false}
-            />
-            <InputBox
-              disabled
-              label="Current Location"
-              value={item['currentLocation.name'] ?? 'Default'}
-              editable={false}
-            />
-            <InputBox disabled label="Received Quantity" value={item.quantity.toString() ?? '0'} editable={false} />
-
-            <View style={styles.divider} />
-            <View>
-              <Text>Putaway Location</Text>
-              <AsyncModalSelect
-                placeholder="Default"
-                label="Default"
-                initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
-                initialData={internalLocations}
-                searchAction={searchInternalLocations}
-                searchActionParams={{
-                  'parentLocation.id': this.props.currentLocation.id
-                }}
-                onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
-              />
+          <View style={styles.dataContainer}>
+            <View style={styles.headerRow}>
+              <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+                {item['stockMovement.id']}
+              </Chip>
+              <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+                {`Expiration Date: ${item?.['inventoryItem.expirationDate'] || 'Never'}`}
+              </Chip>
             </View>
+            <Divider style={styles.dividerHorizontal} />
+
+            <Subheading style={{ fontWeight: 'bold' }}>
+              {`${item?.['product.productCode']} - ${item?.['product.name']}}`}
+            </Subheading>
+            <Caption> {`Lot Number: ${item['inventoryItem.lotNumber'] ?? 'Default'}`} </Caption>
+
+            <View style={styles.rowItem}>
+              <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+                {`Current Location: ${item['currentLocation.name'] ?? 'Default'}`}
+              </Chip>
+              <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+                {`Received Quantity: ${item.quantity.toString() ?? '0'}`}
+              </Chip>
+            </View>
+          </View>
+          <Divider />
+          <View style={styles.formContainer}>
+            <Text>Putaway Location</Text>
+            <AsyncModalSelect
+              placeholder="Default"
+              label="Default"
+              initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
+              initialData={internalLocations}
+              searchAction={searchInternalLocations}
+              searchActionParams={{
+                'parentLocation.id': this.props.currentLocation.id
+              }}
+              onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
+            />
             <View style={styles.inputSpinner}>
               <InputSpinner title="Quantity to Pick" value={quantity} setValue={this.changeQuantity} />
             </View>
+            <Button
+              disabled={quantity > item.quantity || Number(quantity) <= 0}
+              title="Create Putaway"
+              size="100%"
+              onPress={this.create}
+            />
           </View>
-          <Button
-            disabled={quantity > item.quantity || Number(quantity) <= 0}
-            title="Create Putaway"
-            onPress={this.create}
-          />
         </View>
       </ScrollView>
     );

@@ -1,19 +1,21 @@
 /* eslint-disable complexity */
 import _ from 'lodash';
-import { DispatchProps, Props, State } from './types';
 import React from 'react';
-import { getOrdersAction } from '../../redux/actions/orders';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import styles from './styles';
-import PutAwayItems from '../../data/putaway/PutAwayItems';
-import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
-import PutAway from '../../data/putaway/PutAway';
-import EmptyView from '../../components/EmptyView';
-import { Card } from 'react-native-paper';
-import InputBox from '../../components/InputBox';
+
 import { LayoutStyle } from '../../assets/styles';
+import EmptyView from '../../components/EmptyView';
+import InputBox from '../../components/InputBox';
+import { HYPHEN } from '../../constants';
+import PutAway from '../../data/putaway/PutAway';
+import PutAwayItems from '../../data/putaway/PutAwayItems';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getOrdersAction } from '../../redux/actions/orders';
+import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
+import styles from './styles';
+import { DispatchProps, Props, State } from './types';
 
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -36,7 +38,7 @@ class PutawayList extends React.Component<Props, State> {
 
   componentDidUpdate() {
     // @ts-ignore
-    if (this.props.route.params.refetchPutaways) {
+    if (this.props?.route?.params?.refetchPutaways) {
       this.fetchPutAways(null);
     }
   }
@@ -129,33 +131,26 @@ class PutawayList extends React.Component<Props, State> {
                   }
                 >
                   <Card.Content>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Product Code</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['product.productCode']}
-                        </Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Lot Number</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] || 'Default'}
-                        </Text>
-                      </View>
+                    <View style={styles.headerRow}>
+                      <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                        {`Location: ${listRenderItemInfo.item?.putawayItem?.['currentLocation.name']}`}
+                      </Chip>
                     </View>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Current Location</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']??'Default'}
-                        </Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Putaway Location</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']??'Default'}
-                        </Text>
-                      </View>
+                    <Divider style={styles.contentDivider} />
+
+                    <Subheading style={styles.destinationSubheading}>
+                      {`${listRenderItemInfo.item?.putawayItem?.['product.productCode']} - ${listRenderItemInfo.item?.putawayItem?.['product.name']}`}
+                    </Subheading>
+                    <Caption style={styles.caption}>
+                      {`Lot Number: ${listRenderItemInfo.item?.putawayItem?.inventoryItem?.lotNumber ?? 'Default'}`}
+                    </Caption>
+
+                    <View style={styles.rowItem}>
+                      <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                        {`Putaway Location: ${
+                          listRenderItemInfo.item?.putawayItem?.['putawayLocation.name'] ?? HYPHEN
+                        }`}
+                      </Chip>
                     </View>
                   </Card.Content>
                 </Card>

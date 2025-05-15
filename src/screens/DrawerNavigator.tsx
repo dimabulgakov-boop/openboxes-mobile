@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import React from 'react';
 import CustomDrawerContent from '../components/CustomDrawerContent/CustomDrawerContent';
-import { appHeaderHeight } from '../constants';
+import { appConfig } from '../constants';
 import Theme from '../utils/Theme';
 import ChooseCurrentLocation from './ChooseCurrentLocation';
 import Dashboard from './Dashboard';
@@ -15,7 +15,7 @@ const DrawerNavigator = () => {
       screenOptions={{
         headerStyle: {
           backgroundColor: Theme.colors.primary,
-          height: appHeaderHeight
+          height: appConfig.APP_HEADER_HEIGHT
         },
         headerTitleStyle: {
           color: Theme.colors.surface

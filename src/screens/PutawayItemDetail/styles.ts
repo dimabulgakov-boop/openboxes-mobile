@@ -6,107 +6,18 @@ export default StyleSheet.create({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: 8
+    padding: 16
+  },
+  dataContainer: {
+    padding: 16,
+    backgroundColor: Theme.colors.surface
   },
   from: {
     flex: 1
   },
-  name: {
-    fontSize: 17,
-    color: Theme.colors.text,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4
-  },
-  emptyRow: {
-    flexDirection: 'row',
-    borderColor: Theme.colors.onBackground,
-    width: '100%',
-    height: 20
-  },
-  topRow: {
-    flexDirection: 'row',
-    borderColor: Theme.colors.onBackground,
-    width: '100%',
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
-    borderTopColor: 'black',
-    borderBottomWidth: 0,
-    borderBottomColor: 'black',
-    borderRightWidth: 0,
-    borderRightColor: 'black',
-    textAlign: 'center'
-  },
-  row: {
-    flexDirection: 'row',
-    borderColor: Theme.colors.onBackground,
-    width: '100%',
-    borderLeftWidth: 0,
-    borderLeftColor: 'black',
-    borderBottomWidth: 0,
-    borderBottomColor: 'black',
-    borderRightWidth: 0,
-    borderRightColor: 'black'
-  },
-  col30: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '30%',
-    borderRightWidth: 0,
-    borderRightColor: 'black'
-  },
-  col40: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '40%',
-    borderRightWidth: 0,
-    borderRightColor: 'black',
-    justifyContent: 'center' //Centered horizontally
-  },
-  col50: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '50%',
-    borderRightWidth: 1,
-    borderRightColor: 'black'
-  },
-  col60: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '60%'
-  },
-  col70: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '70%'
-  },
-  col100: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '100%'
-  },
-  width100: {
-    width: '100%'
-  },
   label: {
     fontSize: 12,
-    color: Theme.colors.placeholder,
-    width: '50%'
+    color: Theme.colors.placeholder
   },
   title: {
     fontSize: 16,
@@ -114,37 +25,48 @@ export default StyleSheet.create({
     fontWeight: 'bold'
   },
   value: {
-    fontSize: 16,
+    fontSize: 14,
     color: Theme.colors.text
-  },
-  info: {
-    fontSize: 12,
-    color: '#000000'
-  },
-  textInput: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#e7edd8'
   },
   rowItem: {
     flexDirection: 'row',
     borderColor: Theme.colors.background,
-    marginTop: 1,
-    padding: 2,
-    marginStart: 4,
+    marginTop: 8,
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   columnItem: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 0,
-    width: '50%'
+    flex: 0
   },
   buttonContainer: {
-    marginTop: 4,
-    marginBottom: 8
+    marginTop: 8
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center'
+  },
+  chipWarningText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  lastChild: {
+    marginRight: 0
+  },
+  dividerHorizontal: {
+    marginVertical: 12,
+    height: 1
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 });

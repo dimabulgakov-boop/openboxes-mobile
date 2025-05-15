@@ -13,6 +13,9 @@ export const ratio = {
   height: Dimensions.get('window').height / 776
 };
 
-export const appHeaderHeight = 56;
-
 export const HYPHEN = '-';
+
+export const appConfig = {
+  DEFAULT_DEBOUNCE_TIME: 500,
+  APP_HEADER_HEIGHT: 56
+};

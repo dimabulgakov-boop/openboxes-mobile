@@ -1,14 +1,14 @@
-import React, { useRef, useEffect } from 'react';
-import styles from './styles';
-import { ListRenderItemInfo, View, ToastAndroid } from 'react-native';
-import { useDispatch } from 'react-redux';
-import showPopup from '../../components/Popup';
-import { submitPickListItem } from '../../redux/actions/orders';
+import React, { useEffect, useRef } from 'react';
+import { ListRenderItemInfo, ToastAndroid, View } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
+import { useDispatch } from 'react-redux';
+
+import PickListItem from '../../components/PickListItem';
+import showPopup from '../../components/Popup';
 import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
-
-import PickListItem from "../../components/PickListItem";
+import { submitPickListItem } from '../../redux/actions/orders';
+import styles from './styles';
 
 const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPickCallback }: any) => {
   const dispatch = useDispatch();
@@ -17,7 +17,6 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
   useEffect(() => {
     carouselRef.current?.snapToItem(selectedPicklistItemIndex);
   }, [picklistItems, selectedPicklistItemIndex]);
-
 
   const formSubmit = (itemToSave: any) => {
     try {
@@ -73,13 +72,7 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
         }
       };
 
-      dispatch(
-        submitPickListItem(
-          itemToSave.id as string,
-          requestBody,
-          actionCallback,
-        )
-      );
+      dispatch(submitPickListItem(itemToSave.id as string, requestBody, actionCallback));
     } catch (e) {
       const title = e.message ? 'Failed submit item' : null;
       const message = e.message || 'Failed submit item';
@@ -114,7 +107,6 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
         key={selectedPicklistItemIndex}
         sliderHeight={device.windowHeight}
         pointerEvents={'none'}
-        activeSlideAlignment="start"
         renderItem={({ item }: ListRenderItemInfo<PicklistItem>) => {
           return <PickListItem item={item} onPickItem={formSubmit} />;
         }}
