@@ -1,38 +1,46 @@
 import React from 'react';
-import { FlatList, Image, ListRenderItemInfo, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { Card } from 'react-native-paper';
+
 import EmptyView from '../../components/EmptyView';
-import { Props, State } from './Types';
+import { DashboardItem, Props, State } from './Types';
 import dashboardData from './dashboardData';
 import styles from './styles';
 
 class Dashboard extends React.Component<Props, State> {
-  renderItem = (item: any, index: any) => {
+  renderItem = ({ item }: ListRenderItemInfo<DashboardItem>) => {
+    const IconComponent = item.icon;
+
     return (
-      <TouchableOpacity
-        key={index}
+      <Card
         style={styles.cardContainer}
         onPress={() => {
           this.props.navigation.navigate(item.navigationScreenName);
         }}
       >
-        <Card style={styles.card}>
-          <Image style={styles.cardImage} resizeMode="contain" source={item.icon} />
+        <Card.Content style={styles.cardContent}>
+          <View style={styles.iconWrapper}>
+            {IconComponent && <IconComponent width={styles.icon.width} height={styles.icon.height} />}
+          </View>
           <Text style={styles.cardLabel}>{item.screenName}</Text>
-        </Card>
-      </TouchableOpacity>
+        </Card.Content>
+      </Card>
     );
   };
+
+  keyExtractor = (item: DashboardItem, index: number): string =>
+    item.id || item.navigationScreenName || `dashboard-item-${index}`;
 
   render() {
     return (
       <View style={styles.screenContainer}>
         <FlatList
-          data={dashboardData}
-          horizontal={false}
+          data={dashboardData as DashboardItem[]}
+          renderItem={this.renderItem}
+          keyExtractor={this.keyExtractor}
           numColumns={2}
-          ListEmptyComponent={<EmptyView title={''} isRefresh={undefined} />}
-          renderItem={(item: ListRenderItemInfo<any>) => this.renderItem(item.item, item.index)}
+          ListEmptyComponent={<EmptyView title={'No items found'} isRefresh={undefined} />}
+          contentContainerStyle={styles.flatListContentContainer}
         />
       </View>
     );
