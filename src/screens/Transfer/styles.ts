@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { colors, ratio } from '../../constants';
+import { ratio } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   container: {
@@ -9,8 +10,8 @@ export default StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20
   },
-  from: {
-    flex: 1
+  formContainer: {
+    padding: Theme.spacing.medium
   },
   bottom: {
     width: '100%',
@@ -18,27 +19,43 @@ export default StyleSheet.create({
     justifyContent: 'center',
     height: ratio.height * 100
   },
-  button: {
-    width: '80%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-    elevation: 10
-  },
   inputSpinner: {
     flex: 1,
     alignItems: 'center'
   },
-  inputBin: {
-    marginTop: 20,
-    flex: 1
+  infoContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.medium
+  },
+  chipDefault: {
+    height: 28,
+    justifyContent: 'center',
+    borderRadius: Theme.spacing.small,
+    alignItems: 'center',
+    marginRight: Theme.spacing.small,
+    backgroundColor: Theme.colors.background
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 },
+  button: {
+    marginTop: Theme.spacing.small
   }
 });

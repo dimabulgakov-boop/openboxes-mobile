@@ -1,18 +1,20 @@
-/* eslint-disable react-native/no-inline-styles */
-import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import styles from './styles';
-import { ScrollView, View, Text, ToastAndroid } from 'react-native';
-import InputBox from '../../components/InputBox';
-import Button from '../../components/Button';
-import { RootState } from '../../redux/reducers';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { updateStockTransfer } from '../../redux/actions/transfers';
-import showPopup from '../../components/Popup';
+import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, Text, ToastAndroid, View } from 'react-native';
+import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+
 import AsyncModalSelect from '../../components/AsyncModalSelect';
-import { searchInternalLocations } from '../../redux/actions/locations';
+import Button from '../../components/Button';
 import InputSpinner from '../../components/InputSpinner';
+import showPopup from '../../components/Popup';
+import { HYPHEN } from '../../constants';
+import { searchInternalLocations } from '../../redux/actions/locations';
+import { updateStockTransfer } from '../../redux/actions/transfers';
+import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const Transfer = () => {
   const route = useRoute();
@@ -136,58 +138,53 @@ const Transfer = () => {
 
   return (
     <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.from}>
-          <InputBox disabled editable={false} label={'Product Code'} value={item?.product?.productCode} />
-          <InputBox
-            disabled
-            editable={false}
-            label={'Lot Number'}
-            value={item?.inventoryItem?.lotNumber ?? 'Default'}
-          />
-          <InputBox
-            disabled
-            editable={false}
-            label={'Expiration Date'}
-            value={item?.inventoryItem?.expirationDate ?? 'Never'}
-          />
-          <InputBox disabled value={item?.binLocation?.name ?? 'Default'} label={'From'} editable={false} />
-          <InputBox
-            disabled
-            label={'Quantity Available to Transfer'}
-            value={item?.quantityAvailableToPromise?.toString()}
-            editable={false}
-          />
-          <View style={styles.inputBin}>
-            <Text>Bin Location</Text>
-            <AsyncModalSelect
-              placeholder="Bin Location"
-              label="Bin Location"
-              initValue={binToLocationData?.label || ''}
-              initialData={internalLocations}
-              searchAction={searchInternalLocations}
-              searchActionParams={{ 'parentLocation.id': location.id }}
-              onSelect={(selectedItem: any) => {
-                if (selectedItem) {
-                  setBinToLocationData(selectedItem);
-                }
-              }}
-            />
-          </View>
-          <View style={styles.inputSpinner}>
-            <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
-          </View>
+      <View style={styles.infoContainer}>
+        <View style={styles.headerRow}>
+          <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Bin Location (From): ${item?.binLocation?.name ?? 'Default'}`}
+          </Chip>
+          <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Expiry Date: ${item?.inventoryItem?.expirationDate ?? 'Never'}`}
+          </Chip>
         </View>
-        <View style={styles.bottom}>
-          <Button
-            title="TRANSFER"
-            style={{
-              marginTop: 8
+        <Divider style={{ marginVertical: Theme.spacing.medium }} />
+
+        <Subheading style={styles.subheading}>{`${item?.product.productCode} - ${item?.product.name}`}</Subheading>
+        <Caption style={styles.caption}>{`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Default'}`}</Caption>
+
+        <View style={styles.additionalInfoRow}>
+          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Quantity Available To Transfer: ${item.quantityAvailable ?? HYPHEN}`}
+          </Chip>
+        </View>
+      </View>
+      <Divider />
+
+      <View style={styles.formContainer}>
+        <View>
+          <Text>Bin Location (Destination)</Text>
+          <AsyncModalSelect
+            placeholder="Bin Location (Destination)"
+            label="Bin Location (Destination)"
+            initValue={binToLocationData?.label || ''}
+            initialData={internalLocations}
+            searchAction={searchInternalLocations}
+            searchActionParams={{ 'parentLocation.id': location.id }}
+            onSelect={(selectedItem: any) => {
+              if (selectedItem) {
+                setBinToLocationData(selectedItem);
+              }
             }}
-            disabled={binToLocationData && quantity <= 0}
-            onPress={onTransfer}
           />
         </View>
+        <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
+        <Button
+          style={styles.button}
+          size="100%"
+          title="TRANSFER"
+          disabled={binToLocationData && quantity <= 0}
+          onPress={onTransfer}
+        />
       </View>
     </ScrollView>
   );

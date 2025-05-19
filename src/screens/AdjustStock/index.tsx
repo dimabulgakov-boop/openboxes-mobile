@@ -1,17 +1,19 @@
-/* eslint-disable no-shadow */
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import styles from './styles';
-import { ScrollView, View, ToastAndroid } from 'react-native';
-import InputBox from '../../components/InputBox';
-import Button from '../../components/Button';
-import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { ToastAndroid, View } from 'react-native';
+import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
-import RenderData from '../../components/RenderData';
-import { RootState } from '../../redux/reducers';
-import { stockAdjustments } from '../../redux/actions/products';
+import { useDispatch, useSelector } from 'react-redux';
+
+import Button from '../../components/Button';
+import InputBox from '../../components/InputBox';
 import InputSpinner from '../../components/InputSpinner';
+import showPopup from '../../components/Popup';
+import { HYPHEN } from '../../constants';
+import { stockAdjustments } from '../../redux/actions/products';
+import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const reasonCodes = [
   {
@@ -152,31 +154,33 @@ const AdjustStock = () => {
     dispatch(stockAdjustments(requestBody, callback));
   };
 
-  const RenderItem = (): JSX.Element => {
-    return (
-      <View style={styles.itemView}>
-        <View style={styles.rowItem}>
-          <RenderData title="Product Code" subText={item?.product.productCode} />
-          <RenderData title="Product Name" subText={item?.product.name} />
+  return (
+    <>
+      <View style={styles.infoContainer}>
+        <View style={styles.headerRow}>
+          <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Bin Location: ${item?.binLocation?.name ?? 'Default'}`}
+          </Chip>
+          <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Expiration Date: ${item?.inventoryItem?.expirationDate ?? 'Never'}`}
+          </Chip>
         </View>
-        <View style={styles.rowItem}>
-          <RenderData title="Lot Number" subText={item?.inventoryItem.lotNumber ?? 'Default'} />
-          <RenderData title="Expiration Date" subText={item?.inventoryItem.expirationDate ?? 'Never'} />
-        </View>
-        <View style={styles.rowItem}>
-          <RenderData title="Bin Location" subText={item?.binLocation?.name ?? 'Default'} />
-          <RenderData title="Quantity Available" subText={item.quantityAvailableToPromise} />
+        <Divider style={{ marginVertical: Theme.spacing.medium }} />
+
+        <Subheading style={styles.subheading}>{`${item?.product.productCode} - ${item?.product.name}`}</Subheading>
+        <Caption style={styles.caption}>{`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Default'}`}</Caption>
+
+        <View style={styles.additionalInfoRow}>
+          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Quantity Available: ${item.quantityAvailable ?? HYPHEN}`}
+          </Chip>
         </View>
       </View>
-    );
-  };
+      <Divider />
 
-  return (
-    <ScrollView style={styles.container}>
-      <RenderItem />
-      <View style={styles.from}>
+      <View style={styles.formContainer}>
         <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
-        <View style={styles.dropDownDivider} />
+        <View style={styles.dropdownDivider} />
         <DropDown
           label="Reason Code"
           mode="outlined"
@@ -188,11 +192,15 @@ const AdjustStock = () => {
           onDismiss={() => setShowDropDown(false)}
         />
         <InputBox value={comments} disabled={false} editable={false} label="Comments" onChange={setComments} />
+        <Button
+          style={styles.button}
+          disabled={!comments || !reasonCode}
+          title="Adjust Stock"
+          size="100%"
+          onPress={onSave}
+        />
       </View>
-      <View style={styles.bottom}>
-        <Button disabled={!comments || !reasonCode} title="Adjust Stock" onPress={onSave} />
-      </View>
-    </ScrollView>
+    </>
   );
 };
 

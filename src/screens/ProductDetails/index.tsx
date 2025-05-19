@@ -1,21 +1,38 @@
-/* eslint-disable complexity */
-/* eslint-disable prettier/prettier */
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import styles from './styles';
-import PrintModal from '../../components/PrintModal';
-import Refresh from '../../components/Refresh';
-import { DispatchProps, Props, State } from './types';
-import { vmMapper } from './VMMapper';
-import { getProductByIdAction } from '../../redux/actions/products';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { Card, Chip, Divider, Paragraph, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
-import showPopup from '../../components/Popup';
-import { RootState } from '../../redux/reducers';
-import { Card } from 'react-native-paper';
-import RenderData from '../../components/RenderData';
+
 import Button from '../../components/Button';
+import showPopup from '../../components/Popup';
+import PrintModal from '../../components/PrintModal';
+import { HYPHEN } from '../../constants';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getProductByIdAction } from '../../redux/actions/products';
+import { RootState } from '../../redux/reducers';
+import styles from './styles';
+import { DispatchProps, Props, State } from './Types';
+import { vmMapper } from './VMMapper';
+
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card style={styles.sectionCard}>
+      <Card.Title titleStyle={styles.title} title={title} />
+      <Card.Content>{children}</Card.Content>
+    </Card>
+  );
+}
+
+function RowDetail({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.row}>
+      <Paragraph>{label}</Paragraph>
+      <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+        {value}
+      </Chip>
+    </View>
+  );
+}
 
 class ProductDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -37,7 +54,7 @@ class ProductDetails extends React.Component<Props, State> {
 
   handleClick = () => {
     const { product } = this.props.route.params;
-    this.props.getProductByIdAction(product.id, data => {
+    this.props.getProductByIdAction(product.id, (data) => {
       this.setState({ visible: true });
     });
   };
@@ -54,7 +71,7 @@ class ProductDetails extends React.Component<Props, State> {
   }
 
   getProductDetails(id: string) {
-    this.props.navigation.setParams({ refetchProduct : false });
+    this.props.navigation.setParams({ refetchProduct: false });
     this.props.showScreenLoading('');
     if (!id) {
       showPopup({
@@ -67,12 +84,8 @@ class ProductDetails extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage
-            ? `Failed to load product details with value = "${id}"`
-            : null,
-          message:
-            data.errorMessage ??
-            `Failed to load product details with value = "${id}"`,
+          title: data.errorMessage ? `Failed to load product details with value = "${id}"` : null,
+          message: data.errorMessage ?? `Failed to load product details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -97,34 +110,27 @@ class ProductDetails extends React.Component<Props, State> {
   };
 
   renderListItem = (item: any, index: any) => (
-    <TouchableOpacity
-      key={index}
-      style={styles.itemView}
-      onPress={() => this.navigateToDetails(item)}>
+    <TouchableOpacity key={index} style={styles.itemView} onPress={() => this.navigateToDetails(item)}>
       <Card>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData
-              title={'Bin Location'}
-              subText={item?.binLocation?.name ?? 'Default'}
-            />
-            {item.quantityOnHand ? (
-              <RenderData
-                title={'Quantity OnHand'}
-                subText={item.quantityOnHand}
-              />
-            ) : null}
+          <View style={styles.headerRow}>
+            <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Bin Location: ${item?.binLocation?.name ?? 'Default'}`}
+            </Chip>
           </View>
-          <View style={styles.rowItem}>
-            <RenderData
-              title={'Lot Number'}
-              subText={item?.lotNumber || 'Default'}
-            />
+          <Divider style={styles.contentDivider} />
+
+          <Subheading> {`Lot Number: ${item?.lotNumber || 'Default'}`} </Subheading>
+          <View style={styles.additionalInfoRow}>
+            {item.quantityOnHand ? (
+              <Chip icon="package-variant" style={styles.chipDefault} textStyle={styles.chipText}>
+                {`Qty On Hand: ${item.quantityOnHand}`}
+              </Chip>
+            ) : null}
             {item.quantityAvailable ? (
-              <RenderData
-                title={'Quantity Available'}
-                subText={item.quantityAvailable}
-              />
+              <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipText}>
+                {`Qty Available: ${item.quantityAvailable}`}
+              </Chip>
             ) : null}
           </View>
         </Card.Content>
@@ -137,11 +143,7 @@ class ProductDetails extends React.Component<Props, State> {
     const product = this.props.selectedProduct;
     const { visible } = this.state;
     return (
-      <View
-        style={{
-          flexDirection: 'column',
-          flex: 1
-        }}>
+      <>
         <PrintModal
           visible={visible}
           closeModal={this.closeModal}
@@ -150,134 +152,58 @@ class ProductDetails extends React.Component<Props, State> {
           defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
         />
         <View style={styles.contentContainer}>
-          <Refresh onRefresh={this.getProduct}>
-            <View style={styles.header}>
-              <View style={styles.rowItem}>
-                <View style={{ width: '75%' }}>
-                  <Text style={styles.name}>{vm.productCode}</Text>
-                  <Text style={styles.name}>{vm.name}</Text>
-                </View>
-                <View style={{ width: '25%', alignItems: 'flex-end', flex: 1 }}>
-                  <Image
-                    style={{ width: 50, height: 50, resizeMode: 'contain' }}
-                    source={{ uri: vm.defaultImageUrl }}
-                  />
-                </View>
-              </View>
+          <View style={styles.header}>
+            <View style={styles.headerRow}>
+              <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+                {`Code: ${vm.productCode}`}
+              </Chip>
             </View>
-          </Refresh>
-          <ScrollView>
-            <Text style={styles.boxHeading}>Availability</Text>
-            <Card>
-              <View style={styles.container}>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Status'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.status}</Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Quantity On Hand'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityOnHand} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Quantity Available'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityAvailable} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Allocated to Order'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityAllocated} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'On Order'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityOnOrder} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-            <Text style={styles.boxHeading}>Details</Text>
-            <Card>
-              <View style={styles.container}>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Product Code'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.productCode}</Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Category'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.category.name}</Text>
-                  </View>
-                </View>
-                {vm?.attributes?.map((item, index) => {
-                  return (
-                    <View key={index} style={styles.row}>
-                      <Text style={styles.label}>{item.name}</Text>
-                      <Text style={styles.value}>{item.value}</Text>
-                    </View>
-                  );
+            <Divider style={styles.contentDivider} />
+
+            <Subheading style={styles.name}>{vm.name}</Subheading>
+
+            <View style={styles.additionalInfoRow}>
+              <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+                {`Items Available: ${vm?.availableItems?.length}`}
+              </Chip>
+            </View>
+          </View>
+          <Divider />
+          <ScrollView style={styles.detailsSection}>
+            <SectionCard title="Availability">
+              {[
+                { label: 'Status', value: vm.status },
+                { label: 'Quantity On Hand', value: `${vm.quantityOnHand} ${vm.unitOfMeasure}` },
+                { label: 'Quantity Available', value: `${vm.quantityAvailable} ${vm.unitOfMeasure}` },
+                { label: 'Allocated To Order', value: `${vm.quantityAllocated} ${vm.unitOfMeasure}` },
+                { label: 'On Order', value: `${vm.quantityOnOrder} ${vm.unitOfMeasure}` }
+              ].map((item) => (
+                <RowDetail key={item.label} label={item.label} value={item.value} />
+              ))}
+            </SectionCard>
+
+            <SectionCard title="Details">
+              {[
+                { label: 'Product Code', value: vm.productCode || HYPHEN },
+                { label: 'Category', value: vm.category.name || HYPHEN },
+                { label: 'Product Type', value: vm.productType.name || HYPHEN },
+                { label: 'Price Per Unit', value: String(vm.pricePerUnit) || HYPHEN }
+              ].map((item) => (
+                <RowDetail key={item.label} label={item.label} value={item.value} />
+              ))}
+            </SectionCard>
+
+            <SectionCard title="Available Items">
+              {vm?.availableItems
+                ?.filter((item) => item.quantityOnHand > 0 || item.quantityAvailable > 0)
+                .map((item, index) => {
+                  return this.renderListItem(item, index);
                 })}
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Product Type'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.productType.name}</Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Price per unit'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-            <Text style={styles.boxHeading}>Available Items</Text>
-            <Card>
-              {vm?.availableItems?.filter(item => item.quantityOnHand > 0 || item.quantityAvailable > 0).map((item, index) => {
-                return this.renderListItem(item, index);
-              })}
-              <Button
-                title={'Print Barcode Label'}
-                onPress={this.handleClick}
-              />
-            </Card>
+            </SectionCard>
+            <Button style={styles.printButton} title={'Print Barcode Label'} size="100%" onPress={this.handleClick} />
           </ScrollView>
         </View>
-      </View>
+      </>
     );
   }
 }

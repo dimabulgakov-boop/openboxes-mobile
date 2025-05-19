@@ -2,11 +2,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
-import styles from './styles';
-import { Card } from 'react-native-paper';
-import RenderData from '../../components/RenderData';
-import Button from '../../components/Button';
+import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import DefaultProductImage from '../../assets/images/default-product.png';
+import Button from '../../components/Button';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const ViewAvailableItem = () => {
   const route = useRoute();
@@ -34,31 +34,44 @@ const ViewAvailableItem = () => {
   const navigateToTransfer = () => {
     navigation.navigate('Transfer', { item: availableItems });
   };
+
   return (
     <View style={styles.container}>
-      <Card style={styles.from}>
+      <Card>
         <Card.Content>
-          <View style={{ width: '100%', alignItems: 'center', flex: 0 }}>
-            <Image style={{ width: 150, height: 150, resizeMode: 'contain' }} source={source} />
+          <View style={styles.headerRow}>
+            <Image
+              style={{ width: 36, height: 36, resizeMode: 'contain', marginRight: Theme.spacing.medium }}
+              source={source}
+            />
+            <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Expiration Date: ${availableItems?.inventoryItem?.expirationDate ?? 'Never'}`}
+            </Chip>
           </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={availableItems?.product.productCode} />
-            <RenderData title={'Product Name'} subText={availableItems?.product.name} />
+          <Divider style={{ marginVertical: Theme.spacing.medium }} />
+
+          <Subheading style={{ fontWeight: 'bold', fontSize: 16 }}>
+            {`${availableItems?.product.productCode} - ${availableItems?.product.name}`}
+          </Subheading>
+          <Caption style={{ fontSize: 12, color: Theme.colors.text }}>
+            {`Lot Number: ${availableItems?.inventoryItem?.lotNumber ?? 'Default'}`}
+          </Caption>
+
+          <View style={styles.additionalInfoRow}>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Location Name: ${availableItems?.binLocation?.name ?? 'Default'}`}
+            </Chip>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Location Type: ${availableItems?.binLocation?.locationType?.name ?? 'Never'}`}
+            </Chip>
           </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Lot Number'} subText={availableItems?.inventoryItem?.lotNumber ?? 'Default'} />
-            <RenderData title={'Expiration Date'} subText={availableItems?.inventoryItem?.expirationDate ?? 'Never'} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Location Name'} subText={availableItems?.binLocation?.name ?? 'Default'} />
-            <RenderData title={'Location Type'} subText={availableItems?.binLocation?.locationType?.name ?? 'Never'} />
+
+          <View style={styles.buttons}>
+            <Button title={'Adjust Stock'} size="100%" onPress={navigateToAdjustStock} />
+            <Button title={'Transfer'} size="100%" onPress={navigateToTransfer} />
           </View>
         </Card.Content>
       </Card>
-      <View style={styles.button}>
-        <Button title={'Adjust Stock'} onPress={navigateToAdjustStock} />
-        <Button title={'Transfer'} onPress={navigateToTransfer} />
-      </View>
     </View>
   );
 };

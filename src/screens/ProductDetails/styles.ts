@@ -5,15 +5,15 @@ export default StyleSheet.create({
   contentContainer: {
     display: 'flex',
     flex: 1,
-    flexDirection: 'column',
-    padding: 8
+    flexDirection: 'column'
   },
-  title: {},
+  title: {
+    fontSize: 16,
+    color: Theme.colors.text,
+    fontWeight: 'normal'
+  },
   itemView: {
-    marginStart: 10,
-    marginEnd: 10,
-    marginTop: 5,
-    marginBottom: 10
+    margin: Theme.spacing.small / 2
   },
   rowItem: {
     flexDirection: 'row',
@@ -93,19 +93,12 @@ export default StyleSheet.create({
     borderRadius: 8
   },
   row: {
+    display: 'flex',
     flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    borderBottomWidth: 1,
-    marginTop: 8,
-    padding: 8,
-    width: '100%'
-  },
-  label: {
-    width: '50%' // is 50% of container width
-  },
-  value: {
-    width: '50%', // is 50% of container width
-    textAlign: 'right'
+    justifyContent: 'space-between',
+    width: '100%',
+    alignItems: 'center',
+    padding: Theme.spacing.small
   },
   textAlign: {
     textAlign: 'right'
@@ -113,5 +106,50 @@ export default StyleSheet.create({
   logo: {
     width: 66,
     height: 58
+  },
+  header: {
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.large,
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8,
+    backgroundColor: Theme.colors.background
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  contentDivider: {
+    marginVertical: 8
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    marginTop: 8,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap'
+  },
+  detailsSection: {
+    paddingHorizontal: Theme.spacing.small
+  },
+  sectionCard: {
+    marginTop: Theme.spacing.small,
+    '&:last-child': {
+      marginBottom: Theme.spacing.small
+    }
+  },
+  printButton: {
+    marginVertical: Theme.spacing.small
   }
 });

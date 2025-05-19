@@ -41,5 +41,35 @@ export default StyleSheet.create({
     margin: 10,
     padding: 5,
     fontSize: 16
+  },
+  subheading: {
+    fontWeight: 'bold',
+    color: Theme.colors.text
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8,
+    backgroundColor: Theme.colors.background
+  },
+  contentDivider: {
+    marginVertical: 8
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    marginTop: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
   }
 });
