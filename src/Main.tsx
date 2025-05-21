@@ -159,72 +159,96 @@ class Main extends Component<Props, State> {
                 name="Login"
                 component={Login}
                 options={{
-                  headerShown: false
+                  headerShown: false,
+                  title: 'Login'
                 }}
               />
               <Stack.Screen
                 name="Drawer"
                 component={DrawerNavigator}
                 options={{
-                  headerShown: false
+                  headerShown: false,
+                  title: 'Home'
                 }}
               />
-              <Stack.Screen name="Orders" component={Orders} />
-              <Stack.Screen name="OrderDetails" component={OrderDetails} />
-              <Stack.Screen name="ProductDetails" component={ProductDetails} />
-              <Stack.Screen name="PickOrderItem" component={PickOrderItem} />
-              <Stack.Screen name="Transfers" component={Transfers} />
-              <Stack.Screen name="TransferDetails" component={TransferDetails} />
-              <Stack.Screen name="Dashboard" component={Dashboard} />
-              <Stack.Screen name="Scan" component={Scan} />
-              <Stack.Screen name="Products" component={Products} />
-              <Stack.Screen name="PutawayList" component={PutawayList} />
-              <Stack.Screen name="PutawayCandidates" component={PutawayCandidates} />
-              <Stack.Screen name="PutawayItem" component={PutawayItem} />
-              <Stack.Screen name="PutawayItemDetail" component={PutawayItemDetail} />
-              <Stack.Screen name="PutawayDetails" component={PutawayDetails} />
+              <Stack.Screen name="Orders" component={Orders} options={{ title: 'Orders' }} />
+              <Stack.Screen name="OrderDetails" component={OrderDetails} options={{ title: 'Order Details' }} />
+              <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ title: 'Product Details' }} />
+              <Stack.Screen name="PickOrderItem" component={PickOrderItem} options={{ title: 'Pick Order Item' }} />
+              <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
               <Stack.Screen
-                name="InboundOrderList"
-                component={InboundOrderList}
-                options={{
-                  title: 'Receiving'
-                }}
+                name="TransferDetails"
+                component={TransferDetails}
+                options={{ title: 'Transfer Details' }}
               />
-              <Stack.Screen name="InboundDetails" component={InboundDetails} />
-              <Stack.Screen name="Product Summary" component={ProductSummary} />
-              <Stack.Screen name="CreateLpn" component={CreateLpn} />
-              <Stack.Screen name="LpnDetail" component={LpnDetail} />
-              <Stack.Screen name="InboundReceiveDetail" component={InboundReceiveDetail} />
-              <Stack.Screen name="Settings" component={Settings} />
+              <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
+              <Stack.Screen name="Scan" component={Scan} options={{ title: 'Scan' }} />
+              <Stack.Screen name="Products" component={Products} options={{ title: 'Products' }} />
+              <Stack.Screen name="PutawayList" component={PutawayList} options={{ title: 'Putaway List' }} />
+              <Stack.Screen
+                name="PutawayCandidates"
+                component={PutawayCandidates}
+                options={{ title: 'Putaway Candidates' }}
+              />
+              <Stack.Screen name="PutawayItem" component={PutawayItem} options={{ title: 'Putaway Item' }} />
+              <Stack.Screen
+                name="PutawayItemDetail"
+                component={PutawayItemDetail}
+                options={{ title: 'Putaway Item Detail' }}
+              />
+              <Stack.Screen name="PutawayDetails" component={PutawayDetails} options={{ title: 'Putaway Details' }} />
+              <Stack.Screen name="InboundOrderList" component={InboundOrderList} options={{ title: 'Receiving' }} />
+              <Stack.Screen name="InboundDetails" component={InboundDetails} options={{ title: 'Inbound Details' }} />
+              <Stack.Screen name="Product Summary" component={ProductSummary} options={{ title: 'Product Summary' }} />
+              <Stack.Screen name="CreateLpn" component={CreateLpn} options={{ title: 'Create LPN' }} />
+              <Stack.Screen name="LpnDetail" component={LpnDetail} options={{ title: 'LPN Details' }} />
+              <Stack.Screen
+                name="InboundReceiveDetail"
+                component={InboundReceiveDetail}
+                options={{ title: 'Receive Detail' }}
+              />
+              <Stack.Screen name="Settings" component={Settings} options={{ title: 'Settings' }} />
               <Stack.Screen name="OutboundStockList" component={OutboundStockList} options={{ title: 'Packing' }} />
               <Stack.Screen
                 name="OutboundStockDetails"
                 component={OutboundStockDetails}
-                options={{ title: 'Packing' }}
+                options={{ title: 'Packing Details' }}
               />
               <Stack.Screen name="OutboundLoadingList" component={OutboundLoadingList} options={{ title: 'Loading' }} />
               <Stack.Screen
                 name="OutboundLoadingDetails"
                 component={OutboundLoadingDetails}
-                options={{ title: 'Loading' }}
+                options={{ title: 'Loading Details' }}
               />
               <Stack.Screen
                 name="OutboundLoadingContainer"
                 component={OutboundLoadingContainer}
                 options={{ title: 'Load LPN' }}
               />
-              <Stack.Screen name="AdjustStock" component={AdjustStock} />
-              <Stack.Screen name="Transfer" component={Transfer} />
-              <Stack.Screen name="ShipmentDetails" component={ShipItemDetails} options={{ title: 'Packing' }} />
-              <Stack.Screen name="InternalLocationDetail" component={InternalLocationDetails} />
-              <Stack.Screen name="ViewAvailableItem" component={ViewAvailableItem} />
-              <Stack.Screen name="Placeholder" options={{ title: 'Work in progress' }} component={Placeholder} />
+              <Stack.Screen name="AdjustStock" component={AdjustStock} options={{ title: 'Adjust Stock' }} />
+              <Stack.Screen name="Transfer" component={Transfer} options={{ title: 'Transfer' }} />
+              <Stack.Screen
+                name="ShipmentDetails"
+                component={ShipItemDetails}
+                options={{ title: 'Shipment Details' }}
+              />
+              <Stack.Screen
+                name="InternalLocationDetail"
+                component={InternalLocationDetails}
+                options={{ title: 'Location Details' }}
+              />
+              <Stack.Screen
+                name="ViewAvailableItem"
+                component={ViewAvailableItem}
+                options={{ title: 'Available Item' }}
+              />
+              <Stack.Screen name="Placeholder" component={Placeholder} options={{ title: 'Work in Progress' }} />
               <Stack.Screen
                 name="PackingLocationPage"
-                options={{ title: 'Packing Location' }}
                 component={PackingLocationPage}
+                options={{ title: 'Packing Location' }}
               />
-              <Stack.Screen name="AppInfo" component={AppInfoScreen} />
+              <Stack.Screen name="AppInfo" component={AppInfoScreen} options={{ title: 'App Info' }} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

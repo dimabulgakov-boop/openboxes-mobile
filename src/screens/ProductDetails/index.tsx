@@ -142,6 +142,9 @@ class ProductDetails extends React.Component<Props, State> {
     const vm = vmMapper(this.state.productDetails, this.state);
     const product = this.props.selectedProduct;
     const { visible } = this.state;
+    const filteredItems =
+      vm?.availableItems?.filter((item) => item.quantityOnHand > 0 || item.quantityAvailable > 0) ?? [];
+
     return (
       <>
         <PrintModal
@@ -164,7 +167,7 @@ class ProductDetails extends React.Component<Props, State> {
 
             <View style={styles.additionalInfoRow}>
               <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
-                {`Items Available: ${vm?.availableItems?.length}`}
+                {`Items Available: ${filteredItems.length}`}
               </Chip>
             </View>
           </View>
@@ -194,11 +197,9 @@ class ProductDetails extends React.Component<Props, State> {
             </SectionCard>
 
             <SectionCard title="Available Items">
-              {vm?.availableItems
-                ?.filter((item) => item.quantityOnHand > 0 || item.quantityAvailable > 0)
-                .map((item, index) => {
-                  return this.renderListItem(item, index);
-                })}
+              {filteredItems.map((item, index) => {
+                return this.renderListItem(item, index);
+              })}
             </SectionCard>
             <Button style={styles.printButton} title={'Print Barcode Label'} size="100%" onPress={this.handleClick} />
           </ScrollView>
