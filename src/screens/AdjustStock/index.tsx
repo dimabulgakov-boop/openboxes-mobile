@@ -96,7 +96,7 @@ const AdjustStock = () => {
   const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
 
   const [comments, setComments] = useState('');
-  const [quantityAdjusted, setQuantityAdjusted] = useState(item.quantityAvailableToPromise);
+  const [quantityAdjusted, setQuantityAdjusted] = useState(item.quantityAvailable);
   const [reasonCode, setReasonCode] = useState(null);
   const [showDropDown, setShowDropDown] = useState(false);
 
@@ -119,9 +119,9 @@ const AdjustStock = () => {
     const request = {
       'location.id': location.id,
       'product.id': item.product.id,
-      'inventoryItem.id': item?.inventoryItem?.id ?? '',
+      'inventoryItem.id': item?.['inventoryItem.id'] ?? '',
       'binLocation.id': item?.binLocation?.id ?? '',
-      quantityAvailable: item.quantityAvailableToPromise,
+      quantityAvailable: item.quantityAvailable,
       reasonCode: reasonCode ?? 'CORRECTION',
       quantityAdjusted: quantityAdjusted,
       comments: comments

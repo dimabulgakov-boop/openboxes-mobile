@@ -23,7 +23,7 @@ const Transfer = () => {
   const dispatch = useDispatch();
   const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
   const [binToLocationData, setBinToLocationData] = useState<any>({});
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(item?.quantityAvailable ?? 0);
   const [internalLocations, setInternalLocations] = useState<any>([]);
 
   useEffect(() => {
@@ -102,8 +102,8 @@ const Transfer = () => {
       'destination.id': location.id,
       stockTransferItems: [
         {
-          'product.id': item.inventoryItem.product.id,
-          'inventoryItem.id': item.inventoryItem.id,
+          'product.id': item.product.id,
+          'inventoryItem.id': item['inventoryItem.id'],
           'location.id': location.id,
           'originBinLocation.id': item?.binLocation?.id,
           'destinationBinLocation.id': binToLocationData.id,
@@ -111,6 +111,7 @@ const Transfer = () => {
         }
       ]
     };
+
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -125,7 +126,7 @@ const Transfer = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
-        const product = { id: item.inventoryItem.product.id };
+        const product = { id: item.product.id };
         ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
         navigation.navigate('ProductDetails', {
           product,
@@ -133,6 +134,7 @@ const Transfer = () => {
         });
       }
     };
+
     dispatch(updateStockTransfer(request, actionCallback));
   };
 
