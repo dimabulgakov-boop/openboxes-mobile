@@ -24,8 +24,8 @@ export default StyleSheet.create({
     borderRadius: 5,
     marginTop: 10
   },
-  from: {
-    flex: 1
+  formContainer: {
+    padding: Theme.spacing.medium
   },
   bottom: {
     width: '100%',
@@ -61,7 +61,43 @@ export default StyleSheet.create({
     marginTop: 10,
     width: '90%'
   },
-  dropDownDivider: {
-    marginBottom: 30
+  dropdownDivider: {
+    marginBottom: Theme.spacing.small,
+    marginTop: Theme.spacing.small
+  },
+  infoContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.medium
+  },
+  chipDefault: {
+    height: 28,
+    justifyContent: 'center',
+    borderRadius: Theme.spacing.small,
+    alignItems: 'center',
+    marginRight: Theme.spacing.small,
+    backgroundColor: Theme.colors.background
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 },
+  button: {
+    marginTop: Theme.spacing.medium
   }
 });

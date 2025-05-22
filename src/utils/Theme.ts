@@ -16,5 +16,10 @@ export default {
     danger: '#FF5630',
     success: '#22bb33',
     info: '#00B8D9'
+  },
+  spacing: {
+    small: 8,
+    medium: 12,
+    large: 16
   }
 };

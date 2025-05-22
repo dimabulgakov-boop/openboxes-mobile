@@ -13,9 +13,7 @@ export default StyleSheet.create({
     flexDirection: 'column'
   },
   lpnFilter: {
-    marginHorizontal: 4,
-    marginVertical: 8,
-    backgroundColor: 'white'
+    backgroundColor: Theme.colors.surface
   },
   list: {
     width: '100%'
@@ -69,5 +67,9 @@ export default StyleSheet.create({
   value: {
     fontSize: 14,
     color: Theme.colors.text
+  },
+  headerContainer: {
+    padding: Theme.spacing.medium,
+    backgroundColor: Theme.colors.surface
   }
 });

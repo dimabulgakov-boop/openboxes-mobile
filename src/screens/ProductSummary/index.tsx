@@ -1,17 +1,17 @@
-/* eslint-disable no-undef */
-import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import styles from './styles';
-import { Card } from 'react-native-paper';
+import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { FlatList, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { Card, Chip, Divider, Subheading } from 'react-native-paper';
+import { LayoutStyle } from '../../assets/styles';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import EmptyView from '../../components/EmptyView';
 import showPopup from '../../components/Popup';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
-import _ from 'lodash';
-import EmptyView from '../../components/EmptyView';
-import { LayoutStyle } from '../../assets/styles';
+import styles from './styles';
 
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
@@ -26,8 +26,8 @@ const ProductSummary = () => {
     getProductSummary(location.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const getProductSummary = (id: string) => {
-    // eslint-disable-next-line complexity
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -66,15 +66,6 @@ const ProductSummary = () => {
     setState({ ...state });
   };
 
-  const RenderData = ({ title, subText }: any): JSX.Element => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
-
   const navigateToDetails = (item: any) => {
     const product = {
       id: item.productCode
@@ -86,12 +77,18 @@ const ProductSummary = () => {
     return (
       <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToDetails(item)}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={item.productCode} />
-            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
+          <View style={styles.headerRow}>
+            <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Code: ${item.productCode}`}
+            </Chip>
           </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Name'} subText={item.productName} />
+          <Divider style={styles.contentDivider} />
+
+          <Subheading style={styles.subheading}> {item.productName} </Subheading>
+          <View style={styles.additionalInfoRow}>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Quantity On Hand: ${item.quantityOnHand}`}
+            </Chip>
           </View>
         </Card.Content>
       </Card>
