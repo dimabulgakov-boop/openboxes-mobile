@@ -1,16 +1,18 @@
 import React from 'react';
-import showPopup from '../../components/Popup';
-import { saveAndUpdateLpn } from '../../redux/actions/lpn';
-import { DispatchProps, Props } from './Types';
-import { connect } from 'react-redux';
 import { ScrollView, Text, ToastAndroid, View } from 'react-native';
-import { Order } from '../../data/order/Order';
-import styles from './styles';
-import InputBox from '../../components/InputBox';
+import { connect } from 'react-redux';
+
+import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import Button from '../../components/Button';
+import InputBox from '../../components/InputBox';
+import showPopup from '../../components/Popup';
+import { Order } from '../../data/order/Order';
+import { saveAndUpdateLpn } from '../../redux/actions/lpn';
 import { getShipmentOrigin } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
-import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import styles from './styles';
+import { DispatchProps, Props } from './Types';
+import Theme from '../../utils/Theme';
 
 export interface State {
   stockMovements: Order[] | null;
@@ -131,7 +133,13 @@ class CreateLpn extends React.Component<Props, State> {
               });
             }}
           />
-          <InputBox value={this.state.name} editable={false} label={'Name'} onChange={this.onChangeName} />
+          <InputBox
+            value={this.state.name}
+            style={{ marginBottom: Theme.spacing.small }}
+            editable={false}
+            label={'Name'}
+            onChange={this.onChangeName}
+          />
           <InputBox
             value={this.state.containerNumber}
             editable={false}
