@@ -3,17 +3,6 @@
 # Exit on error
 set -e
 
-# Detect sed version for in-place editing portability (GNU vs BSD)
-SED_INPLACE_CMD="sed -i"
-# The --version flag is a GNU extension. On BSD sed (macOS), this command will fail.
-# We redirect stdout and stderr to /dev/null to suppress output.
-if ! sed --version >/dev/null 2>&1; then
-    # This is likely BSD sed, which requires an argument for the -i flag.
-    # An empty string '' tells it to edit in-place without a backup file.
-    SED_INPLACE_CMD="sed -i ''"
-    echo "Info: Detected BSD-style sed. Using 'sed -i ''' for in-place edits."
-fi
-
 # --- Argument: Project Name ---
 PROJECT_NAME="$1"
 if [ -z "${PROJECT_NAME}" ]; then
@@ -116,11 +105,13 @@ else
         echo "    Using 'sed'. Ensure app_name in settings.json is XML-escaped if needed."
         # Use the portable command stored in our variable.
         # The variable is not quoted to allow for word splitting by the shell.
-        if ${SED_INPLACE_CMD} "s#\(<string name=\"app_name\">\)[^<]*\(</string>\)#\1${GENERAL_APP_NAME}\2#g" "${ANDROID_STRINGS_FILE}"; then
-            echo "      Updated Android app_name via sed."
+        if [ "$OSTYPE" == "darwin"* ]; then
+            # macOS sed requires a backup extension for in-place edits
+            sed -i '' "s#\(<string name=\"app_name\">\)[^<]*\(</string>\)#\1${GENERAL_APP_NAME}\2#g" "${ANDROID_STRINGS_FILE}"
         else
-            echo "      Error: sed command failed for Android strings.xml."
+            sed -i "s#\(<string name=\"app_name\">\)[^<]*\(</string>\)#\1${GENERAL_APP_NAME}\2#g" "${ANDROID_STRINGS_FILE}"
         fi
+        echo "    Updated Android app_name via sed."
     elif command -v xmlstarlet &>/dev/null; then
         echo "    Using 'xmlstarlet'."
         if xmlstarlet ed -L -u "/resources/string[@name='app_name']" -v "${GENERAL_APP_NAME}" "${ANDROID_STRINGS_FILE}"; then
