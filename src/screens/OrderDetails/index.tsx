@@ -106,7 +106,9 @@ const OrderDetails: React.FC<Props> = (props) => {
   const parsedExpectedShippingDate = parseDateToISODate(expectedShippingDate);
   const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
 
-  const statusMessage = _.get(pickList, 'statusMessage', '0');
+  const totalQuantityPicked = pickListItems.reduce((sum, item) => {
+    return sum + (item?.quantityPicked || 0);
+  }, 0);
 
   return (
     <ContentContainer>
@@ -116,7 +118,7 @@ const OrderDetails: React.FC<Props> = (props) => {
             <Text style={styles.value}>{identifier}</Text>
           </View>
           <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
-            {`${status} (Picked ${statusMessage})`}
+            {`${status} (Picked ${totalQuantityPicked})`}
           </Chip>
         </View>
         <Divider style={styles.contentDivider} />
