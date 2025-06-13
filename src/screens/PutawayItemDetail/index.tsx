@@ -115,7 +115,7 @@ const PutawayItemDetail = () => {
         <Divider style={styles.dividerHorizontal} />
 
         <Subheading style={{ fontWeight: 'bold' }}>
-          {`${state.putAwayItem?.['product.productCode']} - ${state.putAwayItem?.['product.name']}}`}
+          {`${state.putAwayItem?.['product.productCode']} - ${state.putAwayItem?.['product.name']}`}
         </Subheading>
         <Caption> {`Lot Number: ${state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}`} </Caption>
 

@@ -159,7 +159,7 @@ class PutawayItem extends Component<Props, State> {
             <Divider style={styles.dividerHorizontal} />
 
             <Subheading style={{ fontWeight: 'bold' }}>
-              {`${item?.['product.productCode']} - ${item?.['product.name']}}`}
+              {`${item?.['product.productCode']} - ${item?.['product.name']}`}
             </Subheading>
             <Caption> {`Lot Number: ${item['inventoryItem.lotNumber'] ?? 'Default'}`} </Caption>
 
