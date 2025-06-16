@@ -185,9 +185,7 @@ class ProductDetails extends React.Component<Props, State> {
               {[
                 { label: 'Status', value: vm.status },
                 { label: 'Quantity On Hand', value: `${vm.quantityOnHand} ${vm.unitOfMeasure}` },
-                { label: 'Quantity Available', value: `${vm.quantityAvailable} ${vm.unitOfMeasure}` },
-                { label: 'Allocated To Order', value: `${vm.quantityAllocated} ${vm.unitOfMeasure}` },
-                { label: 'On Order', value: `${vm.quantityOnOrder} ${vm.unitOfMeasure}` }
+                { label: 'Quantity Available', value: `${vm.quantityAvailable} ${vm.unitOfMeasure}` }
               ].map((item) => (
                 <RowDetail key={item.label} label={item.label} value={item.value} />
               ))}
