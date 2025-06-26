@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -43,7 +43,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		508DBFC32DEA39F80074B3AF /* Exceptions for "openboxes_mobile_o" folder in "openboxes_mobile_o" target */ = {
+		508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -56,18 +56,24 @@
 		508DBF982DEA39F70074B3AF /* openboxes_mobile_o */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				508DBFC32DEA39F80074B3AF /* Exceptions for "openboxes_mobile_o" folder in "openboxes_mobile_o" target */,
+				508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
 			);
+			explicitFileTypes = {};
+			explicitFolders = ();
 			path = openboxes_mobile_o;
 			sourceTree = "<group>";
 		};
 		508DBFB42DEA39F80074B3AF /* openboxes_mobile_oTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {};
+			explicitFolders = ();
 			path = openboxes_mobile_oTests;
 			sourceTree = "<group>";
 		};
 		508DBFBE2DEA39F80074B3AF /* openboxes_mobile_oUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {};
+			explicitFolders = ();
 			path = openboxes_mobile_oUITests;
 			sourceTree = "<group>";
 		};
@@ -221,7 +227,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					508DBF952DEA39F70074B3AF = {
 						CreatedOnToolsVersion = 15.4;
@@ -237,6 +243,7 @@
 				};
 			};
 			buildConfigurationList = 508DBF912DEA39F70074B3AF /* Build configuration list for PBXProject "openboxes_mobile_o" */;
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -245,7 +252,6 @@
 			);
 			mainGroup = 508DBF8D2DEA39F70074B3AF;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 56;
 			productRefGroup = 508DBF972DEA39F70074B3AF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
