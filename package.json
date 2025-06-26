@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "branding:vipr": "./scripts/apply_branding.sh vipr",
     "bundle:android": "mkdir -p android/app/src/main/assets && npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev true",
-    "bundle:ios": "mkdir -p ios/build && npx react-native bundle --entry-file index.js --platform ios --bundle-output ios/main.jsbundle --assets-dest ios/build --dev true",
+    "bundle:ios": "mkdir -p ios/build && (xattr -w com.apple.xcode.CreatedByBuildSystem true ios/build || true) && npx react-native bundle --entry-file index.js --platform ios --bundle-output ios/main.jsbundle --assets-dest ios/build --dev true",
     "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx'",
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
