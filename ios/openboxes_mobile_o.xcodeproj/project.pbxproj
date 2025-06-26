@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -221,17 +221,17 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1640;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					508DBF952DEA39F70074B3AF = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 15.4;
 					};
 					508DBFB02DEA39F80074B3AF = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 15.4;
 						TestTargetID = 508DBF952DEA39F70074B3AF;
 					};
 					508DBFBA2DEA39F80074B3AF = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 15.4;
 						TestTargetID = 508DBF952DEA39F70074B3AF;
 					};
 				};
@@ -245,7 +245,7 @@
 			);
 			mainGroup = 508DBF8D2DEA39F70074B3AF;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 56;
 			productRefGroup = 508DBF972DEA39F70074B3AF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
