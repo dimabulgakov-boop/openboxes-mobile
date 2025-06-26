@@ -65,11 +65,13 @@ step_bundles:
       - set-java-version@1:
           inputs:
           - set_java_version: *java_version_ndk
+      - restore-gradle-cache@2: {}
       - install-missing-android-tools@3:
           inputs:
           - gradlew_path: "$PROJECT_LOCATION/gradlew"
           - ndk_version: *android_ndk_version
           is_always_run: true
+      - save-gradle-cache@1: {}
       - set-java-version@1:
           inputs:
           - set_java_version: *java_version
@@ -119,6 +121,12 @@ step_bundles:
           title: Run yarn command - bundle:ios
           inputs:
           - command: bundle:ios
+      - script@1:
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              plutil -lint ios/openboxes_mobile_o.xcodeproj/project.pbxproj
+          title: Script - check validity
       - xcode-build-for-simulator@3:
           inputs:
           - export_method: "$BITRISE_EXPORT_METHOD"
