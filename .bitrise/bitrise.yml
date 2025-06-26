@@ -124,6 +124,8 @@ step_bundles:
           - content: |-
               set -euxo pipefail
               plutil -lint ios/openboxes_mobile_o.xcodeproj/project.pbxproj
+              swift --version
+              xcodebuild -version
           title: Script - check validity
       - yarn@0:
           title: Run yarn command - package:ios
