@@ -53,12 +53,22 @@ target 'openboxes_mobile_o' do
 
     #
     # This block ensures the main project target excludes x86_64,
-    # overriding any changes set by post_install_workaround.
+    # overriding any changes from react_native_post_install and/or
+    # __apply_Xcode_12_5_M1_post_install_workaround. Note that this
+    # only applies to the main project target, not the Pods targets.
+    # Pods targets are patched below.
     #
     Pod::UI.section 'Patching main project target to exclude x86_64' do
       project = Xcodeproj::Project.open('openboxes_mobile_o.xcodeproj')
       project.targets.each do |target|
         target.build_configurations.each do |config|
+
+          valid_archs = config.build_settings['VALID_ARCHS']
+          if valid_archs
+            Pod::UI.warn "Main Target '#{target.name}' (#{config.name}) has VALID_ARCHS set: '#{valid_archs}'"
+          end
+
+
           before = config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]']
           config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]'] = 'x86_64'
           after = config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]']
@@ -102,6 +112,13 @@ target 'openboxes_mobile_o' do
 
         # speed the build by excluding the x86_64 architecture on pods
         config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]'] = 'x86_64'
+
+         # Log VALID_ARCHS if it exists, as it overrides EXCLUDED_ARCHS.
+        # This is the most likely culprit for x86_64 builds persisting.
+        valid_archs = config.build_settings['VALID_ARCHS']
+        if valid_archs
+          Pod::UI.warn "Pod Target '#{target.name}' (#{config.name}) has VALID_ARCHS set: '#{valid_archs}'. This will override EXCLUDED_ARCHS."
+        end
 
         #
         # Prevent xcodebuild from failing with this error:
