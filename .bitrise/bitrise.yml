@@ -119,6 +119,12 @@ step_bundles:
           title: Run yarn command - bundle:ios
           inputs:
           - command: bundle:ios
+      - script@1:
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              plutil -lint ios/openboxes_mobile_o.xcodeproj/project.pbxproj
+          title: Script - check validity
       - xcode-build-for-simulator@3:
           inputs:
           - export_method: "$BITRISE_EXPORT_METHOD"
