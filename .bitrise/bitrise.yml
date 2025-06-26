@@ -131,6 +131,11 @@ step_bundles:
           - project_path: "$BITRISE_PROJECT_PATH"
           - scheme: "$BITRISE_SCHEME"
       - deploy-to-bitrise-io@2:
+          is_always_run: true
+          inputs:
+          - deploy_path: "$BITRISE_XCODEBUILD_BUILD_FOR_SIMULATOR_LOG_PATH"
+          - notify_user_groups: developers
+      - deploy-to-bitrise-io@2:
           is_always_run: false
           inputs:
           - deploy_path: "$BITRISE_APP_DIR_PATH"
