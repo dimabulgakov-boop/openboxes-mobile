@@ -95,7 +95,7 @@ target 'openboxes_mobile_o' do
         # all targets anyway, and we may as well pin to the latest version our
         # target XCode release supports: https://swiftversion.net
         #
-        config.build_settings['SWIFT_VERSION'] = '5.9.2'
+        config.build_settings['SWIFT_VERSION'] = '5.10'
       end
     end
 
