@@ -79,17 +79,23 @@ target 'openboxes_mobile_o' do
           config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(inherited)', '-Wno-error=bitwise-instead-of-logical']
         end
 
-        # I have no idea why we'd want to build for x86_64 on an iOS simulator
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "x86_64"
-
         #
         # Prevent xcodebuild from failing with this error:
         #   `openboxes-mobile/ios/Pods/Pods.xcodeproj: warning: The iOS deployment target 'IPHONEOS_DEPLOYMENT_TARGET' is set to 11.0, but the range of supported deployment target versions is 12.0 to 18.5.99. (in target '***' from project 'Pods')`
         #
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
 
-        # use a consistent Swift version across all targets
-        config.build_settings['SWIFT_VERSION'] = '5.0'
+        #
+        # Swift version mismatches can cause baffling build errors, e.g.:
+        #  `The following build commands failed:`
+        #  `SwiftEmitModule normal x86_64 Emitting\ module\ for\ Sentry (in target 'Sentry' from project 'Pods')`
+        #  `Command failed with exit code 65.`
+        #
+        # It's probably a good idea to use a consistent Swift version across
+        # all targets anyway, and we may as well pin to the latest version our
+        # target XCode release supports: https://swiftversion.net
+        #
+        config.build_settings['SWIFT_VERSION'] = '5.9.2'
       end
     end
 
