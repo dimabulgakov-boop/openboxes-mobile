@@ -98,7 +98,8 @@ target 'openboxes_mobile_o' do
         #   `using '@_implementationOnly' without enabling library evolution for 'Sentry' may lead to instability during execution`
         #
         if target.name == 'Sentry'
-          config.build_settings['SWIFT_ENABLE_LIBRARY_EVOLUTION'] = 'YES'
+          config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'NO'
+          config.build_settings['SWIFT_ENABLE_LIBRARY_EVOLUTION'] = 'NO'
         end
 
         #
