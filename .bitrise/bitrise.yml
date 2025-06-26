@@ -208,4 +208,4 @@ app:
 
 meta:
   bitrise.io:
-    stack: osx-xcode-14.3.x-ventura
+    stack: osx-xcode-15.0.x

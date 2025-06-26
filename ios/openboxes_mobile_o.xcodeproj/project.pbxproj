@@ -43,7 +43,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		508DBFC32DEA39F80074B3AF /* Exceptions for "openboxes_mobile_o" folder in "openboxes_mobile_o" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -56,7 +56,7 @@
 		508DBF982DEA39F70074B3AF /* openboxes_mobile_o */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				508DBFC32DEA39F80074B3AF /* Exceptions for "openboxes_mobile_o" folder in "openboxes_mobile_o" target */,
 			);
 			explicitFileTypes = {};
 			explicitFolders = ();
@@ -67,6 +67,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			explicitFileTypes = {};
 			explicitFolders = ();
+			exceptions = (
+			);
 			path = openboxes_mobile_oTests;
 			sourceTree = "<group>";
 		};
@@ -74,6 +76,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			explicitFileTypes = {};
 			explicitFolders = ();
+			exceptions = (
+			);
 			path = openboxes_mobile_oUITests;
 			sourceTree = "<group>";
 		};
@@ -227,23 +231,23 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					508DBF952DEA39F70074B3AF = {
-						CreatedOnToolsVersion = 14.3.1;
+						CreatedOnToolsVersion = 15.0.0;
 					};
 					508DBFB02DEA39F80074B3AF = {
-						CreatedOnToolsVersion = 14.3.1;
+						CreatedOnToolsVersion = 15.0.0;
 						TestTargetID = 508DBF952DEA39F70074B3AF;
 					};
 					508DBFBA2DEA39F80074B3AF = {
-						CreatedOnToolsVersion = 14.3.1;
+						CreatedOnToolsVersion = 15.0.0;
 						TestTargetID = 508DBF952DEA39F70074B3AF;
 					};
 				};
 			};
 			buildConfigurationList = 508DBF912DEA39F70074B3AF /* Build configuration list for PBXProject "openboxes_mobile_o" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
