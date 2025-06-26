@@ -149,7 +149,7 @@ workflows:
   primary:
     steps:
     - bundle::setup_steps: {}
-    - bundle::setup_steps_android: {}
+    # - bundle::setup_steps_android: {}
     - bundle::setup_steps_ios: {}
     - brew-install@1:
         inputs:
@@ -161,7 +161,7 @@ workflows:
         - command: branding:vipr
         is_skippable: true
         title: Run yarn command - branding:vipr
-    - bundle::release_steps_android: {}
+    # - bundle::release_steps_android: {}
     - bundle::release_steps_ios: {}
     triggers:
       enabled: false
