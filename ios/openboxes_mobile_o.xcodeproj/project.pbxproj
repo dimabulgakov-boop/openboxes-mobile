@@ -33,7 +33,6 @@
 		147055B32E3E16E71C1D78F6 /* libPods-openboxes_mobile_o-openboxes_mobile_oTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-openboxes_mobile_o-openboxes_mobile_oTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		390394A6108AC59D8F0D747D /* Pods-openboxes_mobile_o-openboxes_mobile_oTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-openboxes_mobile_o-openboxes_mobile_oTests.debug.xcconfig"; path = "Target Support Files/Pods-openboxes_mobile_o-openboxes_mobile_oTests/Pods-openboxes_mobile_o-openboxes_mobile_oTests.debug.xcconfig"; sourceTree = "<group>"; };
 		506D395F2E0A17EE004D99D0 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		508A7A032E09DD0500596450 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		508DBF962DEA39F70074B3AF /* openboxes_mobile_o.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = openboxes_mobile_o.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		508DBFB12DEA39F80074B3AF /* openboxes_mobile_oTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = openboxes_mobile_oTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		508DBFBB2DEA39F80074B3AF /* openboxes_mobile_oUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = openboxes_mobile_oUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -104,7 +103,6 @@
 		508DBF8D2DEA39F70074B3AF = {
 			isa = PBXGroup;
 			children = (
-				508A7A032E09DD0500596450 /* main.jsbundle */,
 				506D395F2E0A17EE004D99D0 /* main.jsbundle */,
 				508DBF982DEA39F70074B3AF /* openboxes_mobile_o */,
 				508DBFB42DEA39F80074B3AF /* openboxes_mobile_oTests */,
