@@ -51,6 +51,27 @@ target 'openboxes_mobile_o' do
     #
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
 
+    #
+    # This block ensures the main project target excludes x86_64,
+    # overriding any changes set by post_install_workaround.
+    #
+    Pod::UI.section 'Patching main project target to exclude x86_64' do
+      project = Xcodeproj::Project.open('openboxes_mobile_o.xcodeproj')
+      project.targets.each do |target|
+        target.build_configurations.each do |config|
+          before = config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]']
+          config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]'] = 'x86_64'
+          after = config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]']
+          if before != after
+            Pod::UI.warn "modified $EXCLUDED_ARCHS for '#{target.name}' (#{config.name}) from '#{before}' to '#{after}'"
+          else
+            Pod::UI.message "leaving $EXCLUDED_ARCHS unchanged for '#{target.name}' (#{config.name}) as it is already set to '#{before}'"
+          end
+        end
+      end
+      project.save()
+    end
+
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
 
@@ -78,6 +99,9 @@ target 'openboxes_mobile_o' do
         if target.name == 'Yoga'
           config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(inherited)', '-Wno-error=bitwise-instead-of-logical']
         end
+
+        # speed the build by excluding the x86_64 architecture on pods
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphone*]'] = 'x86_64'
 
         #
         # Prevent xcodebuild from failing with this error:
