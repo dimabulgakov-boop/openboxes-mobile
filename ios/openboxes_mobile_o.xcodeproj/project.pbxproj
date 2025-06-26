@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -43,7 +43,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		508DBFC32DEA39F80074B3AF /* Exceptions for "openboxes_mobile_o" folder in "openboxes_mobile_o" target */ = {
+		508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -53,24 +53,9 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		508DBF982DEA39F70074B3AF /* openboxes_mobile_o */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				508DBFC32DEA39F80074B3AF /* Exceptions for "openboxes_mobile_o" folder in "openboxes_mobile_o" target */,
-			);
-			path = openboxes_mobile_o;
-			sourceTree = "<group>";
-		};
-		508DBFB42DEA39F80074B3AF /* openboxes_mobile_oTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = openboxes_mobile_oTests;
-			sourceTree = "<group>";
-		};
-		508DBFBE2DEA39F80074B3AF /* openboxes_mobile_oUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = openboxes_mobile_oUITests;
-			sourceTree = "<group>";
-		};
+		508DBF982DEA39F70074B3AF /* openboxes_mobile_o */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = openboxes_mobile_o; sourceTree = "<group>"; };
+		508DBFB42DEA39F80074B3AF /* openboxes_mobile_oTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = openboxes_mobile_oTests; sourceTree = "<group>"; };
+		508DBFBE2DEA39F80074B3AF /* openboxes_mobile_oUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = openboxes_mobile_oUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -224,19 +209,20 @@
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					508DBF952DEA39F70074B3AF = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 14.3.1;
 					};
 					508DBFB02DEA39F80074B3AF = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 14.3.1;
 						TestTargetID = 508DBF952DEA39F70074B3AF;
 					};
 					508DBFBA2DEA39F80074B3AF = {
-						CreatedOnToolsVersion = 16.4;
+						CreatedOnToolsVersion = 14.3.1;
 						TestTargetID = 508DBF952DEA39F70074B3AF;
 					};
 				};
 			};
 			buildConfigurationList = 508DBF912DEA39F70074B3AF /* Build configuration list for PBXProject "openboxes_mobile_o" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -245,7 +231,6 @@
 			);
 			mainGroup = 508DBF8D2DEA39F70074B3AF;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 508DBF972DEA39F70074B3AF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -468,6 +453,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -497,6 +483,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -563,7 +550,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -620,7 +607,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -638,7 +625,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NURV32KUUY;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.openboxes-mobile-oTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -657,7 +644,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NURV32KUUY;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.openboxes-mobile-oTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -674,6 +661,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NURV32KUUY;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.openboxes-mobile-oUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -690,6 +678,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = NURV32KUUY;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.openboxes-mobile-oUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
