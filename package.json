@@ -10,7 +10,7 @@
     "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx'",
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "package:ios": "xcodebuild clean archive -allowProvisioningUpdates -archivePath ios/build/Products/OpenBoxes.xcarchive -configuration Debug -derivedDataPath ./ios/build -scheme openboxes_mobile_o -sdk iphonesimulator -workspace ./ios/openboxes_mobile_o.xcworkspace && cp -R ios/build/Products/OpenBoxes.xcarchive/Products/Applications/openboxes_mobile_o.app ios/build",
+    "package:ios": "ARCHS=arm64 xcodebuild clean build -allowProvisioningUpdates -archivePath ios/build/Products/OpenBoxes.xcarchive -configuration Debug -derivedDataPath ./ios/build -scheme openboxes_mobile_o -sdk iphonesimulator -workspace ./ios/openboxes_mobile_o.xcworkspace && cp -R ios/build/Products/OpenBoxes.xcarchive/Products/Applications/openboxes_mobile_o.app ios/build",
     "package:ios:simulate": "yarn package:ios && (xcrun simctl boot 'iPhone 16' || true) && open -a Simulator && xcrun simctl install booted ios/build/openboxes_mobile_o.app && xcrun simctl launch booted com.openboxes.openboxes-mobile-o",
     "pod": "yarn postinstall && cd ios && pod",
     "postinstall": "find node_modules -type f -name '*.podspec' -exec sed -i.pre-postinstall.bak 's|https://boostorg\\.jfrog\\.io/artifactory/main/|https://archives.boost.io/|g' {} +",
