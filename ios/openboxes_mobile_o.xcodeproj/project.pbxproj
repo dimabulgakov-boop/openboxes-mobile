@@ -3,11 +3,19 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		506D39602E0A17EE004D99D0 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 506D395F2E0A17EE004D99D0 /* main.jsbundle */; };
+		50A706E22E0DE6B40074DD00 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A706D82E0DE6B40074DD00 /* AppDelegate.m */; };
+		50A706E32E0DE6B40074DD00 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A706DE2E0DE6B40074DD00 /* main.m */; };
+		50A706E42E0DE6B40074DD00 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50A706D92E0DE6B40074DD00 /* Images.xcassets */; };
+		50A706E62E0DE6B40074DD00 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 50A706DB2E0DE6B40074DD00 /* LaunchScreen.storyboard */; };
+		50A706E72E0DE6B40074DD00 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 50A706DD2E0DE6B40074DD00 /* LaunchScreen.storyboard */; };
+		50A706E82E0DE6B40074DD00 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 50A706E02E0DE6B40074DD00 /* Main.storyboard */; };
+		50A706EC2E0DE6B90074DD00 /* openboxes_mobile_oTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50A706EA2E0DE6B90074DD00 /* openboxes_mobile_oTests.m */; };
+		50A706ED2E0DE6B90074DD00 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 50A706E92E0DE6B90074DD00 /* Info.plist */; };
 		C220EE2490E348D0606C0B6C /* libPods-openboxes_mobile_o-openboxes_mobile_oTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147055B32E3E16E71C1D78F6 /* libPods-openboxes_mobile_o-openboxes_mobile_oTests.a */; };
 		EB8C40E25F999CF2F1346ED7 /* libPods-openboxes_mobile_o.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 56DDFD0D801FF2C67315C04F /* libPods-openboxes_mobile_o.a */; };
 /* End PBXBuildFile section */
@@ -36,26 +44,21 @@
 		508DBF962DEA39F70074B3AF /* openboxes_mobile_o.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = openboxes_mobile_o.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		508DBFB12DEA39F80074B3AF /* openboxes_mobile_oTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = openboxes_mobile_oTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		508DBFBB2DEA39F80074B3AF /* openboxes_mobile_oUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = openboxes_mobile_oUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		50A706D72E0DE6B40074DD00 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		50A706D82E0DE6B40074DD00 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		50A706D92E0DE6B40074DD00 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		50A706DA2E0DE6B40074DD00 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		50A706DB2E0DE6B40074DD00 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		50A706DC2E0DE6B40074DD00 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		50A706DE2E0DE6B40074DD00 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		50A706DF2E0DE6B40074DD00 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		50A706E92E0DE6B90074DD00 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		50A706EA2E0DE6B90074DD00 /* openboxes_mobile_oTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = openboxes_mobile_oTests.m; sourceTree = "<group>"; };
 		56DDFD0D801FF2C67315C04F /* libPods-openboxes_mobile_o.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-openboxes_mobile_o.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		678865036990AA7D5C6ED137 /* Pods-openboxes_mobile_o-openboxes_mobile_oTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-openboxes_mobile_o-openboxes_mobile_oTests.release.xcconfig"; path = "Target Support Files/Pods-openboxes_mobile_o-openboxes_mobile_oTests/Pods-openboxes_mobile_o-openboxes_mobile_oTests.release.xcconfig"; sourceTree = "<group>"; };
 		73265C5E6E04CCC22A5DFA5F /* Pods-openboxes_mobile_o.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-openboxes_mobile_o.release.xcconfig"; path = "Target Support Files/Pods-openboxes_mobile_o/Pods-openboxes_mobile_o.release.xcconfig"; sourceTree = "<group>"; };
 		755195AE274581D0EF6EAC38 /* Pods-openboxes_mobile_o.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-openboxes_mobile_o.debug.xcconfig"; path = "Target Support Files/Pods-openboxes_mobile_o/Pods-openboxes_mobile_o.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 508DBF952DEA39F70074B3AF /* openboxes_mobile_o */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		508DBF982DEA39F70074B3AF /* openboxes_mobile_o */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (508DBFC32DEA39F80074B3AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = openboxes_mobile_o; sourceTree = "<group>"; };
-		508DBFB42DEA39F80074B3AF /* openboxes_mobile_oTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = openboxes_mobile_oTests; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		508DBF932DEA39F70074B3AF /* Frameworks */ = {
@@ -88,8 +91,8 @@
 			isa = PBXGroup;
 			children = (
 				506D395F2E0A17EE004D99D0 /* main.jsbundle */,
-				508DBF982DEA39F70074B3AF /* openboxes_mobile_o */,
-				508DBFB42DEA39F80074B3AF /* openboxes_mobile_oTests */,
+				50A706E12E0DE6B40074DD00 /* openboxes_mobile_o */,
+				50A706EB2E0DE6B90074DD00 /* openboxes_mobile_oTests */,
 				508DBF972DEA39F70074B3AF /* Products */,
 				92E53E3C593BE2EA1D0D23E5 /* Pods */,
 				7FD4CCB9E7090C48429832DF /* Frameworks */,
@@ -104,6 +107,30 @@
 				508DBFBB2DEA39F80074B3AF /* openboxes_mobile_oUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		50A706E12E0DE6B40074DD00 /* openboxes_mobile_o */ = {
+			isa = PBXGroup;
+			children = (
+				50A706D72E0DE6B40074DD00 /* AppDelegate.h */,
+				50A706D82E0DE6B40074DD00 /* AppDelegate.m */,
+				50A706D92E0DE6B40074DD00 /* Images.xcassets */,
+				50A706DA2E0DE6B40074DD00 /* Info.plist */,
+				50A706DB2E0DE6B40074DD00 /* LaunchScreen.storyboard */,
+				50A706DD2E0DE6B40074DD00 /* LaunchScreen.storyboard */,
+				50A706DE2E0DE6B40074DD00 /* main.m */,
+				50A706E02E0DE6B40074DD00 /* Main.storyboard */,
+			);
+			path = openboxes_mobile_o;
+			sourceTree = "<group>";
+		};
+		50A706EB2E0DE6B90074DD00 /* openboxes_mobile_oTests */ = {
+			isa = PBXGroup;
+			children = (
+				50A706E92E0DE6B90074DD00 /* Info.plist */,
+				50A706EA2E0DE6B90074DD00 /* openboxes_mobile_oTests.m */,
+			);
+			path = openboxes_mobile_oTests;
 			sourceTree = "<group>";
 		};
 		7FD4CCB9E7090C48429832DF /* Frameworks */ = {
@@ -144,9 +171,6 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				508DBF982DEA39F70074B3AF /* openboxes_mobile_o */,
-			);
 			name = openboxes_mobile_o;
 			productName = openboxes_mobile_o;
 			productReference = 508DBF962DEA39F70074B3AF /* openboxes_mobile_o.app */;
@@ -167,9 +191,6 @@
 			);
 			dependencies = (
 				508DBFB32DEA39F80074B3AF /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				508DBFB42DEA39F80074B3AF /* openboxes_mobile_oTests */,
 			);
 			name = openboxes_mobile_oTests;
 			productName = openboxes_mobile_oTests;
@@ -242,6 +263,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50A706E42E0DE6B40074DD00 /* Images.xcassets in Resources */,
+				50A706E62E0DE6B40074DD00 /* LaunchScreen.storyboard in Resources */,
+				50A706E72E0DE6B40074DD00 /* LaunchScreen.storyboard in Resources */,
+				50A706E82E0DE6B40074DD00 /* Main.storyboard in Resources */,
 				506D39602E0A17EE004D99D0 /* main.jsbundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -250,6 +275,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50A706ED2E0DE6B90074DD00 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,6 +424,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50A706E22E0DE6B40074DD00 /* AppDelegate.m in Sources */,
+				50A706E32E0DE6B40074DD00 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,6 +433,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50A706EC2E0DE6B90074DD00 /* openboxes_mobile_oTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,6 +458,25 @@
 			targetProxy = 508DBFBC2DEA39F80074B3AF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		50A706DD2E0DE6B40074DD00 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				50A706DC2E0DE6B40074DD00 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		50A706E02E0DE6B40074DD00 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				50A706DF2E0DE6B40074DD00 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		508DBFC52DEA39F80074B3AF /* Debug */ = {
