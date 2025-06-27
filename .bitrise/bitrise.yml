@@ -21,10 +21,10 @@ _dependency_versions:
   java_version_ndk: &java_version_ndk 17
   # But for everything else we want to keep using Java 11
   java_version: &java_version 11
-  node_version: &node_version 14.21.3
-  # We use RN 0.66; use this table to find the correct version of react-native-cli
+  node_version: &node_version 18.20.8
+  # We use RN 0.68.7; use this table to find the correct version of react-native-cli
   # https://github.com/react-native-community/cli?tab=readme-ov-file#compatibility
-  react_native_cli_version: &react_native_cli_version 6.4.0
+  react_native_cli_version: &react_native_cli_version 7.0.4
 
 step_bundles:
   setup_steps:
