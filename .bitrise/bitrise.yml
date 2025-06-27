@@ -119,17 +119,31 @@ step_bundles:
           title: Run yarn command - bundle:ios
           inputs:
           - command: bundle:ios
+      - script@1:
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              plutil -lint ios/openboxes_mobile_o.xcodeproj/project.pbxproj
+              swift --version
+              xcodebuild -version
+          title: Script - check project.pbxproj validity and Xcode version
       - xcode-build-for-simulator@3:
           inputs:
           - export_method: "$BITRISE_EXPORT_METHOD"
           - project_path: "$BITRISE_PROJECT_PATH"
           - scheme: "$BITRISE_SCHEME"
       - deploy-to-bitrise-io@2:
-          is_always_run: false
+          inputs:
+          - deploy_path: "$BITRISE_XCODEBUILD_BUILD_FOR_SIMULATOR_LOG_PATH"
+          - notify_user_groups: developers
+          is_always_run: true
+          title: Deploy to Bitrise.io - Xcode build log
+      - deploy-to-bitrise-io@2:
           inputs:
           - deploy_path: "$BITRISE_APP_DIR_PATH"
           - notify_email_list: "$TESTERS"
           - notify_user_groups: owner, admins, developers
+          is_always_run: false
 workflows:
   app_distribution_to_testers:
     steps:
