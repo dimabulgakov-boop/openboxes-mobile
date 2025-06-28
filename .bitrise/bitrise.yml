@@ -84,6 +84,7 @@ step_bundles:
           - workdir: "$BITRISE_SOURCE_DIR/ios"
           - content: |-
               set -euxo pipefail
+              ls -la
               bundle install
           title: Script - bundle install (ruby gems)
       - cocoapods-install@2:
