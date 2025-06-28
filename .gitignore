@@ -64,6 +64,8 @@ buck-out/
 # Environment variables
 app/utils/EnvironmentActual.ts
 
+android/app/src/main/assets/index.android.bundle
+
 .env
 
 # VSCode workspace files
