@@ -115,10 +115,6 @@ step_bundles:
     description: |-
       Assemble the iOS app and copy the *.app package to $BITRISE_DEPLOY_DIR.
     steps:
-      - yarn@0:
-          title: Run yarn command - bundle:ios
-          inputs:
-          - command: bundle:ios
       - script@1:
           inputs:
           - content: |-
