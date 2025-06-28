@@ -1,7 +1,6 @@
 apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
-import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -116,16 +115,19 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 /**
  * Whether to enable the Hermes VM.
  *
- * This should be set on project.ext.react and mirrored here.  If it is not set
+ * This should be set on project.ext.react and that value will be read here. If it is not set
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 /**
- * Architectures to build native code for in debug.
+ * Architectures to build native code for.
  */
-def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 
 android {
     ndkVersion rootProject.ext.ndkVersion
@@ -171,15 +173,6 @@ android {
                     // Make sure this target name is the same you specify inside the
                     // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
                     targets "openboxes_mobile_o_appmodules"
-                    // Fix for windows limit on number of character in file paths and in command lines
-                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                        arguments "NDK_APP_SHORT_COMMANDS=true"
-                    }
-                }
-            }
-            if (!enableSeparateBuildPerCPUArchitecture) {
-                ndk {
-                    abiFilters (*reactNativeArchitectures())
                 }
             }
         }
