@@ -79,6 +79,13 @@ step_bundles:
       Install iOS-specific dependencies.
     steps:
       - restore-cocoapods-cache: {}
+      - script@1:
+          inputs:
+          - workdir: ios
+          - content: |-
+              set -euxo pipefail
+              bundle install
+          title: Script - bundle install (ruby gems)
       - cocoapods-install@2:
           inputs:
           - source_root_path: "$BITRISE_SOURCE_DIR/ios"
