@@ -68,7 +68,7 @@ step_bundles:
           - set_java_version: *java_version_ndk
       - install-missing-android-tools@3:
           inputs:
-          - gradlew_path: "$PROJECT_LOCATION/gradlew"
+          - gradlew_path: "$GRADLEW_PATH"
           - ndk_version: *android_ndk_version
           is_always_run: true
       - set-java-version@1:
@@ -81,7 +81,7 @@ step_bundles:
       - restore-cocoapods-cache: {}
       - script@1:
           inputs:
-          - workdir: ios
+          - workdir: "$BITRISE_SOURCE_DIR/ios"
           - content: |-
               set -euxo pipefail
               bundle install
@@ -127,7 +127,7 @@ step_bundles:
           inputs:
           - content: |-
               set -euxo pipefail
-              plutil -lint ios/openboxes_mobile_o.xcodeproj/project.pbxproj
+              plutil -lint "$BITRISE_SOURCE_DIR/ios/openboxes_mobile_o.xcodeproj/project.pbxproj"
               swift --version
               xcodebuild -version
           title: Script - check project.pbxproj validity and Xcode version
