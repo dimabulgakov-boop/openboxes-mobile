@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.openboxes.BuildConfig;
-import com.openboxes.newarchitecture.components.MainComponentsRegistry;
-import com.openboxes.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.openboxes.android.BuildConfig;
+import com.openboxes.android.newarchitecture.components.MainComponentsRegistry;
+import com.openboxes.android.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
