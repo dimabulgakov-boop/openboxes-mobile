@@ -14,8 +14,9 @@ trigger_map:
   workflow: primary
 
 _dependency_versions:
-  # https://github.com/android/ndk/wiki/Unsupported-Downloads#r21e
-  android_ndk_version: &android_ndk_version 21.4.7075529
+  # android/app/build.gradle for RN 0.68.7 says use NDK 24 when building on a Mac
+  # https://github.com/android/ndk/wiki/Unsupported-Downloads#r24
+  android_ndk_version: &android_ndk_version 24.0.8215888
   # On stacks that support Xcode 16+, Bitrise's install-missing-android-tools
   # step ends up calling an sdkmanager release that requires Java 17+.
   java_version_ndk: &java_version_ndk 17
