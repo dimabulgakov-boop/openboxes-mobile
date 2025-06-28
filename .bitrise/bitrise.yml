@@ -14,17 +14,18 @@ trigger_map:
   workflow: android-only
 
 _dependency_versions:
-  # https://github.com/android/ndk/wiki/Unsupported-Downloads#r21e
-  android_ndk_version: &android_ndk_version 21.4.7075529
+  # android/app/build.gradle for RN 0.68.7 says use NDK 24 when building on a Mac
+  # https://github.com/android/ndk/wiki/Unsupported-Downloads#r24
+  android_ndk_version: &android_ndk_version 24.0.8215888
   # On stacks that support Xcode 16+, Bitrise's install-missing-android-tools
   # step ends up calling an sdkmanager release that requires Java 17+.
   java_version_ndk: &java_version_ndk 17
   # But for everything else we want to keep using Java 11
   java_version: &java_version 11
-  node_version: &node_version 14.21.3
-  # We use RN 0.66; use this table to find the correct version of react-native-cli
+  node_version: &node_version 18.20.8
+  # We use RN 0.68.7; use this table to find the correct version of react-native-cli
   # https://github.com/react-native-community/cli?tab=readme-ov-file#compatibility
-  react_native_cli_version: &react_native_cli_version 6.4.0
+  react_native_cli_version: &react_native_cli_version 7.0.4
 
 step_bundles:
   setup-steps:
@@ -129,10 +130,6 @@ step_bundles:
     description: |-
       Assemble the iOS app and copy the *.app package to $BITRISE_DEPLOY_DIR.
     steps:
-      - yarn@0:
-          inputs:
-          - command: bundle:ios
-          title: Run yarn command - bundle:ios
       - script@1:
           inputs:
           - content: |-
@@ -225,4 +222,4 @@ app:
 
 meta:
   bitrise.io:
-    stack: osx-xcode-16.4.x
+    stack: osx-xcode-15.0.x
