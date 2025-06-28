@@ -37,7 +37,6 @@ step_bundles:
       - git-clone@8:
           is_always_run: true
       - script@1:
-          title: Script - create .env file
           inputs:
           - content: |-
               set -euxo pipefail
@@ -45,19 +44,20 @@ step_bundles:
               API_BASE_URL='$API_BASE_URL'" > ./.env
               echo "Check if the file was properly created: "
               wc .env
+          title: Script - create .env file
       - nvm@1:
-          title: Node Version Manager (NVM) - install Node.js
           inputs:
           - node_version: *node_version
+          title: Node Version Manager (NVM) - install Node.js
       - restore-npm-cache@2: {}
       - install-react-native@0:
           inputs:
           - version: *react_native_cli_version
           title: Install React Native - CLI tools
       - yarn@0:
-          title: Run yarn command - install
           inputs:
           - command: install
+          title: Run yarn command - install
       - save-npm-cache@1: {}
   setup_steps_android:
     description: |-
@@ -81,11 +81,11 @@ step_bundles:
       - restore-cocoapods-cache: {}
       - script@1:
           inputs:
-          - workdir: "$BITRISE_SOURCE_DIR/ios"
           - content: |-
               set -euxo pipefail
               ls -la
               bundle install
+          - working_dir: "$BITRISE_SOURCE_DIR/ios"
           title: Script - bundle install (ruby gems)
       - cocoapods-install@2:
           inputs:
@@ -97,16 +97,16 @@ step_bundles:
       Currently, filenames are hardcoded, but they could be parameterized.
     steps:
       - yarn@0:
-          title: Run yarn command - bundle:android
           inputs:
           - command: bundle:android
+          title: Run yarn command - bundle:android
       - restore-gradle-cache@2: {}
       - gradle-runner@3:
-          title: Gradle Runner - assembleRelease
           inputs:
           - apk_file_exclude_filter: "*-unaligned.apk\n\n"
           - cache_level: all
           - gradle_task: assembleRelease
+          title: Gradle Runner - assembleRelease
       - save-gradle-cache@1: {}
       - script@1:
           inputs:
@@ -115,11 +115,11 @@ step_bundles:
               cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
           title: Script - copy APK for deploy-to-bitrise-io step
       - deploy-to-bitrise-io@2:
-          is_always_run: false
           inputs:
           - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
           - notify_email_list: "$TESTERS"
           - notify_user_groups: owner, admins, developers
+          is_always_run: false
   release_steps_ios:
     description: |-
       Assemble the iOS app and copy the *.app package to $BITRISE_DEPLOY_DIR.
