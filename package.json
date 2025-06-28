@@ -5,17 +5,20 @@
   "scripts": {
     "android": "react-native run-android",
     "branding:vipr": "./scripts/apply_branding.sh vipr",
-    "bundle:android": "mkdir -p android/app/src/main/assets && npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev true",
+    "bundle:android": "mkdir -p android/app/src/main/assets && npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev false",
     "bundle:ios": "mkdir -p ios/build && (xattr -w com.apple.xcode.CreatedByBuildSystem true ios/build || true) && npx react-native bundle --assets-dest ios/build --bundle-output ios/openboxes_mobile_o/main.jsbundle --dev false --entry-file index.js --platform ios",
     "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx'",
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "package:ios": "xcodebuild clean archive -allowProvisioningUpdates -archivePath ios/build/openboxes_mobile_o.xcarchive -configuration Release -derivedDataPath ios/build -destination 'generic/platform=iOS Simulator' -scheme openboxes_mobile_o -workspace ./ios/openboxes_mobile_o.xcworkspace && cp -R ios/build/openboxes_mobile_o.xcarchive/Products/Applications/openboxes_mobile_o.app ios/build",
-    "package:ios:simulate": "yarn package:ios && (xcrun simctl boot 'iPhone 13' || true) && open -a Simulator && xcrun simctl install booted ios/build/openboxes_mobile_o.app && xcrun simctl launch booted com.openboxes.openboxes-mobile-o",
+    "release:android": "cd android && ./gradlew assembleRelease",
+    "release:android:simulate": "yarn release:android && adb uninstall com.openboxes.android || true && adb install -r android/app/build/outputs/apk/release/app-release.apk && adb shell am start -n com.openboxes.android/.MainActivity",
+    "release:ios": "xcodebuild clean archive -allowProvisioningUpdates -archivePath ios/build/openboxes_mobile_o.xcarchive -configuration Release -derivedDataPath ios/build -destination 'generic/platform=iOS Simulator' -scheme openboxes_mobile_o -workspace ./ios/openboxes_mobile_o.xcworkspace && cp -R ios/build/openboxes_mobile_o.xcarchive/Products/Applications/openboxes_mobile_o.app ios/build",
+    "release:ios:simulate": "yarn release:ios && (xcrun simctl boot 'iPhone 13' || true) && open -a Simulator && xcrun simctl install booted ios/build/openboxes_mobile_o.app && xcrun simctl launch booted com.openboxes.openboxes-mobile-o",
     "pod": "yarn postinstall && cd ios && pod",
     "postinstall": "find node_modules -type f -name '*.podspec' -exec sed -i.pre-postinstall.bak 's|https://boostorg\\.jfrog\\.io/artifactory/main/|https://archives.boost.io/|g' {} +",
     "start": "npx react-native start --verbose",
-    "test": "jest"
+    "test": "jest",
+    "watchman:reset": "watchman watch-del . && watchman watch-project ."
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.17.3",
