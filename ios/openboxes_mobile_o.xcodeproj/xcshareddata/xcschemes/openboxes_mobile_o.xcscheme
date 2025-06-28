@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+               BlueprintIdentifier = "508DBF952DEA39F70074B3AF"
                BuildableName = "openboxes_mobile_o.app"
                BlueprintName = "openboxes_mobile_o"
                ReferencedContainer = "container:openboxes_mobile_o.xcodeproj">
@@ -35,7 +35,7 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "00E356ED1AD99517003FC87E"
+               BlueprintIdentifier = "508DBFB02DEA39F80074B3AF"
                BuildableName = "openboxes_mobile_oTests.xctest"
                BlueprintName = "openboxes_mobile_oTests"
                ReferencedContainer = "container:openboxes_mobile_o.xcodeproj">
@@ -68,7 +68,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BlueprintIdentifier = "508DBF952DEA39F70074B3AF"
             BuildableName = "openboxes_mobile_o.app"
             BlueprintName = "openboxes_mobile_o"
             ReferencedContainer = "container:openboxes_mobile_o.xcodeproj">
@@ -85,7 +85,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BlueprintIdentifier = "508DBF952DEA39F70074B3AF"
             BuildableName = "openboxes_mobile_o.app"
             BlueprintName = "openboxes_mobile_o"
             ReferencedContainer = "container:openboxes_mobile_o.xcodeproj">
