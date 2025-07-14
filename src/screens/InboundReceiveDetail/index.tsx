@@ -137,7 +137,17 @@ const InboundReceiveDetail: React.FC = () => {
         }
       ]
     }),
-    []
+    [
+      shipmentId,
+      shipmentItem,
+      receiveLocation.id,
+      lotNumber,
+      expirationDate,
+      comments,
+      lotStatus,
+      quantity,
+      cancelRemaining
+    ]
   );
 
   const createCompleteReceivingPayload = useCallback(
