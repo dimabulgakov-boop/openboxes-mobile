@@ -49,12 +49,16 @@ import PutawayList from './screens/PutawayList';
 import Scan from './screens/Scan';
 import Settings from './screens/Settings';
 import ShipItemDetails from './screens/ShipItemDetails';
+import SortationEntryScreen from './screens/Sortation/SortationEntryScreen';
+import SortationQuantityScreen from './screens/Sortation/SortationQuantityScreen';
 import Transfer from './screens/Transfer';
 import Transfers from './screens/Transfers';
 import TransferDetails from './screens/TransfersDetails';
 import ViewAvailableItem from './screens/ViewAvailableItem';
 import ApiClient from './utils/ApiClient';
 import Theme from './utils/Theme';
+import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
+import SortationTaskSelectionListScreen from './screens/Sortation/SortationTaskSelectionListScreen';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -249,6 +253,26 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Packing Location' }}
               />
               <Stack.Screen name="AppInfo" component={AppInfoScreen} options={{ title: 'App Info' }} />
+              <Stack.Screen
+                name="Sortation"
+                component={SortationEntryScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
+              <Stack.Screen
+                name="SortationQuantity"
+                component={SortationQuantityScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
+              <Stack.Screen
+                name="SortationContainer"
+                component={SortationContainerScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
+              <Stack.Screen
+                name="SortationTaskList"
+                component={SortationTaskSelectionListScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>
