@@ -8,9 +8,9 @@ import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
-import SortationProductDetails, { DetailChip } from './SortationProductDetails';
+import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
+import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
-import { SortationProduct, SortationTask } from './types';
 
 type ContainerRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; quantitySorted: number; task: SortationTask } },
@@ -77,7 +77,7 @@ export default function SortationContainerScreen() {
 
     const payload = {
       action: 'complete',
-      putawayContainerId: putawayContainerBarcode || null
+      destination: task.destination?.id || null
     };
 
     dispatch(
