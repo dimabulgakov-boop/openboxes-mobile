@@ -14,7 +14,7 @@ export const ratio = {
 };
 
 export const HYPHEN = '-';
-export const EMPTY_CHAR = '';
+export const EMPTY_FALLBACK = 'Unassigned';
 
 export const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',

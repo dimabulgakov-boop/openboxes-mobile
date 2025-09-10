@@ -3,14 +3,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
+import { useDispatch } from 'react-redux';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { navigate } from '../../NavigationService';
+import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
-import { useDispatch } from 'react-redux';
-import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 
 type QuantityRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; task: SortationTask } },
@@ -26,7 +26,6 @@ export default function SortationQuantityScreen() {
   const dispatch = useDispatch();
 
   const [quantitySorted, setQuantitySorted] = useState<number | undefined>();
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   const [directPutawayRequired, setDirectPutawayRequired] = useState<boolean>(false);
 
   useEffect(() => {
@@ -57,19 +56,15 @@ export default function SortationQuantityScreen() {
     if (task && task.status === 'PENDING') {
       const payload = {
         action: 'start'
-      }
+      };
 
       dispatch(
         patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
           if (response && response.error) {
-            Alert.alert(
-              'Error',
-              response?.errorMessage || 'An error occurred while starting the task.'
-            );
+            Alert.alert('Error', response?.errorMessage || 'An error occurred while starting the task.');
           }
         })
       );
-
     }
   }, [task, dispatch]);
 
@@ -119,6 +114,11 @@ export default function SortationQuantityScreen() {
       icon: 'map-search',
       label: 'Putaway Zone',
       value: task?.destination?.zoneName
+    },
+    {
+      icon: 'human',
+      label: 'Assignee',
+      value: task?.assignee ? `${task.assignee.firstName} ${task.assignee.lastName}`.trim() : undefined
     },
     {
       icon: 'package',
