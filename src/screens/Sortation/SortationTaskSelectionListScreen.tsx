@@ -1,9 +1,9 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, FlatList, View } from 'react-native';
 import { Button, Caption, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
-import { EMPTY_CHAR, HYPHEN } from '../../constants';
+import { EMPTY_FALLBACK, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationProduct, SortationTask } from '../../types/sortation';
 import styles from './styles';
@@ -51,15 +51,19 @@ export default function SortationTaskSelectionListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           const isSelected = selectedTask?.id === item.id;
+          const assigneeName = item.assignee
+            ? `${item.assignee.firstName} ${item.assignee.lastName}`.trim()
+            : EMPTY_FALLBACK;
+
           return (
             <Card style={[styles.card, isSelected && styles.cardSelected]} onPress={() => setSelectedTask(item)}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.headerRow}>
                   <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-                    {`${item.putaway?.putawayNumber ?? EMPTY_CHAR}`}
+                    {`${item.identifier ?? EMPTY_FALLBACK}`}
                   </Chip>
 
-                  <Chip style={[styles.chipDefault]} textStyle={styles.chipText}>
+                  <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
                     {`${item.status ?? HYPHEN}`}
                   </Chip>
                 </View>
@@ -69,10 +73,13 @@ export default function SortationTaskSelectionListScreen() {
                 <Title style={styles.title}>{`Location Name: ${item.location.name}`}</Title>
                 <Caption style={styles.caption}> {`Location Number: ${item.location.locationNumber}`} </Caption>
                 <Chip icon="package" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-                  {`Quantity: ${item.quantity ?? HYPHEN}`}
+                  {`Quantity: ${item.quantity ?? EMPTY_FALLBACK}`}
+                </Chip>
+                <Chip icon="human" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+                  {`Assignee: ${assigneeName}`}
                 </Chip>
                 <Chip icon="map-marker" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-                  {`Final Storage Location: ${item.destination?.name ?? EMPTY_CHAR}`}
+                  {`Final Storage Location: ${item.destination?.name ?? EMPTY_FALLBACK}`}
                 </Chip>
               </Card.Content>
             </Card>

@@ -9,9 +9,9 @@ import EmptyView from '../../components/EmptyView';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
+import Theme from '../../utils/Theme';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
-import Theme from '../../utils/Theme';
 
 type ContainerRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; quantitySorted: number; task: SortationTask } },
@@ -146,11 +146,7 @@ export default function SortationContainerScreen() {
 
         <View style={[styles.cardAnnotation, styles.cardContainer]}>
           <Paragraph style={[styles.paragraph, styles.bold]}>Override container</Paragraph>
-          <Switch 
-            value={isOverrideEnabled} 
-            onValueChange={setIsOverrideEnabled}
-            color={Theme.colors.primary}
-          />
+          <Switch value={isOverrideEnabled} color={Theme.colors.primary} onValueChange={setIsOverrideEnabled} />
         </View>
 
         <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleSubmit}>

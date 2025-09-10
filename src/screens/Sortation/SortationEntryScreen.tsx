@@ -8,8 +8,8 @@ import { useDispatch } from 'react-redux';
 import { appConfig } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getSortationDetailsByBarcode } from '../../redux/actions/products';
-import styles from './styles';
 import { SortationTask } from '../../types/sortation';
+import styles from './styles';
 
 export default function SortationEntryScreen() {
   const [barcode, setBarcode] = useState<string>('');
@@ -39,12 +39,13 @@ export default function SortationEntryScreen() {
             const { product, tasks } = response || {};
 
             const allowedStatuses = ['PENDING', 'IN_PROGRESS'];
-            const filteredTasks = (tasks || []).filter((task: SortationTask) => 
-              allowedStatuses.includes(task.status)
-            );
+            const filteredTasks = (tasks || []).filter((task: SortationTask) => allowedStatuses.includes(task.status));
 
             if (filteredTasks.length === 0) {
-              Alert.alert('No Valid Tasks', 'No tasks with PENDING or IN_PROGRESS status found for this product.');
+              Alert.alert(
+                'No Valid Tasks',
+                `No sortation tasks with valid status (${allowedStatuses.join(', ')}) were found for this product.`
+              );
             } else if (filteredTasks.length === 1) {
               navigate('SortationQuantity', { product, task: filteredTasks[0] });
             } else {

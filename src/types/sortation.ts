@@ -1,9 +1,7 @@
 /* eslint-disable no-undef */
-import { Container } from '../data/container/Shipment';
-import Location from '../data/location/Location';
 import LocationType from '../data/location/LocationType';
 import InventoryItem from '../data/picklist/InventoryItem';
-import PutAwayItems from '../data/putaway/PutAwayItems';
+import Person from '../data/picklist/Person';
 
 export type SortationProduct = {
   active: boolean;
@@ -52,29 +50,29 @@ export type SortationInventoryItem = {
   product: SortationProduct;
 };
 
-export type SortationPutaway = {
-  dateCreated: string;
-  destination: unknown;
-  errors: unknown;
+export type SortationUser = {
   id: string;
-  orderedBy: unknown;
-  origin: unknown;
-  putawayAssignee: unknown;
-  putawayDate: string | null;
-  putawayItems: PutAwayItems[];
-  putawayNumber: string;
-  putawayStatus: string;
-  sortBy: string | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
 };
 
 export type SortationTask = {
-  container: SortationLocation;
+  assignee: SortationUser | null;
+  container: SortationLocation | null;
+  dateCanceled: string | null;
+  dateCompleted: string | null;
+  dateCreated: string;
+  dateStarted: string | null;
   destination: SortationLocation;
   facility: SortationFacility;
   id: string;
+  identifier: string;
   inventoryItem: SortationInventoryItem;
+  lastUpdated: string;
   location: SortationLocation;
-  putaway: SortationPutaway | null;
+  orderedBy: Person;
   quantity: number;
   status: string;
 };

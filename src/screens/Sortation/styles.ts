@@ -35,6 +35,13 @@ export default StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center'
   },
+  chipWarning: {
+    height: 28,
+    justifyContent: 'flex-start',
+    borderRadius: 4,
+    alignItems: 'center',
+    backgroundColor: Theme.colors.warning
+  },
   chipSuccess: {
     backgroundColor: Theme.colors.success,
     height: 28,

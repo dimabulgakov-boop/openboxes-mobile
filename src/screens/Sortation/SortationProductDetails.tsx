@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Caption, Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
+import { Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
 
-import { EMPTY_CHAR } from '../../constants';
+import { EMPTY_FALLBACK } from '../../constants';
 import { DetailChip, SortationProduct } from '../../types/sortation';
 import Theme from '../../utils/Theme';
 import styles from './styles';
@@ -22,25 +22,24 @@ export default function SortationProductDetails({
   directPutawayRequired = false,
   onToggleDirectPutaway
 }: SortationProductDetailsProps) {
-  const { productCode, name, description } = product;
+  const { productCode, name } = product;
 
   return (
     <View style={styles.productDetails}>
       <View style={styles.headerRow}>
         <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-          {productCode}
+          {`Product Code: ${productCode}`}
         </Chip>
       </View>
 
       <Divider style={styles.contentDivider} />
 
       <Title style={styles.title}>{name}</Title>
-      <Caption style={styles.caption}>{description}</Caption>
 
       {detailsChips.map(({ icon, value, label }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]}>
           <Text style={styles.chipText}>
-            {label}: <Text style={[styles.bold, styles.chipText]}>{value ?? EMPTY_CHAR}</Text>
+            {label}: <Text style={[styles.bold, styles.chipText]}>{value ?? EMPTY_FALLBACK}</Text>
           </Text>
         </Chip>
       ))}
