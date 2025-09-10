@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import LocationType from '../data/location/LocationType';
 import InventoryItem from '../data/picklist/InventoryItem';
+import Person from '../data/picklist/Person';
 
 export type SortationProduct = {
   active: boolean;
@@ -71,7 +72,7 @@ export type SortationTask = {
   inventoryItem: SortationInventoryItem;
   lastUpdated: string;
   location: SortationLocation;
-  orderedBy: SortationUser;
+  orderedBy: Person;
   quantity: number;
   status: string;
 };
