@@ -12,10 +12,11 @@ import { navigate } from '../../NavigationService';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
+import { PutawayDetailsModel } from '../../types/sortation';
+import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 type PutawayQuantityRouteProp = RouteProp<
-  // TODO [Putaway]: Create a proper type for putawayDetails
-  { SortationPutawayQuantity: { putawayDetails: any } },
+  { SortationPutawayQuantity: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean } },
   'SortationPutawayQuantity'
 >;
 
@@ -27,7 +28,8 @@ type Location = {
 
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
-  const { putawayDetails } = params;
+  const { taskList, currentTaskIndex, isDirectPutaway } = params;
+  const putawayDetails = taskList[currentTaskIndex];
   const dispatch = useDispatch();
 
   const inputRef = useRef<TextInput | null>(null);
@@ -43,7 +45,10 @@ export default function PutawayQuantityScreen() {
     dispatch(
       searchInternalLocations('', { 'parentLocation.id': currentLocation?.id }, (data: any) => {
         if (data?.error) {
-          Alert.alert('Error', 'Failed to load internal locations.');
+          Alert.alert(
+            'Error', 
+            'Failed to load internal locations.'
+          );
           return;
         }
         const internalLocations: Location[] = data.data.map((item: any) => ({
@@ -64,7 +69,7 @@ export default function PutawayQuantityScreen() {
     if (!isFocused) {
       return;
     }
-    const t = setTimeout(() => inputRef.current?.focus(), 100);
+    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
@@ -88,7 +93,10 @@ export default function PutawayQuantityScreen() {
 
   function handleMainConfirm() {
     if (!putawayQuantity) {
-      Alert.alert('Invalid Putaway Quantity', 'Please enter a valid putaway quantity.');
+      Alert.alert(
+        'Invalid Putaway Quantity', 
+        'Please enter a valid putaway quantity.'
+      );
       return;
     }
 
@@ -118,10 +126,29 @@ export default function PutawayQuantityScreen() {
     dispatch(
       patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
         if (response && !response.error) {
-          Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
-          navigate('SortationPutaway');
+          Alert.alert(
+            'Sortation Successful', 
+            'The product has been sorted successfully.'
+          );
+          const nextTaskIndex = currentTaskIndex + 1;
+          if (nextTaskIndex < taskList.length) {
+            navigate('SortationPutawayLocationScan', {
+              taskList,
+              currentTaskIndex: nextTaskIndex,
+              isDirectPutaway
+            });
+          } else {
+            if (isDirectPutaway) {  
+              navigate('Sortation');
+            } else {
+              navigate('SortationPutaway');
+            }
+          }
         } else {
-          Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
+          Alert.alert(
+            'Sortation Failed', 
+            response.errorMessage || 'Sortation Failed'
+          );
         }
       })
     );
