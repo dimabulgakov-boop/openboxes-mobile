@@ -1,15 +1,15 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, ScrollView, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Subheading } from 'react-native-paper';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
+import { PutawayDetailsModel } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
-import { PutawayDetailsModel } from '../../types/sortation';
-import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 // NOTE: Currently, Product Scan and Location Scan are implemented as separate screens.
 // If their scanning flow and UI remain largely the same, we can consider merging them
@@ -80,7 +80,7 @@ export default function PutawayProductScanScreen() {
   }
 
   return (
-    <View style={styles.contentContainer}>
+    <ScrollView style={styles.contentContainer}>
       <PutawayDetails putawayDetails={putawayDetails} />
 
       <Divider />
@@ -105,6 +105,6 @@ export default function PutawayProductScanScreen() {
           Submit
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }

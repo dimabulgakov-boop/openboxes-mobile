@@ -276,11 +276,7 @@ class Main extends Component<Props, State> {
                 component={SortationTaskSelectionListScreen}
                 options={{ title: 'Inbound Sortation' }}
               />
-              <Stack.Screen 
-                name="SortationPutaway" 
-                component={PutawayEntryScreen} 
-                options={{ title: 'Putaway' }} 
-              />
+              <Stack.Screen name="SortationPutaway" component={PutawayEntryScreen} options={{ title: 'Putaway' }} />
               <Stack.Screen
                 name="SortationPutawayLocationScan"
                 component={PutawayLocationScanScreen}
