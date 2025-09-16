@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
-import { Image, View } from 'react-native';
+import { Image, ScrollView, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -73,7 +73,7 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.screenContainer}>
+    <ScrollView style={styles.screenContainer} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
       <View style={styles.welcomeContainer}>
         <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       </View>
@@ -109,7 +109,7 @@ const Login = () => {
           }}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
