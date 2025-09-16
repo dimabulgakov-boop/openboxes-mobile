@@ -20,7 +20,7 @@ const NO_LOCATION_GROUP_NAME = 'NO_LOCATION_GROUP_PROVIDED';
 export interface OwnProps {
   navigation: any;
   groupLocationEntries?: boolean;
-  currentLocation?: Location | null
+  currentLocation?: Location | null;
 }
 
 interface DispatchProps {
@@ -155,21 +155,21 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     locations.map((location) => {
       const isSelected = currentLocation && location.id === currentLocation.id;
       return (
-        <Card 
-          key={location.id} 
-          style={[styles.cardContainer, isSelected && styles.selectedCard]} 
+        <Card
+          key={location.id}
+          style={[styles.cardContainer, isSelected && styles.selectedCard]}
           onPress={() => this.setCurrentLocation(location)}
         >
-        <Card.Content style={styles.cardContent}>
-          <View style={styles.contentContainer}>
-            <GarageIcon width={48} height={48} />
-            <View style={styles.textContainer}>
-              <Text style={styles.cardTitle}>{location.name}</Text>
-              <Text style={styles.cardSubtitle}>{location.locationGroup?.name || NO_LOCATION_GROUP_NAME}</Text>
+          <Card.Content style={styles.cardContent}>
+            <View style={styles.contentContainer}>
+              <GarageIcon width={48} height={48} />
+              <View style={styles.textContainer}>
+                <Text style={styles.cardTitle}>{location.name}</Text>
+                <Text style={styles.cardSubtitle}>{location.locationGroup?.name || NO_LOCATION_GROUP_NAME}</Text>
+              </View>
             </View>
-          </View>
-        </Card.Content>
-      </Card>
+          </Card.Content>
+        </Card>
       );
     });
 
@@ -192,7 +192,10 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       <View>
         <ScrollView style={styles.scrollView}>
           {groupLocationEntries
-            ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(availableLocations), currentLocation)
+            ? this.renderGroupedLocations(
+                this.getSortedOrgNameAndLocationsDictionary(availableLocations),
+                currentLocation
+              )
             : this.renderAllLocations(availableLocations, currentLocation)}
         </ScrollView>
       </View>
