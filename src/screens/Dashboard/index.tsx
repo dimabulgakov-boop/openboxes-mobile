@@ -7,6 +7,7 @@ import EmptyIcon from '../../assets/images/icon_empty.svg';
 import Button from '../../components/Button';
 import { useFilteredDashboardEntries } from '../../hooks/useFilteredDashboardEntries';
 import { useOrderedDashboardEntries } from '../../hooks/useOrderedDashboardEntries';
+import { useResponsiveColumns } from '../../hooks/useResponsiveColumns';
 import { RootState } from '../../redux/reducers';
 import { DashboardEntry } from './dashboardData';
 import styles from './styles';
@@ -19,6 +20,7 @@ export default function Dashboard({ navigation }: Props) {
 
   const orderedEntries = useOrderedDashboardEntries(dashboardEntriesOrder);
   const visibleEntries = useFilteredDashboardEntries(orderedEntries, dashboardEntriesVisibility);
+  const { columns } = useResponsiveColumns();
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<DashboardEntry>) => {
@@ -40,12 +42,13 @@ export default function Dashboard({ navigation }: Props) {
   return (
     <View style={styles.screenContainer}>
       <FlatList
+        key={columns}
         data={visibleEntries}
         renderItem={renderItem}
         keyExtractor={(item: DashboardEntry, index: number) =>
           item.key || item.navigationScreenName || `dashboard-item-${index}`
         }
-        numColumns={2}
+        numColumns={columns}
         contentContainerStyle={styles.flatListContentContainer}
         ListEmptyComponent={() => (
           <View style={styles.emptyScreenContainer}>

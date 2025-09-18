@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo, Text, ToastAndroid, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, ScrollView, Text, ToastAndroid, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -142,7 +142,7 @@ const TransferDetails = () => {
   };
 
   return (
-    <View style={styles.mainContainer}>
+    <ScrollView style={styles.mainContainer}>
       <View style={styles.detailsContainer}>{renderTransferDetails()}</View>
       <Divider />
 
@@ -160,7 +160,7 @@ const TransferDetails = () => {
       <View style={styles.bottom}>
         <Button title="Complete Transfer" onPress={() => completeTransfers(transferDetail)} />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

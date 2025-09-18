@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
-import { Alert, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
 import EmptyView from '../../components/EmptyView';
@@ -173,7 +173,7 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
 
   render() {
     return (
-      <>
+      <ScrollView>
         <View style={[styles.contentContainer, { backgroundColor: Theme.colors.surface }]}>
           <OrderDetailsSection shipment={this.state.shipment} />
         </View>
@@ -211,7 +211,7 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
             keyExtractor={(item, index) => item.id || index.toString()}
           />
         </View>
-      </>
+      </ScrollView>
     );
   }
 }

@@ -1,6 +1,6 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, ScrollView, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
 import { useDispatch } from 'react-redux';
@@ -141,7 +141,7 @@ export default function SortationQuantityScreen() {
   ];
 
   return (
-    <View style={styles.contentContainer}>
+    <ScrollView style={styles.contentContainer}>
       <SortationProductDetails
         showDirectPutawayRequired
         product={product}
@@ -175,6 +175,6 @@ export default function SortationQuantityScreen() {
           Submit
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }

@@ -4,8 +4,6 @@ const styles = StyleSheet.create({
   screenContainer: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    flex: 1,
     paddingHorizontal: 20
   },
   welcomeContainer: {

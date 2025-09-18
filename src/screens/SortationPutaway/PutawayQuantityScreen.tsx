@@ -1,19 +1,19 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Modal, TextInput, View } from 'react-native';
+import { Alert, Modal, ScrollView, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import PutawayDetails from './PutawayDetails';
-import styles from './styles';
-import { patchPutawayTaskAction } from '../../redux/actions/putaways';
+import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { searchInternalLocations } from '../../redux/actions/locations';
+import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
-import AsyncModalSelect from '../../components/AsyncModalSelect';
 import { PutawayDetailsModel } from '../../types/sortation';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import PutawayDetails from './PutawayDetails';
+import styles from './styles';
 
 type PutawayQuantityRouteProp = RouteProp<
   {
@@ -168,7 +168,7 @@ export default function PutawayQuantityScreen() {
   };
 
   return (
-    <View style={styles.contentContainer}>
+    <ScrollView style={styles.contentContainer}>
       <PutawayDetails putawayDetails={updatedPutawayDetails} />
 
       <Divider />
@@ -236,6 +236,6 @@ export default function PutawayQuantityScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 }

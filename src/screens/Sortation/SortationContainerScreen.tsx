@@ -1,18 +1,18 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, ScrollView, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading, Switch } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import Theme from '../../utils/Theme';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
-import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 type ContainerRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; quantitySorted: number; task: SortationTask } },
@@ -124,7 +124,7 @@ export default function SortationContainerScreen() {
   ];
 
   return (
-    <View style={styles.contentContainer}>
+    <ScrollView style={styles.contentContainer}>
       <SortationProductDetails product={product} detailsChips={productDetailsChips} />
 
       <Divider />
@@ -156,6 +156,6 @@ export default function SortationContainerScreen() {
           Submit
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }

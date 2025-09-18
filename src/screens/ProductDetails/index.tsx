@@ -153,7 +153,7 @@ class ProductDetails extends React.Component<Props, State> {
       vm?.availableItems?.filter((item) => item.quantityOnHand > 0 || item.quantityAvailable > 0) ?? [];
 
     return (
-      <>
+      <ScrollView>
         <PrintModal
           visible={visible}
           closeModal={this.closeModal}
@@ -219,7 +219,7 @@ class ProductDetails extends React.Component<Props, State> {
             <Button style={styles.printButton} title={'Print Barcode Label'} size="100%" onPress={this.handleClick} />
           </ScrollView>
         </View>
-      </>
+      </ScrollView>
     );
   }
 }

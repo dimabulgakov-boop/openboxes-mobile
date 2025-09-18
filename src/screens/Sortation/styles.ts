@@ -5,8 +5,7 @@ export default StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    padding: Theme.spacing.large,
-    justifyContent: 'flex-start'
+    padding: Theme.spacing.large
   },
   emptyContainer: {
     flex: 1,

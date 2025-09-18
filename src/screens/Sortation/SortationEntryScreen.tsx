@@ -1,7 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, ScrollView, TextInput } from 'react-native';
 import { TextInput as PaperTextInput, Paragraph, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -84,7 +84,7 @@ export default function SortationEntryScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    <ScrollView style={styles.screen}>
       <Title>Scan Product Barcode For Sortation</Title>
       <Paragraph>
         Point your barcode scanner at the product or type the code manually, then wait a moment for it to auto‐submit.
@@ -101,6 +101,6 @@ export default function SortationEntryScreen() {
         onChangeText={handleChange}
         onSubmitEditing={handleSubmit}
       />
-    </View>
+    </ScrollView>
   );
 }
