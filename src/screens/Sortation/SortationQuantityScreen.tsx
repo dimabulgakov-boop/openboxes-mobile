@@ -141,7 +141,7 @@ export default function SortationQuantityScreen() {
   ];
 
   return (
-    <ScrollView style={styles.contentContainer}>
+    <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
       <SortationProductDetails
         showDirectPutawayRequired
         product={product}

@@ -168,7 +168,7 @@ export default function PutawayQuantityScreen() {
   };
 
   return (
-    <ScrollView style={styles.contentContainer}>
+    <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
       <PutawayDetails putawayDetails={updatedPutawayDetails} />
 
       <Divider />
