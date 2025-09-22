@@ -124,7 +124,7 @@ export default function SortationContainerScreen() {
   ];
 
   return (
-    <ScrollView style={styles.contentContainer}>
+    <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
       <SortationProductDetails product={product} detailsChips={productDetailsChips} />
 
       <Divider />

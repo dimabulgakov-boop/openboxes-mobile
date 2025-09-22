@@ -84,7 +84,7 @@ export default function SortationEntryScreen() {
   };
 
   return (
-    <ScrollView style={styles.screen}>
+    <ScrollView keyboardShouldPersistTaps="handled" style={styles.screen}>
       <Title>Scan Product Barcode For Sortation</Title>
       <Paragraph>
         Point your barcode scanner at the product or type the code manually, then wait a moment for it to auto‐submit.

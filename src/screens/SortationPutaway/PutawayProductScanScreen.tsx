@@ -80,7 +80,7 @@ export default function PutawayProductScanScreen() {
   }
 
   return (
-    <ScrollView style={styles.contentContainer}>
+    <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
       <PutawayDetails putawayDetails={putawayDetails} />
 
       <Divider />

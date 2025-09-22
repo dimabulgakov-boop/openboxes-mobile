@@ -80,7 +80,7 @@ export default function PutawayLocationScanScreen() {
   }
 
   return (
-    <ScrollView style={styles.contentContainer}>
+    <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
       <PutawayDetails putawayDetails={putawayDetails} />
 
       <Divider />
@@ -91,6 +91,7 @@ export default function PutawayLocationScanScreen() {
         <PaperTextInput
           ref={inputRef}
           autoCompleteType="off"
+          blurOnSubmit={false}
           style={styles.topSpace}
           mode="outlined"
           label="Putaway Location Entry Field"
