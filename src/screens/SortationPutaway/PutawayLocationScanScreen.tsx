@@ -91,7 +91,6 @@ export default function PutawayLocationScanScreen() {
         <PaperTextInput
           ref={inputRef}
           autoCompleteType="off"
-          blurOnSubmit={false}
           style={styles.topSpace}
           mode="outlined"
           label="Putaway Location Entry Field"
