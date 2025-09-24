@@ -41,14 +41,14 @@ export default function PutawayEntryScreen() {
         getPutawayDetailsByContainerId(containerId, (response) => {
           if (response && !response.error) {
             const allTasks: SortationTask[] = response?.response?.data || [];
-            const filteredTasks = allTasks.filter((task) => task.status === 'IN_TRANSIT');
+            const filteredTasks = allTasks.filter((task) => task.status === 'IN_PROGRESS');
             if (filteredTasks.length > 0) {
               navigate('SortationPutawayLocationScan', {
                 taskList: filteredTasks,
                 currentTaskIndex: 0
               });
             } else {
-              Alert.alert('No Valid Tasks Found', `No IN_TRANSIT tasks found for container ${containerId}`);
+              Alert.alert('No Valid Tasks Found', `No IN_PROGRESS tasks found for container ${containerId}`);
             }
           } else {
             Alert.alert('Not found', `Container ${containerId} not found`);

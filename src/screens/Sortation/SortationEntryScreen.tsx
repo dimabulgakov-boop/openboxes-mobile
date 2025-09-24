@@ -41,7 +41,7 @@ export default function SortationEntryScreen() {
           if (response && !response.error) {
             const { product, tasks } = response || {};
 
-            const allowedStatuses = ['PENDING', 'IN_PROGRESS'];
+            const allowedStatuses = ['PENDING', 'STARTED'];
             const filteredTasks = (tasks || []).filter((task: SortationTask) => allowedStatuses.includes(task.status));
             if (filteredTasks.length === 0) {
               Alert.alert(
