@@ -11,7 +11,7 @@ type PutawayDetailsProps = {
 };
 
 export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) {
-  const { inventoryItem, quantity, container, destination } = putawayDetails;
+  const { inventoryItem, quantity, container, destination, type } = putawayDetails;
 
   const detailsChips: DetailChip[] = [
     {
@@ -43,7 +43,12 @@ export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) 
 
       <Divider style={styles.contentDivider} />
 
-      <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
+      <View style={styles.headerRow}>
+        <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
+        <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
+          {`${type ?? EMPTY_FALLBACK}`}
+        </Chip>
+      </View>
       <Caption style={styles.caption}>{inventoryItem?.product?.description}</Caption>
 
       {detailsChips.map(({ icon, value, label }) => (

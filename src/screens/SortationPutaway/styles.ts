@@ -39,6 +39,13 @@ export default StyleSheet.create({
     fontSize: 12,
     color: Theme.colors.text
   },
+  chipWarning: {
+    height: 28,
+    justifyContent: 'flex-start',
+    borderRadius: 4,
+    alignItems: 'center',
+    backgroundColor: Theme.colors.warning
+  },
   contentDivider: {
     marginVertical: 8
   },
@@ -94,5 +101,10 @@ export default StyleSheet.create({
   bottomActionContainer: {
     padding: Theme.spacing.large,
     borderTopColor: Theme.colors.disabled
+  },
+  cardAnnotation: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   }
 });

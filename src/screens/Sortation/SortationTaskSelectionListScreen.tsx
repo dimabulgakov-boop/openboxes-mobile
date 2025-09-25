@@ -64,6 +64,10 @@ export default function SortationTaskSelectionListScreen() {
                   </Chip>
 
                   <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
+                    {`${item.type ?? EMPTY_FALLBACK}`}
+                  </Chip>
+
+                  <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
                     {`${item.status ?? EMPTY_FALLBACK}`}
                   </Chip>
                 </View>

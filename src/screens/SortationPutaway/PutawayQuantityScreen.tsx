@@ -1,7 +1,7 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Divider, TextInput as PaperTextInput, Paragraph, Subheading, Switch } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
@@ -15,6 +15,7 @@ import { RootState } from '../../redux/reducers';
 import { PutawayDetailsModel } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
+import Theme from '../../utils/Theme';
 
 type PutawayQuantityRouteProp = RouteProp<
   {
@@ -51,6 +52,7 @@ export default function PutawayQuantityScreen() {
   );
   const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
   const [selectedReasonCode, setSelectedReasonCode] = useState<ReasonCode | null>(null);
+  const [isCancelRemainingEnabled, setIsCancelRemainingEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(
@@ -110,25 +112,28 @@ export default function PutawayQuantityScreen() {
   }
 
   function handleConfirm() {
-    if (!putawayQuantity) {
-      Alert.alert('Invalid Putaway Quantity', 'Quantity is required.');
-      return;
-    }
+    if (!isCancelRemainingEnabled) {
+      if (!putawayQuantity) {
+        Alert.alert('Invalid Putaway Quantity', 'Quantity is required.');
+        return;
+      }
 
-    if (putawayQuantity < 1 || putawayQuantity > putawayDetails.quantity) {
-      Alert.alert(
-        'Invalid Putaway Quantity',
-        `Please enter a valid putaway quantity between 1 and ${putawayDetails.quantity}.`
-      );
-      return;
+      if (putawayQuantity < 1 || putawayQuantity > putawayDetails.quantity) {
+        Alert.alert(
+          'Invalid Putaway Quantity',
+          `Please enter a valid putaway quantity between 1 and ${putawayDetails.quantity}.`
+        );
+        return;
+      }
     }
 
     const isAlternativeLocationSelected = selectedAlternativeDestination?.id !== putawayDetails.destination?.id;
-    if (putawayQuantity === putawayDetails.quantity) {
+    if (putawayQuantity === putawayDetails.quantity || isCancelRemainingEnabled) {
       const payload = {
         action: 'complete',
         destination: selectedAlternativeDestination?.id,
-        force: isAlternativeLocationSelected
+        force: isAlternativeLocationSelected,
+        isCancelRemaining: isCancelRemainingEnabled
       };
       dispatch(
         patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
@@ -158,7 +163,6 @@ export default function PutawayQuantityScreen() {
         action: 'partialComplete',
         quantity: putawayQuantity,
         destination: selectedAlternativeDestination?.id,
-        force: isAlternativeLocationSelected,
         reasonCode: selectedReasonCode?.id ? selectedReasonCode.id : null
       };
       if (!selectedReasonCode?.id) {
@@ -184,14 +188,13 @@ export default function PutawayQuantityScreen() {
 
   function handleAlternativeLocation() {
     if (internalLocations.length === 0) {
-      Alert.alert('No Alternatives', 'No alternative locations are available');
-      return;
+      Alert.alert('No Alternatives', 'No alternative locations are available. Discrepancy location will be used.');
+      setSelectedAlternativeDestination(null);
+    } else {
+      const randomIndex = Math.floor(Math.random() * internalLocations.length);
+      const randomLocation = internalLocations[randomIndex];
+      setSelectedAlternativeDestination(randomLocation);
     }
-
-    const randomIndex = Math.floor(Math.random() * internalLocations.length);
-    const randomLocation = internalLocations[randomIndex];
-
-    setSelectedAlternativeDestination(randomLocation);
   }
 
   const updatedPutawayDetails = {
@@ -238,6 +241,15 @@ export default function PutawayQuantityScreen() {
               />
             </View>
           </View>
+        </View>
+
+        <View style={[styles.cardAnnotation]}>
+          <Paragraph style={[styles.paragraph]}>Cancel Remaining</Paragraph>
+          <Switch
+            value={isCancelRemainingEnabled}
+            color={Theme.colors.primary}
+            onValueChange={setIsCancelRemainingEnabled}
+          />
         </View>
       </View>
 

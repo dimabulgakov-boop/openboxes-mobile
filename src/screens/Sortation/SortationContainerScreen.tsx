@@ -125,7 +125,7 @@ export default function SortationContainerScreen() {
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
-      <SortationProductDetails product={product} detailsChips={productDetailsChips} />
+      <SortationProductDetails product={product} detailsChips={productDetailsChips} task={task} />
 
       <Divider />
 

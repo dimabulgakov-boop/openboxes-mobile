@@ -147,6 +147,7 @@ export default function SortationQuantityScreen() {
         product={product}
         detailsChips={productDetailsChips}
         directPutawayRequired={directPutawayRequired}
+        task={task}
         onToggleDirectPutaway={setDirectPutawayRequired}
       />
 

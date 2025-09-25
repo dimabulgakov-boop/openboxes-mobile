@@ -75,6 +75,7 @@ export type SortationTask = {
   orderedBy: Person;
   quantity: number;
   status: string;
+  type: string;
 };
 
 export type DetailChip = {
@@ -85,6 +86,7 @@ export type DetailChip = {
 
 export type PutawayDetailsModel = {
   id: string;
+  type: string;
   status: string;
   identifier: string;
   inventoryItem: InventoryItem;
