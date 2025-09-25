@@ -106,5 +106,24 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+  dialogActions: {
+    justifyContent: 'space-between'
+  },
+  dialogNewLocationHeader: {
+    marginTop: 16,
+    fontWeight: 'bold',
+    fontSize: 20
+  },
+  dialogScanLocationInput: {
+    marginTop: 16
+  },
+  dialogCurrentLocationLabel: {
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  dialogCurrentLocationWrapper: {
+    marginBottom: 16,
+    fontWeight: 'bold'
   }
 });

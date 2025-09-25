@@ -1,7 +1,16 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading, Switch } from 'react-native-paper';
+import {
+  Button as PaperButton,
+  Dialog,
+  Divider,
+  Paragraph,
+  Portal,
+  Subheading,
+  Switch,
+  TextInput as PaperTextInput
+} from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
@@ -53,6 +62,10 @@ export default function PutawayQuantityScreen() {
   const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
   const [selectedReasonCode, setSelectedReasonCode] = useState<ReasonCode | null>(null);
   const [isCancelRemainingEnabled, setIsCancelRemainingEnabled] = useState<boolean>(false);
+
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [tempAlternativeLocation, setTempAlternativeLocation] = useState<Location | null>(null);
+  const [scannedLocationInput, setScannedLocationInput] = useState('');
 
   useEffect(() => {
     dispatch(
@@ -186,16 +199,45 @@ export default function PutawayQuantityScreen() {
     }
   }
 
-  function handleAlternativeLocation() {
-    if (internalLocations.length === 0) {
-      Alert.alert('No Alternatives', 'No alternative locations are available. Discrepancy location will be used.');
-      setSelectedAlternativeDestination(null);
+  function handleCancelRemainingToggle(isEnabled: boolean) {
+    setIsCancelRemainingEnabled(isEnabled);
+
+    if (isEnabled) {
+      setPutawayQuantity(putawayDetails.quantity);
     } else {
-      const randomIndex = Math.floor(Math.random() * internalLocations.length);
-      const randomLocation = internalLocations[randomIndex];
-      setSelectedAlternativeDestination(randomLocation);
+      setPutawayQuantity(undefined);
     }
   }
+
+  function handleRequestAlternativeLocation() {
+    setTempAlternativeLocation(selectedAlternativeDestination);
+    setIsDialogVisible(true);
+  }
+
+  const hideDialog = () => {
+    setIsDialogVisible(false);
+    setScannedLocationInput('');
+  };
+
+  const handleSuggestLocation = () => {
+    const randomIndex = Math.floor(Math.random() * internalLocations.length);
+    const randomLocation = internalLocations[randomIndex];
+    setTempAlternativeLocation(randomLocation);
+    setScannedLocationInput('');
+  };
+
+  const handleScanLocation = (text: string) => {
+    setScannedLocationInput(text);
+    const foundLocation = internalLocations.find(
+      (loc) => loc.locationNumber?.toLowerCase() === text.trim().toLowerCase()
+    );
+    setTempAlternativeLocation(foundLocation || null);
+  };
+
+  const handleConfirmAlternative = () => {
+    setSelectedAlternativeDestination(tempAlternativeLocation);
+    hideDialog();
+  };
 
   const updatedPutawayDetails = {
     ...putawayDetails,
@@ -203,61 +245,101 @@ export default function PutawayQuantityScreen() {
   };
 
   return (
-    <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
-      <PutawayDetails putawayDetails={updatedPutawayDetails} />
-      <Divider />
+    <Portal.Host>
+      <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
+        <PutawayDetails putawayDetails={updatedPutawayDetails} />
+        <Divider />
 
-      <View style={styles.formContainer}>
-        <Subheading style={styles.subheading}>Enter Putaway Quantity</Subheading>
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
-          style={styles.topSpace}
-          mode="outlined"
-          label="Putaway Quantity Entry Field"
-          keyboardType="number-pad"
-          value={putawayQuantity?.toString() || ''}
-          returnKeyType="done"
-          onChangeText={handleChange}
-        />
+        <View style={styles.formContainer}>
+          <Subheading style={styles.subheading}>Enter Putaway Quantity</Subheading>
+          <PaperTextInput
+            ref={inputRef}
+            autoCompleteType="off"
+            style={styles.topSpace}
+            mode="outlined"
+            label="Putaway Quantity Entry Field"
+            keyboardType="number-pad"
+            value={putawayQuantity?.toString() || ''}
+            returnKeyType="done"
+            onChangeText={handleChange}
+          />
 
-        <View style={styles.topSpace}>
-          <View style={[styles.headerRow, styles.bottomSpace]}>
-            <Paragraph style={styles.paragraph}>Alternative Location?</Paragraph>
-            <Button style={styles.secondaryButton} size="50%" title="Request" onPress={handleAlternativeLocation} />
-          </View>
-
-          <View style={styles.headerRow}>
-            <Paragraph style={styles.paragraph}>Discrepancy Reason</Paragraph>
-            <View style={styles.dropdownContainer}>
-              <AsyncModalSelect
-                placeholder="Select a reason"
-                label="Reason for shortage"
-                initValue={selectedReasonCode?.name || ''}
-                initialData={reasonCodes}
-                searchAction={() => {}}
-                serverSearchEnabled={false}
-                onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
+          <View style={styles.topSpace}>
+            <View style={[styles.headerRow, styles.bottomSpace]}>
+              <Paragraph style={styles.paragraph}>Alternative Location?</Paragraph>
+              <Button
+                style={styles.secondaryButton}
+                size="50%"
+                title="Request"
+                onPress={handleRequestAlternativeLocation}
               />
             </View>
+
+            <View style={styles.headerRow}>
+              <Paragraph style={styles.paragraph}>Discrepancy Reason</Paragraph>
+              <View style={styles.dropdownContainer}>
+                <AsyncModalSelect
+                  placeholder="Select a reason"
+                  label="Reason for shortage"
+                  initValue={selectedReasonCode?.name || ''}
+                  initialData={reasonCodes}
+                  searchAction={() => {}}
+                  serverSearchEnabled={false}
+                  onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.cardAnnotation}>
+            <Paragraph style={[styles.paragraph]}>Cancel Remaining</Paragraph>
+            <Switch
+              value={isCancelRemainingEnabled}
+              color={Theme.colors.primary}
+              onValueChange={handleCancelRemainingToggle}
+            />
           </View>
         </View>
 
-        <View style={[styles.cardAnnotation]}>
-          <Paragraph style={[styles.paragraph]}>Cancel Remaining</Paragraph>
-          <Switch
-            value={isCancelRemainingEnabled}
-            color={Theme.colors.primary}
-            onValueChange={setIsCancelRemainingEnabled}
-          />
+        <View style={styles.bottomActionContainer}>
+          <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleConfirm}>
+            Submit
+          </Button>
         </View>
-      </View>
+      </ScrollView>
 
-      <View style={styles.bottomActionContainer}>
-        <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleConfirm}>
-          Submit
-        </Button>
-      </View>
-    </ScrollView>
+      <Portal>
+        <Dialog visible={isDialogVisible} dismissable={false} onDismiss={hideDialog}>
+          <Dialog.Title>Choose Alternative Location</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph style={styles.dialogCurrentLocationWrapper}>
+              <Paragraph style={styles.dialogCurrentLocationLabel}>Current Location: </Paragraph>
+              {putawayDetails.destination?.name || 'Unassgined'}
+            </Paragraph>
+
+            <PaperButton icon="shuffle-variant" mode="contained" onPress={handleSuggestLocation}>
+              Suggest new location
+            </PaperButton>
+
+            <PaperTextInput
+              label="Scan location number"
+              value={scannedLocationInput}
+              mode="outlined"
+              style={styles.dialogScanLocationInput}
+              autoCompleteType="off"
+              onChangeText={handleScanLocation}
+            />
+
+            <Subheading style={styles.dialogNewLocationHeader}>
+              New Location: {tempAlternativeLocation?.name || 'Unknown'}
+            </Subheading>
+          </Dialog.Content>
+          <Dialog.Actions style={styles.dialogActions}>
+            <PaperButton onPress={hideDialog}>Cancel</PaperButton>
+            <PaperButton onPress={handleConfirmAlternative}>OK</PaperButton>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </Portal.Host>
   );
 }
