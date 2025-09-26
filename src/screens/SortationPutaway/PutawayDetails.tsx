@@ -39,16 +39,15 @@ export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) 
             Product Code: <Text style={styles.bold}>{inventoryItem?.product?.productCode}</Text>
           </Text>
         </Chip>
-      </View>
-
-      <Divider style={styles.contentDivider} />
-
-      <View style={styles.headerRow}>
-        <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
         <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
           {`${type ?? EMPTY_FALLBACK}`}
         </Chip>
       </View>
+
+      <Divider style={styles.contentDivider} />
+
+      <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
+
       <Caption style={styles.caption}>{inventoryItem?.product?.description}</Caption>
 
       {detailsChips.map(({ icon, value, label }) => (

@@ -24,6 +24,9 @@ export const GET_INTERNAL_LOCATION_DETAIL_SUCCESS = 'GET_INTERNAL_LOCATION_DETAI
 export const GET_INTERNAL_LOCATION_SEARCH_REQUEST = 'GET_INTERNAL_LOCATION_SEARCH_REQUEST';
 export const GET_INTERNAL_LOCATION_SEARCH_SUCCESS = 'GET_INTERNAL_LOCATION_SEARCH_SUCCESS';
 
+export const GET_ALTERNATIVE_DESTINATIONS_REQUEST = 'GET_ALTERNATIVE_DESTINATIONS_REQUEST';
+export const GET_ALTERNATIVE_DESTINATIONS_SUCCESS = 'GET_ALTERNATIVE_DESTINATIONS_SUCCESS';
+
 export function getLocationsAction(callback: (products: any) => void) {
   return {
     type: GET_LOCATIONS_REQUEST,
@@ -82,6 +85,14 @@ export function getInternalLocationDetail(id: string, callback: (data: any) => v
   return {
     type: GET_INTERNAL_LOCATION_DETAIL_REQUEST,
     payload: { id },
+    callback
+  };
+}
+
+export function getAlternativeDestinationsAction(facilityId: string, taskId: string, callback?: (data: any) => void) {
+  return {
+    type: GET_ALTERNATIVE_DESTINATIONS_REQUEST,
+    payload: { facilityId, taskId },
     callback
   };
 }

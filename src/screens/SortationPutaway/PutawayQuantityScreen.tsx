@@ -1,5 +1,5 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, TextInput, View } from 'react-native';
 import {
   Button as PaperButton,
@@ -9,15 +9,16 @@ import {
   Portal,
   Subheading,
   Switch,
-  TextInput as PaperTextInput
+  TextInput as PaperTextInput,
+  IconButton
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { appConfig, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
-import { searchInternalLocations } from '../../redux/actions/locations';
+import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { RootState } from '../../redux/reducers';
@@ -25,6 +26,7 @@ import { PutawayDetailsModel } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
 import Theme from '../../utils/Theme';
+import { debounce } from 'lodash';
 
 type PutawayQuantityRouteProp = RouteProp<
   {
@@ -55,7 +57,7 @@ export default function PutawayQuantityScreen() {
   const currentLocation = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
 
   const [putawayQuantity, setPutawayQuantity] = useState<number | undefined>();
-  const [internalLocations, setInternalLocations] = useState<Location[]>([]);
+  const [alternativeLocations, setAlternativeLocations] = useState<Location[]>([]);
   const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<Location | null>(
     putawayDetails.destination
   );
@@ -66,6 +68,43 @@ export default function PutawayQuantityScreen() {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [tempAlternativeLocation, setTempAlternativeLocation] = useState<Location | null>(null);
   const [scannedLocationInput, setScannedLocationInput] = useState('');
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+
+  const performLocationSearch = useCallback((locationNumber: string) => {
+      const trimmedText = locationNumber.trim();
+      if (!trimmedText) {
+        setTempAlternativeLocation(null);
+        return;
+      }
+
+      dispatch(
+        searchLocationByLocationNumber(trimmedText, (data: any) => {
+          if (data && !data.error) {
+            const foundLocation: Location = {
+              id: data.id,
+              name: data.name,
+              locationNumber: data.locationNumber
+            };
+            setTempAlternativeLocation(foundLocation);
+          } else {
+            setTempAlternativeLocation(null);
+          }
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const debouncedLocationSearch = useMemo(
+    () => debounce(performLocationSearch, appConfig.DEFAULT_DEBOUNCE_TIME),
+    [performLocationSearch]
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedLocationSearch.cancel();
+    };
+  }, [debouncedLocationSearch]);
 
   useEffect(() => {
     dispatch(
@@ -81,9 +120,9 @@ export default function PutawayQuantityScreen() {
 
   useEffect(() => {
     dispatch(
-      searchInternalLocations('', { 'parentLocation.id': currentLocation?.id }, (data: any) => {
+      getAlternativeDestinationsAction(putawayDetails.facility.id, putawayDetails.id, (data: any) => {
         if (data?.error) {
-          Alert.alert('Error', 'Failed to load internal locations.');
+          Alert.alert('Error', 'Failed to load alternative locations.');
           return;
         }
         const mappedLocations: Location[] = data.data.map((item: any) => ({
@@ -92,11 +131,10 @@ export default function PutawayQuantityScreen() {
           locationNumber: item.locationNumber
         }));
 
-        const filteredLocations = mappedLocations.filter((location) => location.id !== putawayDetails.destination?.id);
-        setInternalLocations(filteredLocations);
+        setAlternativeLocations(mappedLocations);
       })
     );
-  }, [dispatch, currentLocation.id, putawayDetails.destination?.id]);
+  }, [dispatch, currentLocation.id, putawayDetails.destination?.id, putawayDetails.facility.id, putawayDetails.id]);
 
   useEffect(() => {
     if (!isFocused) {
@@ -142,11 +180,16 @@ export default function PutawayQuantityScreen() {
 
     const isAlternativeLocationSelected = selectedAlternativeDestination?.id !== putawayDetails.destination?.id;
     if (putawayQuantity === putawayDetails.quantity || isCancelRemainingEnabled) {
+      if (isCancelRemainingEnabled && !selectedReasonCode?.id) {
+        Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
+        return;
+      }
       const payload = {
         action: 'complete',
         destination: selectedAlternativeDestination?.id,
         force: isAlternativeLocationSelected,
-        isCancelRemaining: isCancelRemainingEnabled
+        isCancelRemaining: isCancelRemainingEnabled,
+        reasonCode: selectedReasonCode?.id ? selectedReasonCode.id : null
       };
       dispatch(
         patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
@@ -172,16 +215,16 @@ export default function PutawayQuantityScreen() {
         })
       );
     } else {
+      if (!selectedReasonCode?.id) {
+        Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
+        return;
+      }
       const payload = {
         action: 'partialComplete',
         quantity: putawayQuantity,
         destination: selectedAlternativeDestination?.id,
         reasonCode: selectedReasonCode?.id ? selectedReasonCode.id : null
       };
-      if (!selectedReasonCode?.id) {
-        Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason for a partial putaway.');
-        return;
-      }
       dispatch(
         patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
           if (response && !response.error && response.data) {
@@ -220,18 +263,21 @@ export default function PutawayQuantityScreen() {
   };
 
   const handleSuggestLocation = () => {
-    const randomIndex = Math.floor(Math.random() * internalLocations.length);
-    const randomLocation = internalLocations[randomIndex];
-    setTempAlternativeLocation(randomLocation);
+    if (alternativeLocations.length === 0) {
+      return;
+    }
+
+    const suggestedLocation = alternativeLocations[suggestionIndex];
+    setTempAlternativeLocation(suggestedLocation);
     setScannedLocationInput('');
+
+    const nextIndex = (suggestionIndex + 1) % alternativeLocations.length;
+    setSuggestionIndex(nextIndex);
   };
 
   const handleScanLocation = (text: string) => {
     setScannedLocationInput(text);
-    const foundLocation = internalLocations.find(
-      (loc) => loc.locationNumber?.toLowerCase() === text.trim().toLowerCase()
-    );
-    setTempAlternativeLocation(foundLocation || null);
+    debouncedLocationSearch(text);
   };
 
   const handleConfirmAlternative = () => {
@@ -310,6 +356,7 @@ export default function PutawayQuantityScreen() {
 
       <Portal>
         <Dialog visible={isDialogVisible} dismissable={false} onDismiss={hideDialog}>
+          <IconButton icon="close" size={24} style={styles.dialogCloseButton} onPress={hideDialog} />
           <Dialog.Title>Choose Alternative Location</Dialog.Title>
           <Dialog.Content>
             <Paragraph style={styles.dialogCurrentLocationWrapper}>

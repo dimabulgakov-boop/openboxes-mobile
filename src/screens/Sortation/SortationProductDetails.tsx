@@ -32,16 +32,14 @@ export default function SortationProductDetails({
         <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
           {`Product Code: ${productCode}`}
         </Chip>
-      </View>
-
-      <Divider style={styles.contentDivider} />
-
-      <View style={styles.headerRow}>
-        <Title style={styles.title}>{name}</Title>
         <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
           {`${task.type ?? EMPTY_FALLBACK}`}
         </Chip>
       </View>
+
+      <Divider style={styles.contentDivider} />
+
+      <Title style={styles.title}>{name}</Title>
 
       {detailsChips.map(({ icon, value, label }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]}>

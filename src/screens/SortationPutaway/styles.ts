@@ -125,5 +125,11 @@ export default StyleSheet.create({
   dialogCurrentLocationWrapper: {
     marginBottom: 16,
     fontWeight: 'bold'
+  },
+  dialogCloseButton: {
+    position: 'absolute',
+    right: 5,
+    top: 5,
+    zIndex: 1
   }
 });

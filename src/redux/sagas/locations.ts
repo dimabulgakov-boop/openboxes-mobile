@@ -16,7 +16,11 @@ import {
   GET_PRODUCT_SUMMARY_FROM_LOCATION,
   GET_PRODUCT_SUMMARY_FROM_LOCATION_SUCCESS,
   GET_INTERNAL_LOCATION_DETAIL_SUCCESS,
-  GET_INTERNAL_LOCATION_DETAIL_REQUEST, GET_INTERNAL_LOCATION_SEARCH_REQUEST, GET_INTERNAL_LOCATION_SEARCH_SUCCESS
+  GET_INTERNAL_LOCATION_DETAIL_REQUEST,
+  GET_INTERNAL_LOCATION_SEARCH_REQUEST,
+  GET_INTERNAL_LOCATION_SEARCH_SUCCESS,
+  GET_ALTERNATIVE_DESTINATIONS_SUCCESS,
+  GET_ALTERNATIVE_DESTINATIONS_REQUEST
 } from '../actions/locations';
 import * as Sentry from '@sentry/react-native';
 
@@ -130,11 +134,7 @@ function* searchInternalLocations(action: any) {
 function* getInternalLocationsDetails(action: any) {
   try {
     yield put(showScreenLoading('Loading...'));
-    const response = yield call(
-      api.internalLocationsDetails,
-      action.payload.id,
-      action.payload.location
-    );
+    const response = yield call(api.internalLocationsDetails, action.payload.id, action.payload.location);
     yield put({
       type: GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
       payload: response.data
@@ -168,6 +168,26 @@ function* getInternalLocationDetails(action: any) {
     });
   }
 }
+
+function* getAlternativeDestinations(action: any) {
+  try {
+    yield put(showScreenLoading('Please wait...'));
+    const response = yield call(api.getAlternativeDestinations, action.payload.facilityId, action.payload.taskId);
+    yield put({
+      type: GET_ALTERNATIVE_DESTINATIONS_SUCCESS,
+      payload: response.data
+    });
+    yield action.callback(response);
+    yield put(hideScreenLoading());
+  } catch (e) {
+    yield put(hideScreenLoading());
+    yield action.callback({
+      error: true,
+      errorMessage: e.message
+    });
+  }
+}
+
 function* getBinLocations() {
   try {
     yield put(showScreenLoading('Please wait..'));
@@ -186,10 +206,7 @@ function* getBinLocations() {
 function* fetchProductSummary(action: any) {
   try {
     yield put(showScreenLoading('Loading...'));
-    const response = yield call(
-      api.fetchProductSummary,
-      action.payload.location
-    );
+    const response = yield call(api.fetchProductSummary, action.payload.location);
     yield put({
       type: GET_PRODUCT_SUMMARY_FROM_LOCATION_SUCCESS,
       payload: response.data
@@ -214,8 +231,6 @@ export default function* watcher() {
   yield takeLatest(GET_BIN_LOCATIONS_REQUEST, getBinLocations);
   yield takeLatest(GET_PRODUCT_SUMMARY_FROM_LOCATION, fetchProductSummary);
   yield takeLatest(GET_INTERNAL_LOCATION_DETAIL, getInternalLocationsDetails);
-  yield takeLatest(
-    GET_INTERNAL_LOCATION_DETAIL_REQUEST,
-    getInternalLocationDetails
-  );
+  yield takeLatest(GET_INTERNAL_LOCATION_DETAIL_REQUEST, getInternalLocationDetails);
+  yield takeLatest(GET_ALTERNATIVE_DESTINATIONS_REQUEST, getAlternativeDestinations);
 }
