@@ -10,6 +10,7 @@ import { navigate } from '../../NavigationService';
 import { PutawayDetailsModel } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
+import { SkipButton } from './SkipButton';
 
 // NOTE: Currently, Product Scan and Location Scan are implemented as separate screens.
 // If their scanning flow and UI remain largely the same, we can consider merging them
@@ -104,6 +105,7 @@ export default function PutawayLocationScanScreen() {
         <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleSubmit}>
           Submit
         </Button>
+        <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} />
       </View>
     </ScrollView>
   );

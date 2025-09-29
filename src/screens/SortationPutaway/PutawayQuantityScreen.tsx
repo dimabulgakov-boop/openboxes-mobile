@@ -27,6 +27,7 @@ import PutawayDetails from './PutawayDetails';
 import styles from './styles';
 import Theme from '../../utils/Theme';
 import { debounce } from 'lodash';
+import { SkipButton } from './SkipButton';
 
 type PutawayQuantityRouteProp = RouteProp<
   {
@@ -70,7 +71,8 @@ export default function PutawayQuantityScreen() {
   const [scannedLocationInput, setScannedLocationInput] = useState('');
   const [suggestionIndex, setSuggestionIndex] = useState(0);
 
-  const performLocationSearch = useCallback((locationNumber: string) => {
+  const performLocationSearch = useCallback(
+    (locationNumber: string) => {
       const trimmedText = locationNumber.trim();
       if (!trimmedText) {
         setTempAlternativeLocation(null);
@@ -351,6 +353,7 @@ export default function PutawayQuantityScreen() {
           <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleConfirm}>
             Submit
           </Button>
+          <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} />
         </View>
       </ScrollView>
 
