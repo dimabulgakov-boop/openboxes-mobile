@@ -96,3 +96,9 @@ export type PutawayDetailsModel = {
   container: SortationLocation;
   destination: SortationLocation;
 };
+
+export type SortationPutawayScreenType = {
+  taskList: PutawayDetailsModel[];
+  currentTaskIndex: number;
+  isDirectPutaway: boolean;
+};

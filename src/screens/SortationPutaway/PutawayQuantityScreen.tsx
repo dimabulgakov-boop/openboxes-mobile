@@ -1,38 +1,37 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, TextInput, View } from 'react-native';
 import {
-  Button as PaperButton,
   Dialog,
   Divider,
+  IconButton,
+  Button as PaperButton,
+  TextInput as PaperTextInput,
   Paragraph,
   Portal,
   Subheading,
-  Switch,
-  TextInput as PaperTextInput,
-  IconButton
+  Switch
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { appConfig, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
 import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
-import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { getReasonCodesAction } from '../../redux/actions/others';
+import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
-import { PutawayDetailsModel } from '../../types/sortation';
-import PutawayDetails from './PutawayDetails';
-import styles from './styles';
+import { SortationPutawayScreenType } from '../../types/sortation';
 import Theme from '../../utils/Theme';
-import { debounce } from 'lodash';
+import PutawayDetails from './PutawayDetails';
 import { SkipButton } from './SkipButton';
+import styles from './styles';
 
 type PutawayQuantityRouteProp = RouteProp<
-  {
-    SortationPutawayQuantity: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean };
-  },
+  { SortationPutawayQuantity: SortationPutawayScreenType },
   'SortationPutawayQuantity'
 >;
 

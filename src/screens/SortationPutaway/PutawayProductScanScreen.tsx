@@ -7,10 +7,10 @@ import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { PutawayDetailsModel } from '../../types/sortation';
+import { SortationPutawayScreenType } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
-import styles from './styles';
 import { SkipButton } from './SkipButton';
+import styles from './styles';
 
 // NOTE: Currently, Product Scan and Location Scan are implemented as separate screens.
 // If their scanning flow and UI remain largely the same, we can consider merging them
@@ -18,11 +18,7 @@ import { SkipButton } from './SkipButton';
 
 type PutawayProductScanRouteProp = RouteProp<
   {
-    SortationPutawayProductScan: {
-      taskList: PutawayDetailsModel[];
-      currentTaskIndex: number;
-      isDirectPutaway: boolean;
-    };
+    SortationPutawayProductScan: SortationPutawayScreenType;
   },
   'SortationPutawayProductScan'
 >;
