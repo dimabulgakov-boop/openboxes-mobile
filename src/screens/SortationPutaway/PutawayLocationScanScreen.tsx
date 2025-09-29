@@ -7,8 +7,9 @@ import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { PutawayDetailsModel } from '../../types/sortation';
+import { SortationPutawayScreenType } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
+import { SkipButton } from './SkipButton';
 import styles from './styles';
 
 // NOTE: Currently, Product Scan and Location Scan are implemented as separate screens.
@@ -17,11 +18,7 @@ import styles from './styles';
 
 type PutawayLocationScanRouteProp = RouteProp<
   {
-    SortationPutawayLocationScan: {
-      taskList: PutawayDetailsModel[];
-      currentTaskIndex: number;
-      isDirectPutaway?: boolean;
-    };
+    SortationPutawayLocationScan: SortationPutawayScreenType;
   },
   'SortationPutawayLocationScan'
 >;
@@ -104,6 +101,7 @@ export default function PutawayLocationScanScreen() {
         <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleSubmit}>
           Submit
         </Button>
+        <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
       </View>
     </ScrollView>
   );
