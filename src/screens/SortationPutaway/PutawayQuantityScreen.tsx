@@ -1,45 +1,27 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import { debounce } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, TextInput, View } from 'react-native';
-import {
-  Dialog,
-  Divider,
-  IconButton,
-  Button as PaperButton,
-  TextInput as PaperTextInput,
-  Paragraph,
-  Portal,
-  Subheading,
-  Switch
-} from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-
+import { Divider, Paragraph, Portal, Subheading, Switch, TextInput as PaperTextInput } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { appConfig, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
-import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
-import { getReasonCodesAction } from '../../redux/actions/others';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
-import { RootState } from '../../redux/reducers';
-import { SortationPutawayScreenType } from '../../types/sortation';
-import Theme from '../../utils/Theme';
+import { getReasonCodesAction } from '../../redux/actions/others';
+import { PutawayDetailsModel, SortationLocation } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
-import { SkipButton } from './SkipButton';
 import styles from './styles';
+import Theme from '../../utils/Theme';
+import AlternativeLocationSelector from '../../components/AlternativeLocationSelector';
 
 type PutawayQuantityRouteProp = RouteProp<
-  { SortationPutawayQuantity: SortationPutawayScreenType },
+  {
+    SortationPutawayQuantity: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean };
+  },
   'SortationPutawayQuantity'
 >;
-
-type Location = {
-  id: string;
-  name: string;
-  locationNumber?: string;
-};
 
 type ReasonCode = {
   id: string;
@@ -54,11 +36,9 @@ export default function PutawayQuantityScreen() {
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
-  const currentLocation = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
 
   const [putawayQuantity, setPutawayQuantity] = useState<number | undefined>();
-  const [alternativeLocations, setAlternativeLocations] = useState<Location[]>([]);
-  const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<Location | null>(
+  const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<SortationLocation | null>(
     putawayDetails.destination
   );
   const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
@@ -66,46 +46,10 @@ export default function PutawayQuantityScreen() {
   const [isCancelRemainingEnabled, setIsCancelRemainingEnabled] = useState<boolean>(false);
 
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const [tempAlternativeLocation, setTempAlternativeLocation] = useState<Location | null>(null);
-  const [scannedLocationInput, setScannedLocationInput] = useState('');
-  const [suggestionIndex, setSuggestionIndex] = useState(0);
-
-  const performLocationSearch = useCallback(
-    (locationNumber: string) => {
-      const trimmedText = locationNumber.trim();
-      if (!trimmedText) {
-        setTempAlternativeLocation(null);
-        return;
-      }
-
-      dispatch(
-        searchLocationByLocationNumber(trimmedText, (data: any) => {
-          if (data && !data.error) {
-            const foundLocation: Location = {
-              id: data.id,
-              name: data.name,
-              locationNumber: data.locationNumber
-            };
-            setTempAlternativeLocation(foundLocation);
-          } else {
-            setTempAlternativeLocation(null);
-          }
-        })
-      );
-    },
-    [dispatch]
-  );
-
-  const debouncedLocationSearch = useMemo(
-    () => debounce(performLocationSearch, appConfig.DEFAULT_DEBOUNCE_TIME),
-    [performLocationSearch]
-  );
 
   useEffect(() => {
-    return () => {
-      debouncedLocationSearch.cancel();
-    };
-  }, [debouncedLocationSearch]);
+    setSelectedAlternativeDestination(putawayDetails.destination);
+  }, [putawayDetails]);
 
   useEffect(() => {
     dispatch(
@@ -118,24 +62,6 @@ export default function PutawayQuantityScreen() {
       })
     );
   }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(
-      getAlternativeDestinationsAction(putawayDetails.facility.id, putawayDetails.id, (data: any) => {
-        if (data?.error) {
-          Alert.alert('Error', 'Failed to load alternative locations.');
-          return;
-        }
-        const mappedLocations: Location[] = data.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          locationNumber: item.locationNumber
-        }));
-
-        setAlternativeLocations(mappedLocations);
-      })
-    );
-  }, [dispatch, currentLocation.id, putawayDetails.destination?.id, putawayDetails.facility.id, putawayDetails.id]);
 
   useEffect(() => {
     if (!isFocused) {
@@ -253,42 +179,9 @@ export default function PutawayQuantityScreen() {
     }
   }
 
-  function handleRequestAlternativeLocation() {
-    setTempAlternativeLocation(selectedAlternativeDestination);
-    setIsDialogVisible(true);
-  }
-
-  const hideDialog = () => {
-    setIsDialogVisible(false);
-    setScannedLocationInput('');
-  };
-
-  const handleSuggestLocation = () => {
-    if (alternativeLocations.length === 0) {
-      return;
-    }
-
-    const suggestedLocation = alternativeLocations[suggestionIndex];
-    setTempAlternativeLocation(suggestedLocation);
-    setScannedLocationInput('');
-
-    const nextIndex = (suggestionIndex + 1) % alternativeLocations.length;
-    setSuggestionIndex(nextIndex);
-  };
-
-  const handleScanLocation = (text: string) => {
-    setScannedLocationInput(text);
-    debouncedLocationSearch(text);
-  };
-
-  const handleConfirmAlternative = () => {
-    setSelectedAlternativeDestination(tempAlternativeLocation);
-    hideDialog();
-  };
-
   const updatedPutawayDetails = {
     ...putawayDetails,
-    destination: selectedAlternativeDestination
+    destination: selectedAlternativeDestination ?? putawayDetails.destination
   };
 
   return (
@@ -318,7 +211,7 @@ export default function PutawayQuantityScreen() {
                 style={styles.secondaryButton}
                 size="50%"
                 title="Request"
-                onPress={handleRequestAlternativeLocation}
+                onPress={() => setIsDialogVisible(true)}
               />
             </View>
 
@@ -352,43 +245,19 @@ export default function PutawayQuantityScreen() {
           <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleConfirm}>
             Submit
           </Button>
-          <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} />
         </View>
       </ScrollView>
 
-      <Portal>
-        <Dialog visible={isDialogVisible} dismissable={false} onDismiss={hideDialog}>
-          <IconButton icon="close" size={24} style={styles.dialogCloseButton} onPress={hideDialog} />
-          <Dialog.Title>Choose Alternative Location</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph style={styles.dialogCurrentLocationWrapper}>
-              <Paragraph style={styles.dialogCurrentLocationLabel}>Current Location: </Paragraph>
-              {putawayDetails.destination?.name || 'Unassgined'}
-            </Paragraph>
-
-            <PaperButton icon="shuffle-variant" mode="contained" onPress={handleSuggestLocation}>
-              Suggest new location
-            </PaperButton>
-
-            <PaperTextInput
-              label="Scan location number"
-              value={scannedLocationInput}
-              mode="outlined"
-              style={styles.dialogScanLocationInput}
-              autoCompleteType="off"
-              onChangeText={handleScanLocation}
-            />
-
-            <Subheading style={styles.dialogNewLocationHeader}>
-              New Location: {tempAlternativeLocation?.name || 'Unknown'}
-            </Subheading>
-          </Dialog.Content>
-          <Dialog.Actions style={styles.dialogActions}>
-            <PaperButton onPress={hideDialog}>Cancel</PaperButton>
-            <PaperButton onPress={handleConfirmAlternative}>OK</PaperButton>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <AlternativeLocationSelector
+        visible={isDialogVisible}
+        putawayDetails={putawayDetails}
+        initialLocation={selectedAlternativeDestination}
+        onDismiss={() => setIsDialogVisible(false)}
+        onConfirm={(location) => {
+          setSelectedAlternativeDestination(location);
+          setIsDialogVisible(false);
+        }}
+      />
     </Portal.Host>
   );
 }

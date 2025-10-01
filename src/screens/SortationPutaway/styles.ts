@@ -99,7 +99,7 @@ export default StyleSheet.create({
     alignSelf: 'flex-end'
   },
   bottomActionContainer: {
-    padding: Theme.spacing.large,
+    padding: Theme.spacing.small,
     borderTopColor: Theme.colors.disabled
   },
   cardAnnotation: {

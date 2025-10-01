@@ -48,8 +48,6 @@ export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) 
 
       <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
 
-      <Caption style={styles.caption}>{inventoryItem?.product?.description}</Caption>
-
       {detailsChips.map(({ icon, value, label }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
           <Text>
