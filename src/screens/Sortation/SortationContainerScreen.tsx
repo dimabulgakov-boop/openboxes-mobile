@@ -83,6 +83,7 @@ export default function SortationContainerScreen() {
 
     const payload = {
       action: 'load',
+      quantity: quantitySorted,
       container: putawayContainerBarcode,
       override: isOverrideEnabled
     };
