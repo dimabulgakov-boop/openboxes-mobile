@@ -105,7 +105,6 @@ export default function PutawayQuantityScreen() {
       }
     }
 
-    const isAlternativeLocationSelected = selectedAlternativeDestination?.id !== putawayDetails.destination?.id;
     if (putawayQuantity === putawayDetails.quantity || isCancelRemainingEnabled) {
       if (isCancelRemainingEnabled && !selectedReasonCode?.id) {
         Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
@@ -114,7 +113,6 @@ export default function PutawayQuantityScreen() {
       const payload = {
         action: 'complete',
         destination: selectedAlternativeDestination?.id,
-        force: isAlternativeLocationSelected,
         isCancelRemaining: isCancelRemainingEnabled,
         reasonCode: selectedReasonCode?.id ? selectedReasonCode.id : null
       };

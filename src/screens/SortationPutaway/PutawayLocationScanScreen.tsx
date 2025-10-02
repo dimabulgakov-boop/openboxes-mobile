@@ -83,7 +83,11 @@ export default function PutawayLocationScanScreen() {
       ...putawayDetails,
       destination: selectedAlternativeDestination ?? putawayDetails.destination
     };
-    navigate('SortationPutawayProductScan', { taskList, currentTaskIndex, isDirectPutaway });
+    navigate('SortationPutawayProductScan', {
+      taskList: updatedTaskList,
+      currentTaskIndex,
+      isDirectPutaway
+    });
   }
 
   const updatedPutawayDetails = {
