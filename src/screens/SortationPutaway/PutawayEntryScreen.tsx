@@ -51,7 +51,7 @@ export default function PutawayEntryScreen() {
               Alert.alert('No Valid Tasks Found', `No IN_PROGRESS tasks found for container ${containerId}`);
             }
           } else {
-            Alert.alert('Not found', `Container ${containerId} not found`);
+            Alert.alert('Error', `Error while fetching putaway tasks: ${response?.errorMessage}`);
           }
           setPutawayContainerId(EMPTY_STRING);
         })
