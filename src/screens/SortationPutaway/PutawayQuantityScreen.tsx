@@ -84,97 +84,110 @@ export default function PutawayQuantityScreen() {
   }
 
   function handleChange(text: string) {
-    // Strip non-numeric characters and convert to number
-    const digitsOnly = text.replace(/[^0-9]/g, '');
-    const num = digitsOnly.length > 0 ? parseInt(digitsOnly, 10) : undefined;
+    const digitsOnly = text.replace(/\D/g, '');
+    const num = digitsOnly ? Math.min(parseInt(digitsOnly, 10), putawayDetails.quantity) : undefined;
     setPutawayQuantity(num);
-  }
-
-  function handleConfirm() {
-    if (!isCancelRemainingEnabled) {
-      if (!putawayQuantity) {
-        Alert.alert('Invalid Putaway Quantity', 'Quantity is required.');
-        return;
-      }
-
-      if (putawayQuantity < 1 || putawayQuantity > putawayDetails.quantity) {
-        Alert.alert(
-          'Invalid Putaway Quantity',
-          `Please enter a valid putaway quantity between 1 and ${putawayDetails.quantity}.`
-        );
-        return;
-      }
-    }
-
-    if (putawayQuantity === putawayDetails.quantity || isCancelRemainingEnabled) {
-      if (isCancelRemainingEnabled && !selectedReasonCode?.id) {
-        Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
-        return;
-      }
-      const payload = {
-        action: 'complete',
-        destination: selectedAlternativeDestination?.id,
-        isCancelRemaining: isCancelRemainingEnabled,
-        reasonCode: selectedReasonCode?.id ? selectedReasonCode.id : null
-      };
-      dispatch(
-        patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
-          if (response && !response.error) {
-            Alert.alert('Putaway Successful', 'The putaway was successful.');
-            const nextTaskIndex = currentTaskIndex + 1;
-            if (nextTaskIndex < taskList.length) {
-              navigate('SortationPutawayLocationScan', {
-                taskList,
-                currentTaskIndex: nextTaskIndex,
-                isDirectPutaway
-              });
-            } else {
-              if (isDirectPutaway) {
-                navigate('Sortation');
-              } else {
-                navigate('SortationPutaway');
-              }
-            }
-          } else {
-            Alert.alert('Putaway Failed', response.errorMessage || 'Putaway Failed');
-          }
-        })
-      );
-    } else {
-      if (!selectedReasonCode?.id) {
-        Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
-        return;
-      }
-      const payload = {
-        action: 'partialComplete',
-        quantity: putawayQuantity,
-        destination: selectedAlternativeDestination?.id,
-        reasonCode: selectedReasonCode?.id ? selectedReasonCode.id : null
-      };
-      dispatch(
-        patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
-          if (response && !response.error && response.data) {
-            const remainingTask = response.data;
-            replace('SortationPutawayQuantity', {
-              taskList: [remainingTask],
-              currentTaskIndex: 0,
-              isDirectPutaway
-            });
-          } else {
-            Alert.alert('Partial Putaway Failed', response.errorMessage || 'Partial putaway operation failed');
-          }
-        })
-      );
-    }
   }
 
   function handleCancelRemainingToggle(isEnabled: boolean) {
     setIsCancelRemainingEnabled(isEnabled);
+  }
 
-    if (isEnabled) {
-      setPutawayQuantity(putawayDetails.quantity);
+  function handleConfirm() {
+    const totalQty = putawayDetails.quantity;
+
+    if (putawayQuantity === undefined || putawayQuantity < 0 || putawayQuantity > putawayDetails.quantity) {
+      Alert.alert(
+        'Invalid Putaway Quantity',
+        `Please enter a valid putaway quantity between 0 and ${putawayDetails.quantity}.`
+      );
+      return;
+    }
+
+    const hasDiscrepancy = putawayQuantity < totalQty || isCancelRemainingEnabled;
+
+    if (hasDiscrepancy && !selectedReasonCode?.id) {
+      Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
+      return;
+    }
+
+    // Full quantity putaway
+    if (putawayQuantity === totalQty) {
+      const payload = {
+        action: 'complete',
+        destination: selectedAlternativeDestination?.id,
+        reasonCode: selectedReasonCode?.id ?? null
+      };
+      return dispatchComplete(payload);
+    }
+
+    // Partial putaway (first step)
+    const partialPayload = {
+      action: 'partialComplete',
+      quantity: putawayQuantity,
+      destination: selectedAlternativeDestination?.id,
+      reasonCode: selectedReasonCode?.id ?? null
+    };
+
+    dispatch(
+      patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, partialPayload, (response: any) => {
+        if (!response || response.error || !response.data) {
+          Alert.alert('Partial Putaway Failed', response?.errorMessage || 'Partial putaway failed.');
+          return;
+        }
+
+        const remainingTask = response.data;
+
+        // Cancel Remaining True
+        if (isCancelRemainingEnabled) {
+          const cancelPayload = {
+            action: 'complete',
+            destination: remainingTask.destination?.id,
+            isCancelRemaining: true,
+            reasonCode: selectedReasonCode?.id ?? null
+          };
+
+          dispatch(
+            patchPutawayTaskAction(
+              remainingTask.facility.id,
+              remainingTask.id,
+              cancelPayload,
+              handleResponseAfterComplete
+            )
+          );
+        } else {
+          // Cancel Remaining False - Navigate to Quantity Screen with new task
+          replace('SortationPutawayQuantity', {
+            taskList: [remainingTask],
+            currentTaskIndex: 0,
+            isDirectPutaway
+          });
+        }
+      })
+    );
+  }
+
+  function dispatchComplete(payload: any) {
+    dispatch(
+      patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, handleResponseAfterComplete)
+    );
+  }
+
+  function handleResponseAfterComplete(response: any) {
+    if (response && !response.error) {
+      Alert.alert('Putaway Successful', 'The putaway was successful.');
+      const nextIndex = currentTaskIndex + 1;
+      if (nextIndex < taskList.length) {
+        navigate('SortationPutawayLocationScan', {
+          taskList,
+          currentTaskIndex: nextIndex,
+          isDirectPutaway
+        });
+      } else {
+        navigate(isDirectPutaway ? 'Sortation' : 'SortationPutaway');
+      }
     } else {
-      setPutawayQuantity(undefined);
+      Alert.alert('Putaway Failed', response?.errorMessage || 'Putaway failed.');
     }
   }
 
@@ -182,6 +195,8 @@ export default function PutawayQuantityScreen() {
     ...putawayDetails,
     destination: selectedAlternativeDestination ?? putawayDetails.destination
   };
+
+  const remainingQty = Math.max(putawayDetails.quantity - (putawayQuantity ?? 0), 0);
 
   return (
     <Portal.Host>
@@ -219,6 +234,7 @@ export default function PutawayQuantityScreen() {
                   initialData={reasonCodes}
                   searchAction={() => {}}
                   serverSearchEnabled={false}
+                  disabled={!isCancelRemainingEnabled && putawayQuantity === putawayDetails.quantity}
                   onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
                 />
               </View>
@@ -226,7 +242,7 @@ export default function PutawayQuantityScreen() {
           </View>
 
           <View style={styles.cardAnnotation}>
-            <Paragraph style={[styles.subheading]}>Cancel Remaining</Paragraph>
+            <Paragraph style={styles.subheading}>Cancel Remaining ({remainingQty})</Paragraph>
             <Switch
               value={isCancelRemainingEnabled}
               color={Theme.colors.primary}
