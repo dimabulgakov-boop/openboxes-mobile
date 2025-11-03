@@ -117,7 +117,8 @@ export default function PutawayQuantityScreen() {
         action: 'complete',
         destination: selectedAlternativeDestination?.id,
         isCancelRemaining: false,
-        reasonCode: selectedReasonCode?.id ?? null
+        reasonCode: selectedReasonCode?.id ?? null,
+        isDirectPutaway
       };
       return dispatchComplete(payload);
     }
@@ -127,7 +128,8 @@ export default function PutawayQuantityScreen() {
       action: 'partialComplete',
       quantity: putawayQuantity,
       destination: selectedAlternativeDestination?.id,
-      reasonCode: selectedReasonCode?.id ?? null
+      reasonCode: selectedReasonCode?.id ?? null,
+      isDirectPutaway
     };
 
     dispatch(
@@ -145,7 +147,8 @@ export default function PutawayQuantityScreen() {
             action: 'complete',
             destination: remainingTask.destination?.id,
             isCancelRemaining: true,
-            reasonCode: selectedReasonCode?.id ?? null
+            reasonCode: selectedReasonCode?.id ?? null,
+            isDirectPutaway
           };
 
           dispatch(
