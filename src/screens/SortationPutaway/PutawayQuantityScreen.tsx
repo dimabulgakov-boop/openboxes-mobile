@@ -116,6 +116,7 @@ export default function PutawayQuantityScreen() {
       const payload = {
         action: 'complete',
         destination: selectedAlternativeDestination?.id,
+        isCancelRemaining: false,
         reasonCode: selectedReasonCode?.id ?? null
       };
       return dispatchComplete(payload);
