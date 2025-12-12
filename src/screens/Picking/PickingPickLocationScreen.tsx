@@ -38,6 +38,7 @@ export default function PickingPickLocationScreen() {
         'Invalid Barcode',
         `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`
       );
+      setPickLocationBarcode('');
       return;
     }
 
@@ -68,7 +69,11 @@ export default function PickingPickLocationScreen() {
 
         <ProductDetails.List
           items={[
-            { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityRequired },
+            {
+              icon: 'package',
+              label: 'Quantity Picked',
+              value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
+            },
             { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
           ]}
         />
