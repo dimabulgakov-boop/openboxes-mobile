@@ -3,11 +3,12 @@ import { Alert, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ScannerInput } from '../../components/ScannerInput';
-import { EMPTY_STRING } from '../../constants';
+import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
+import { parseFromISODateToLocaleString } from '../../utils/utils';
 
 export default function PickingPickStagingLocationScreen() {
   const { tasks, dropCurrentTask, resetSession, setCurrentTaskIndex } = usePickingContext();
@@ -95,9 +96,25 @@ export default function PickingPickStagingLocationScreen() {
 
         <ProductDetails.Separator />
         <ProductDetails.Title />
+        <ProductDetails.Caption
+          title={currentTask.inventoryItem.lotNumber}
+          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
+        />
 
         <ProductDetails.List
           items={[
+            {
+              icon: 'identifier',
+              label: 'Order Number',
+              value: currentTask.requisitionNumber || HYPHEN
+            },
+            {
+              icon: 'account',
+              label: 'Assignee',
+              value: currentTask?.assignee
+                ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
+                : HYPHEN
+            },
             {
               icon: 'pin',
               label: 'Outbound Container',

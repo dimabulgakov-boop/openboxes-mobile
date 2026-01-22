@@ -5,6 +5,7 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
+import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
@@ -54,9 +55,18 @@ export default function PickingPickLocationScreen() {
 
         <ProductDetails.Separator />
         <ProductDetails.Title />
+        <ProductDetails.Caption
+          title={currentTask.inventoryItem.lotNumber}
+          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
+        />
 
         <ProductDetails.List
           items={[
+            {
+              icon: 'identifier',
+              label: 'Order Number',
+              value: currentTask.requisitionNumber || HYPHEN
+            },
             {
               icon: 'package',
               label: 'Quantity Picked',
