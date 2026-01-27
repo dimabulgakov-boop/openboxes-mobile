@@ -11,7 +11,7 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickLocationScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, startPickTask } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, startPickTask, revalidateCurrentTask } = usePickingContext();
   const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>(EMPTY_STRING);
 
   if (!currentTask) {
@@ -35,9 +35,11 @@ export default function PickingPickLocationScreen() {
         return;
       }
 
-      setPickLocationBarcode(EMPTY_STRING);
+      revalidateCurrentTask(() => {
+        setPickLocationBarcode(EMPTY_STRING);
 
-      navigate('PickingPickProduct');
+        navigate('PickingPickProduct');
+      });
     });
   }
 
