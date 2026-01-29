@@ -2,12 +2,12 @@ import * as React from 'react';
 import { Alert, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
+import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { isProductBarcodeValid, parseFromISODateToLocaleString } from '../../utils/utils';
 import { usePickingContext } from './PickingContext';
-import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickProductScreen() {

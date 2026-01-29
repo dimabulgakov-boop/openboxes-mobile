@@ -145,6 +145,13 @@ const dashboardEntries: DashboardEntry[] = [
         entryDescription: 'Enter a List ID to select the Cycle Count',
         icon: IconInventory,
         navigationScreenName: 'CycleCountListEntry'
+      },
+      {
+        key: 'replenishment',
+        screenName: 'Replenishment',
+        entryDescription: 'Manage inventory replenishment tasks',
+        icon: IconProducts,
+        navigationScreenName: 'ReplenishmentPickingLocation'
       }
     ]
   },
