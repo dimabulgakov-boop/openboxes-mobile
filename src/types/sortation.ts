@@ -1,5 +1,4 @@
 import LocationType from '../data/location/LocationType';
-import InventoryItem from '../data/picklist/InventoryItem';
 import Person from '../data/picklist/Person';
 
 export type SortationProduct = {
@@ -20,6 +19,7 @@ export type SortationProduct = {
   productCode: string;
   unitOfMeasure: string;
   updatedBy: string;
+  upc?: string;
 };
 
 export type SortationFacility = {
@@ -82,23 +82,4 @@ export type DetailChip = {
   label: string;
   value: string | null | number | undefined;
   isActive?: boolean;
-};
-
-export type PutawayDetailsModel = {
-  id: string;
-  type: string;
-  status: string;
-  identifier: string;
-  inventoryItem: InventoryItem;
-  facility: SortationFacility;
-  location: SortationLocation;
-  quantity: number;
-  container: SortationLocation;
-  destination: SortationLocation;
-};
-
-export type SortationPutawayScreenType = {
-  taskList: PutawayDetailsModel[];
-  currentTaskIndex: number;
-  isDirectPutaway?: boolean;
 };

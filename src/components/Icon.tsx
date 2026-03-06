@@ -12,7 +12,10 @@ export enum Name {
   Cross,
   Search,
   Category,
-  Check
+  Check,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp
 }
 
 export interface Props {
@@ -47,6 +50,16 @@ export default function Icon(props: Props) {
     case Name.Check:
       content = <Entypo name="check" style={props.style} size={props.size} color={props.color} />;
       break;
+    case Name.ChevronRight:
+      content = <Entypo name="chevron-right" style={props.style} size={props.size} color={props.color} />;
+      break;
+    case Name.ChevronDown:
+      content = <Entypo name="chevron-down" style={props.style} size={props.size} color={props.color} />;
+      break;
+    case Name.ChevronUp:
+      content = <Entypo name="chevron-up" style={props.style} size={props.size} color={props.color} />;
+      break;
   }
-  return <TouchableOpacity onPress={props.onPress}>{content}</TouchableOpacity>;
+
+  return props.onPress ? <TouchableOpacity onPress={props.onPress}>{content}</TouchableOpacity> : content;
 }

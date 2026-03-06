@@ -158,5 +158,138 @@ export default StyleSheet.create({
   },
   dialogActionButton: {
     marginLeft: Theme.spacing.small
+  },
+  modeCardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: Theme.spacing.large,
+    marginTop: Theme.spacing.large,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2
+  },
+  modeCardLeft: {
+    marginRight: Theme.spacing.large
+  },
+  modeCardAvatar: {
+    backgroundColor: '#EEF2F7'
+  },
+  modeCardContent: {
+    flex: 1
+  },
+  modeCardRight: {
+    marginLeft: Theme.spacing.small
+  },
+  modeCardTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: Theme.colors.primary
+  },
+  modeCardDescription: {
+    fontSize: 14,
+    color: Theme.colors.text,
+    marginTop: 4
+  },
+  taskRow: {
+    backgroundColor: '#FFFFFF',
+    padding: Theme.spacing.large,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0'
+  },
+  taskRowContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  taskRowProduct: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Theme.colors.primary,
+    flex: 2
+  },
+  taskRowLocation: {
+    fontSize: 14,
+    color: Theme.colors.text,
+    flex: 1,
+    textAlign: 'center'
+  },
+  taskRowQuantity: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Theme.colors.text,
+    flex: 0.5,
+    textAlign: 'right'
+  },
+  zoneSection: {
+    marginTop: Theme.spacing.large
+  },
+  zoneHeader: {
+    backgroundColor: '#E8EDF2',
+    paddingVertical: Theme.spacing.medium,
+    paddingHorizontal: Theme.spacing.large,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#D0D0D0'
+  },
+  zoneHeaderText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Theme.colors.text
+  },
+  clearButton: {
+    marginTop: Theme.spacing.medium
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: Theme.colors.primary,
+    paddingVertical: Theme.spacing.large,
+    paddingHorizontal: Theme.spacing.large,
+    alignItems: 'center'
+  },
+  tableHeaderText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FFFFFF'
+  },
+  tableHeaderProduct: {
+    flex: 1
+  },
+  tableHeaderLocation: {
+    flex: 1,
+    textAlign: 'center'
+  },
+  tableHeaderQty: {
+    flex: 1,
+    textAlign: 'right'
+  },
+  zoneHeaderContent: {
+    flexDirection: 'column'
+  },
+  zoneHeaderLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#666666',
+    marginBottom: 2
+  },
+  zoneHeaderIcon: {
+    color: '#666666'
+  },
+  emptyTableContent: {
+    paddingVertical: Theme.spacing.large * 2,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  emptyText: {
+    fontSize: 14,
+    color: Theme.colors.text,
+    textAlign: 'center'
   }
 });

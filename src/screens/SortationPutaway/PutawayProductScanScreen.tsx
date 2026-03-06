@@ -2,13 +2,15 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Subheading } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { SortationPutawayScreenType } from '../../types/sortation';
+import { RootState } from '../../redux/reducers';
+import { SortationTask } from '../../types/sortation';
 import { isProductBarcodeValid } from '../../utils/utils';
 import PutawayDetails from './PutawayDetails';
 import { SkipButton } from './SkipButton';
@@ -16,15 +18,21 @@ import styles from './styles';
 
 type PutawayProductScanRouteProp = RouteProp<
   {
-    SortationPutawayProductScan: SortationPutawayScreenType;
+    SortationPutawayProductScan: {
+      currentTaskIndex: number;
+      isDirectPutaway?: boolean;
+      isUserDirected?: boolean;
+      containerId?: string;
+    };
   },
   'SortationPutawayProductScan'
 >;
 
 export default function PutawayProductScanScreen() {
   const { params } = useRoute<PutawayProductScanRouteProp>();
-  const { taskList, currentTaskIndex, isDirectPutaway } = params;
-  const putawayDetails = taskList[currentTaskIndex];
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
+  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
+  const putawayDetails = putawayTasks?.[currentTaskIndex];
   const [putawayProductBarcode, setPutawayProductBarcode] = useState<string>(EMPTY_STRING);
 
   if (!putawayDetails) {
@@ -46,16 +54,16 @@ export default function PutawayProductScanScreen() {
       Alert.alert(
         'Wrong Product',
         `The scanned barcode does not match the expected putaway product (${product?.productCode}).`,
-        // Clear input on error to allow retry
         [{ text: 'OK', onPress: () => setPutawayProductBarcode(EMPTY_STRING) }]
       );
       return;
     }
 
     navigate('SortationPutawayQuantity', {
-      taskList,
       currentTaskIndex,
-      isDirectPutaway
+      isDirectPutaway,
+      isUserDirected,
+      containerId
     });
   }
 
@@ -65,7 +73,12 @@ export default function PutawayProductScanScreen() {
       style={styles.contentWrapper}
       contentContainerStyle={styles.contentContainer}
     >
-      <PutawayDetails putawayDetails={putawayDetails} />
+      <PutawayDetails
+        putawayDetails={putawayDetails}
+        taskIndex={currentTaskIndex}
+        totalTasks={putawayTasks.length}
+        showTaskCounter={!isUserDirected}
+      />
 
       <Divider />
 
@@ -82,15 +95,20 @@ export default function PutawayProductScanScreen() {
 
         <Button
           style={styles.topSpace}
-          title="Confirm"
+          title="Submit"
           mode="contained"
           size="100%"
           onPress={() => handleProcessing(putawayProductBarcode)}
-        >
-          Submit
-        </Button>
+        />
 
-        <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
+        {!isUserDirected && (
+          <SkipButton
+            taskList={putawayTasks}
+            currentTaskIndex={currentTaskIndex}
+            isDirectPutaway={isDirectPutaway}
+            containerId={containerId}
+          />
+        )}
       </View>
     </ScrollView>
   );

@@ -2,13 +2,15 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { SortationLocation, SortationPutawayScreenType } from '../../types/sortation';
+import { RootState } from '../../redux/reducers';
+import { SortationLocation, SortationTask } from '../../types/sortation';
 import AlternativeLocationSelector from './AlternativeLocationSelector';
 import PutawayDetails from './PutawayDetails';
 import { SkipButton } from './SkipButton';
@@ -16,15 +18,21 @@ import styles from './styles';
 
 type PutawayLocationScanRouteProp = RouteProp<
   {
-    SortationPutawayLocationScan: SortationPutawayScreenType;
+    SortationPutawayLocationScan: {
+      currentTaskIndex: number;
+      isDirectPutaway?: boolean;
+      isUserDirected?: boolean;
+      containerId?: string;
+    };
   },
   'SortationPutawayLocationScan'
 >;
 
 export default function PutawayLocationScanScreen() {
   const { params } = useRoute<PutawayLocationScanRouteProp>();
-  const { taskList, currentTaskIndex, isDirectPutaway } = params;
-  const putawayDetails = taskList[currentTaskIndex];
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
+  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
+  const putawayDetails = putawayTasks?.[currentTaskIndex];
 
   const [putawayLocationBarcode, setPutawayLocationBarcode] = useState<string>(EMPTY_STRING);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
@@ -38,7 +46,7 @@ export default function PutawayLocationScanScreen() {
 
   useEffect(() => {
     setPutawayLocationBarcode(EMPTY_STRING);
-  }, []);
+  }, [currentTaskIndex]);
 
   if (!putawayDetails) {
     return (
@@ -51,9 +59,6 @@ export default function PutawayLocationScanScreen() {
     );
   }
 
-  /**
-   * Unifies validation for scanner input and button press
-   */
   function handleProcessing(code: string) {
     const expectedLocation = selectedAlternativeDestination?.locationNumber;
 
@@ -66,17 +71,11 @@ export default function PutawayLocationScanScreen() {
       return;
     }
 
-    // Prepare updated task
-    const updatedTaskList = [...taskList];
-    updatedTaskList[currentTaskIndex] = {
-      ...putawayDetails,
-      destination: selectedAlternativeDestination ?? putawayDetails.destination
-    };
-
     navigate('SortationPutawayProductScan', {
-      taskList: updatedTaskList,
       currentTaskIndex,
-      isDirectPutaway
+      isDirectPutaway,
+      isUserDirected,
+      containerId
     });
   }
 
@@ -92,7 +91,12 @@ export default function PutawayLocationScanScreen() {
         style={styles.contentWrapper}
         contentContainerStyle={styles.contentContainer}
       >
-        <PutawayDetails putawayDetails={updatedPutawayDetails} />
+        <PutawayDetails
+          putawayDetails={updatedPutawayDetails}
+          taskIndex={currentTaskIndex}
+          totalTasks={putawayTasks?.length || 0}
+          showTaskCounter={!isUserDirected}
+        />
 
         <Divider />
 
@@ -126,7 +130,22 @@ export default function PutawayLocationScanScreen() {
             Submit
           </Button>
 
-          <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
+          {isUserDirected ? (
+            <Button
+              style={styles.topSpace}
+              title="Back To List"
+              mode="text"
+              size="100%"
+              onPress={() => navigate('SortationPutawayTaskList', { containerId })}
+            />
+          ) : (
+            <SkipButton
+              taskList={putawayTasks}
+              currentTaskIndex={currentTaskIndex}
+              isDirectPutaway={isDirectPutaway}
+              containerId={containerId}
+            />
+          )}
         </View>
       </ScrollView>
 
