@@ -34,6 +34,10 @@ export default StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center'
   },
+  chipActive: {
+    borderWidth: 2,
+    borderColor: Theme.colors.primary
+  },
   chipWarning: {
     height: 28,
     justifyContent: 'flex-start',
@@ -58,12 +62,17 @@ export default StyleSheet.create({
   title: {
     fontSize: 18,
     color: Theme.colors.text,
-    fontWeight: 'bold'
+    fontWeight: '600'
   },
   subheading: {
     fontSize: 16,
     color: Theme.colors.text,
     fontWeight: 'bold'
+  },
+  paragraphMuted: {
+    fontSize: 14,
+    color: Theme.colors.disabled,
+    fontWeight: 'normal'
   },
   caption: { fontSize: 12 },
   bold: { fontWeight: 'bold' },
@@ -74,6 +83,7 @@ export default StyleSheet.create({
   },
   topSpace: { marginTop: Theme.spacing.small },
   bottomSpace: { marginBottom: Theme.spacing.small },
+  rightSpace: { marginRight: Theme.spacing.small },
   cardAnnotation: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -103,5 +113,57 @@ export default StyleSheet.create({
   },
   cardContainer: {
     paddingVertical: Theme.spacing.large
+  },
+  dialogOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Theme.spacing.large
+  },
+  dialogContent: {
+    backgroundColor: 'white',
+    borderRadius: Theme.roundness * 2,
+    padding: Theme.spacing.large,
+    width: '100%',
+    maxWidth: 400
+  },
+  dialogTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: Theme.spacing.medium
+  },
+  dialogText: {
+    fontSize: 16,
+    color: Theme.colors.text,
+    marginBottom: Theme.spacing.medium
+  },
+  dialogActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
+  },
+  dialogButton: {
+    flex: 1
+  },
+  successBanner: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  successText: {
+    fontSize: 14,
+    marginBottom: Theme.spacing.medium,
+    textAlign: 'center'
+  },
+  successHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: Theme.spacing.medium
+  },
+  link: {
+    fontSize: 14,
+    color: Theme.colors.primary,
+    textDecorationLine: 'underline'
   }
 });

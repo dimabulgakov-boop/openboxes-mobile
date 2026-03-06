@@ -1,20 +1,14 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import {
-  AppState,
-  InteractionManager,
-  Keyboard,
-  TextInput as NativeTextInput,
-  StyleProp,
-  ViewStyle
-} from 'react-native';
+import { AppState, Keyboard, TextInput as NativeTextInput, StyleProp, ViewStyle } from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-import IconKeyboard from '../assets/images/icon_keyboard.svg';
-import IconScanAction from '../assets/images/icon_scan_action.svg';
+import { isString } from 'lodash';
 import { appConfig } from '../constants';
 import { RootState } from '../redux/reducers';
+import Theme from '../utils/Theme';
+import { KeyboardIcon, ScanIcon } from './Icons';
 
 type ScannerInputProps = {
   value: string;
@@ -32,6 +26,23 @@ type ScannerInputProps = {
    * Set to 0 or null to disable auto-submit.
    */
   autoSubmitTimeout?: number;
+  /**
+   * Custom left icon component. Defaults to scan icon.
+   */
+  leftIcon?: React.ReactNode;
+  /**
+   * If true, shows the keyboard on mount instead of hiding it.
+   */
+  showKeyboardOnMount?: boolean;
+  /**
+   * Keyboard type (e.g., 'number-pad', 'default')
+   */
+  keyboardType?: 'default' | 'number-pad' | 'email-address';
+  placeholder?: string;
+  /**
+   * If true, shows error styling (red border) - uses PaperTextInput error color (#B00020)
+   */
+  danger?: boolean;
 };
 
 /**
@@ -51,49 +62,56 @@ type ScannerInputProps = {
  * />
  */
 export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
-  ({ value, onChange, onSubmit, label = 'Scan Barcode', style, isEnabled = true, autoSubmitTimeout }, ref) => {
+  (
+    {
+      value,
+      onChange,
+      onSubmit,
+      label,
+      style,
+      isEnabled = true,
+      autoSubmitTimeout,
+      leftIcon,
+      showKeyboardOnMount,
+      keyboardType,
+      placeholder,
+      danger = false
+    },
+    ref
+  ) => {
     const storedDebounceTime = useSelector((state: RootState) => state.settingsReducer.barcodeScanDebounceTime);
     const defaultTimeout = storedDebounceTime ?? appConfig.DEFAULT_DEBOUNCE_TIME;
     const timeout = autoSubmitTimeout !== undefined ? autoSubmitTimeout : defaultTimeout;
     const internalInputRef = useRef<NativeTextInput | null>(null);
     const isScreenFocused = useIsFocused();
-    const [showKeyboard, setShowKeyboard] = useState(false);
+    const [showKeyboard, setShowKeyboard] = useState(showKeyboardOnMount ?? false);
+    const formattedLabel = label && isString(label) ? label.toUpperCase() : 'SCAN BARCODE';
 
-    // Track the latest submitted value to prevent double submissions (one from debounce, one from Enter key)
+    // Track the latest submitted value to prevent double submissions
     const lastSubmittedValue = useRef<string>('');
-
-    // We only want to be aggressive about focus if the screen is visible
-    // AND the parent component hasn't explicitly disabled us.
     const shouldBeFocused = isScreenFocused && isEnabled;
 
     useImperativeHandle(ref, () => internalInputRef.current!);
 
+    // Simple focus - just focus without all the complex logic
     const requestFocus = useCallback(() => {
       if (!shouldBeFocused) {
         return;
       }
-
-      InteractionManager.runAfterInteractions(() => {
-        const input = internalInputRef.current;
-        // Check if already focused to avoid UI flicker
-        if (input && !input.isFocused()) {
-          input.focus();
-        }
-      });
+      const input = internalInputRef.current;
+      if (input && !input.isFocused()) {
+        input.focus();
+      }
     }, [shouldBeFocused]);
 
-    // Initial Load & Reacting to Navigation/Prop changes
+    // Focus once on mount
     useEffect(() => {
       if (shouldBeFocused) {
         requestFocus();
-      } else {
-        internalInputRef.current?.blur();
-        // Reset keyboard state when screen loses focus
-        setShowKeyboard(false);
       }
     }, [requestFocus, shouldBeFocused]);
 
-    // App State (Background/Foreground)
+    // Handle app state changes
     useEffect(() => {
       const subscription = AppState.addEventListener('change', (nextAppState) => {
         if (nextAppState === 'active' && shouldBeFocused) {
@@ -194,7 +212,7 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
       <PaperTextInput
         ref={internalInputRef}
         mode="outlined"
-        label={label}
+        label={formattedLabel}
         value={value}
         style={style}
         // Keep keyboard hidden
@@ -202,13 +220,24 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         autoCorrect={false}
         autoCompleteType="off"
         importantForAutofill="no"
+        placeholder={placeholder}
+        placeholderTextColor={danger ? Theme.colors.danger : Theme.colors.disabled}
         blurOnSubmit={false}
         returnKeyType="done"
-        // @ts-ignore
-        left={<PaperTextInput.Icon name={() => <IconScanAction height={24} width={24} />} />}
+        keyboardType={keyboardType || 'default'}
+        error={danger}
+        left={
+          // @ts-ignore
+          <PaperTextInput.Icon
+            name={() => leftIcon || <ScanIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
+          />
+        }
         right={
           // @ts-ignore
-          <PaperTextInput.Icon name={() => <IconKeyboard height={24} width={24} />} onPress={handleKeyboardPress} />
+          <PaperTextInput.Icon
+            name={() => <KeyboardIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
+            onPress={handleKeyboardPress}
+          />
         }
         onBlur={handleBlur}
         onFocus={() => {}}
