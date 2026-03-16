@@ -9,8 +9,10 @@ trigger_map:
 - push_branch: develop
   workflow: android-only
 - pull_request_target_branch: develop
+  enabled: false
   workflow: android-only
 - pull_request_source_branch: "*"
+  enabled: false
   workflow: android-only
 
 _dependency_versions:
@@ -73,6 +75,11 @@ step_bundles:
       - set-java-version@1:
           inputs:
           - set_java_version: *java_version
+      - change-android-versioncode-and-versionname@1:
+          inputs:
+            - new_version_code: $BITRISE_BUILD_NUMBER
+            - new_version_name: '"1.0.0"'
+            - build_gradle_path: $APP_GRADLE_BUILD_FILE_PATH
   setup-steps-ios:
     description: |-
       Install iOS-specific dependencies.
@@ -122,7 +129,7 @@ step_bundles:
       - deploy-to-bitrise-io@2:
           inputs:
           - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
-          - notify_email_list: "$TESTERS"
+          - notify_email_list: "$UAT_TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
       - appetize-deploy@0:
@@ -159,7 +166,7 @@ step_bundles:
       - deploy-to-bitrise-io@2:
           inputs:
           - deploy_path: "$BITRISE_APP_DIR_PATH"
-          - notify_email_list: "$TESTERS"
+          - notify_email_list: "$UAT_TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
 workflows:
@@ -201,7 +208,12 @@ app:
     BITRISE_SCHEME: openboxes_mobile_o
   - opts:
       is_expand: false
+    # Top-level build file
     GRADLE_BUILD_FILE_PATH: android/build.gradle
+  - opts:
+      is_expand: false
+    # Module-level build file
+    APP_GRADLE_BUILD_FILE_PATH: android/app/build.gradle
   - opts:
       is_expand: false
     #
