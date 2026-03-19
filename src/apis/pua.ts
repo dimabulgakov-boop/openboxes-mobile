@@ -2,7 +2,7 @@ import apiClient from '../utils/ApiClient';
 
 export function getOutboundOrders() {
   let url =
-    '/stockMovements?exclude=lineItems&direction=OUTBOUND&requisitionStatusCode=VERIFYING' +
+    '/stockMovements?exclude=lineItems&direction=OUTBOUND&requisitionStatusCode=VERIFYING&requisitionStatusCode=CREATED' +
     '&sort=dateCreated&order=asc&deliveryTypeCode=PICK_UP';
   if (global.location) {
     url += '&origin=' + global.location.id;
