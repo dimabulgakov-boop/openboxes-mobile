@@ -120,6 +120,7 @@ step_bundles:
           - gradle_task: assembleRelease
           title: Gradle Runner - assembleRelease
       - save-gradle-cache@1: {}
+      - sign-apk@2: {}
       - script@1:
           inputs:
           - content: |-
