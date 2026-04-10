@@ -120,7 +120,12 @@ step_bundles:
           - gradle_task: assembleRelease
           title: Gradle Runner - assembleRelease
       - save-gradle-cache@1: {}
-      - sign-apk@2: {}
+      - sign-apk@2:
+          inputs:
+            - keystore_url: $BITRISEIO_ANDROID_KEYSTORE_1_URL
+            - keystore_password: $BITRISEIO_ANDROID_KEYSTORE_1_PASSWORD
+            - keystore_alias: $BITRISEIO_ANDROID_KEYSTORE_1_ALIAS
+            - private_key_password: $BITRISEIO_ANDROID_KEYSTORE_1_PRIVATE_KEY_PASSWORD
       - script@1:
           inputs:
           - content: |-
