@@ -22,6 +22,8 @@ interface OwnProps {
    * Defaults to the `searchDebounceTime` from settings, or DEFAULT_SEARCH_DEBOUNCE_TIME.
    */
   debounceTime?: number;
+  loading?: boolean;
+  accessibilityLabel?: string;
 }
 
 const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
@@ -47,12 +49,6 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
   }, [debouncedSubmit]);
 
   useEffect(() => {
-    if (props.autoSearch) {
-      debouncedSubmit(searchTerm);
-    }
-  }, [searchTerm, props.autoSearch, debouncedSubmit]);
-
-  useEffect(() => {
     return navigation.addListener('focus', () => {
       setSearchTerm('');
       if (props.resetSearch) {
@@ -62,7 +58,14 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation, props.resetSearch]);
 
-  const onSearchTermSubmit = () => {
+  const onChangeText = (text: string) => {
+    setSearchTerm(text);
+    if (props.autoSearch) {
+      debouncedSubmit(text);
+    }
+  };
+
+  const onSubmitEditing = () => {
     debouncedSubmit.cancel();
     props.onSearchTermSubmit(searchTerm);
   };
@@ -76,8 +79,11 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
         value={searchTerm}
         style={styles.searchBar}
         autoFocus={props.autoFocus}
-        onSubmitEditing={onSearchTermSubmit}
-        onChangeText={setSearchTerm}
+        loading={props.loading}
+        returnKeyType="search"
+        accessibilityLabel={props.accessibilityLabel ?? 'Search'}
+        onSubmitEditing={onSubmitEditing}
+        onChangeText={onChangeText}
       />
     </View>
   );

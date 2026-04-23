@@ -6,12 +6,13 @@ import { connect } from 'react-redux';
 
 import GarageIcon from '../../assets/images/icon_garage.svg';
 import EmptyView from '../../components/EmptyView';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
 import Location from '../../data/location/Location';
 import { getLocationsAction, setCurrentLocationAction } from '../../redux/actions/locations';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
+import LocationCardSkeleton from './LocationCardSkeleton';
 import styles from './styles';
 
 const NO_ORGANIZATION_NAME = 'No organization';
@@ -24,28 +25,33 @@ export interface OwnProps {
 }
 
 interface DispatchProps {
-  getLocationsAction: (callback: (locations: any) => void) => void;
-  setCurrentLocationAction: (location: Location, callback: (data: any) => void) => void;
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
+  getLocationsAction: (callback: (locations: any) => void, suppressLoading?: boolean) => void;
+  setCurrentLocationAction: (
+    location: Location,
+    callback: (data: any) => void,
+    suppressLoading?: boolean
+  ) => void;
 }
 
 type Props = OwnProps & DispatchProps;
 
 interface State {
   availableLocations: Location[];
+  loading: boolean;
 }
 
 class ChooseCurrentLocation extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      availableLocations: []
+      availableLocations: [],
+      loading: true
     };
   }
 
   componentDidMount = () => {
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Failed to load locations' : 'Error',
@@ -53,19 +59,18 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.getLocationsAction(actionCallback);
+              this.setState({ loading: true });
+              this.props.getLocationsAction(actionCallback, true);
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        const sortedLocations = _.sortBy(data, ['name']);
-
-        this.setState({ availableLocations: sortedLocations });
-        this.props.hideScreenLoading();
+        return;
       }
+      const sortedLocations = _.sortBy(data, ['name']);
+      this.setState({ availableLocations: sortedLocations });
     };
-    this.props.getLocationsAction(actionCallback);
+    this.props.getLocationsAction(actionCallback, true);
   };
 
   setCurrentLocation = async (location: Location) => {
@@ -76,15 +81,15 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           positiveButton: {
             text: 'Try Again',
             callback: () => {
-              this.props.setCurrentLocationAction(location, actionCallback);
+              this.setCurrentLocation(location);
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        global.location = location;
-        this.props.navigation.navigate('Dashboard');
+        return;
       }
+      global.location = location;
+      this.props.navigation.navigate('Dashboard');
     };
 
     this.props.setCurrentLocationAction(location, actionCallback);
@@ -174,8 +179,16 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     });
 
   render() {
-    const { availableLocations } = this.state;
+    const { availableLocations, loading } = this.state;
     const { groupLocationEntries, currentLocation } = this.props;
+
+    if (loading) {
+      return (
+        <View style={styles.scrollView}>
+          <ListLoadingSkeleton visible count={4} CardComponent={LocationCardSkeleton} />
+        </View>
+      );
+    }
 
     if (!availableLocations || availableLocations.length === 0) {
       return (
@@ -210,9 +223,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps: DispatchProps = {
   getLocationsAction,
-  setCurrentLocationAction,
-  showScreenLoading,
-  hideScreenLoading
+  setCurrentLocationAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChooseCurrentLocation);

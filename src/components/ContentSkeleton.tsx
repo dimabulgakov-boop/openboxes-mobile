@@ -2,7 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import Theme from '../utils/Theme';
 
-function ShimmerBlock({ style }: { style?: any }) {
+export function SkeletonDivider() {
+  return <View style={styles.divider} />;
+}
+
+export function ShimmerBlock({ style }: { style?: any }) {
   const opacity = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {

@@ -27,10 +27,11 @@ export const GET_INTERNAL_LOCATION_SEARCH_SUCCESS = 'GET_INTERNAL_LOCATION_SEARC
 export const GET_ALTERNATIVE_DESTINATIONS_REQUEST = 'GET_ALTERNATIVE_DESTINATIONS_REQUEST';
 export const GET_ALTERNATIVE_DESTINATIONS_SUCCESS = 'GET_ALTERNATIVE_DESTINATIONS_SUCCESS';
 
-export function getLocationsAction(callback: (products: any) => void) {
+export function getLocationsAction(callback: (products: any) => void, suppressLoading?: boolean) {
   return {
     type: GET_LOCATIONS_REQUEST,
-    callback
+    callback,
+    suppressLoading
   };
 }
 
@@ -41,11 +42,16 @@ export function getBinLocationsAction(callback?: () => void) {
   };
 }
 
-export function setCurrentLocationAction(location: any, callback: (data: any) => void) {
+export function setCurrentLocationAction(
+  location: any,
+  callback: (data: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: SET_CURRENT_LOCATION_REQUEST,
     payload: { location },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

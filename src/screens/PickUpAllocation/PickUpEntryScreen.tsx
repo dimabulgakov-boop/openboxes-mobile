@@ -1,30 +1,34 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, FlatList, TouchableOpacity, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Paragraph, Title } from 'react-native-paper';
 
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import { navigate } from '../../NavigationService';
-import styles from './styles';
-import { AllocationOrder } from './types';
 import { getOutboundOrders } from '../../apis/pua';
 import { useFocusEffect } from '@react-navigation/native';
 
+import PickUpCardSkeleton from './PickUpCardSkeleton';
+import styles from './styles';
+import { AllocationOrder } from './types';
+
 export function PickUpEntryScreen() {
   const [orders, setOrders] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   const fetchOrders = async () => {
     try {
-      setIsLoading(true);
+      setIsRefreshing(true);
       const response = await getOutboundOrders();
       setOrders(response.data || []);
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch orders data');
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
+      setHasLoaded(true);
     }
   };
 
-  // useFocusEffect usedto refresh when screen is focused after nagivation
   useFocusEffect(
     useCallback(() => {
       fetchOrders();
@@ -40,15 +44,19 @@ export function PickUpEntryScreen() {
 
       <Divider style={styles.sectionDivider} />
 
-      <FlatList
-        data={orders}
-        renderItem={({ item }) => <PickUpCard order={item} />}
-        keyExtractor={(item: AllocationOrder) => item.id}
-        numColumns={1}
-        ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-        refreshing={isLoading}
-        onRefresh={fetchOrders}
-      />
+      {!hasLoaded ? (
+        <ListLoadingSkeleton visible count={5} CardComponent={PickUpCardSkeleton} />
+      ) : (
+        <FlatList
+          data={orders}
+          renderItem={({ item }) => <PickUpCard order={item} />}
+          keyExtractor={(item: AllocationOrder) => item.id}
+          numColumns={1}
+          ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+          refreshing={isRefreshing}
+          onRefresh={fetchOrders}
+        />
+      )}
     </View>
   );
 }
