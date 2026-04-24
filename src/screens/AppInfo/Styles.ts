@@ -20,9 +20,8 @@ export default StyleSheet.create({
     fontSize: 15,
     color: 'black'
   },
-  imageStyle: {
-    width: 100,
-    height: 100,
-    marginVertical: 20
+  logo: {
+    width: 120,
+    height: 120
   }
 });

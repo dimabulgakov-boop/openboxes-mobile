@@ -1,7 +1,7 @@
 import apiClient from '../utils/ApiClient';
 
 export function fetchInboundOrderList(id: string = '') {
-  return apiClient.get(`/shipments?destination.id=${id}`);
+  return apiClient.get(`/shipments?destination=${id}`);
 }
 
 export function fetchPartialReceiving(id: string = '') {
@@ -10,4 +10,8 @@ export function fetchPartialReceiving(id: string = '') {
 
 export function submitPartialReceiving(id: string, requestBody: any) {
   return apiClient.post(`/partialReceiving/${id}`, requestBody);
+}
+
+export function createReceivingBinLocation(id: string) {
+  return apiClient.post(`/partialReceiving/${id}/receivingBinLocation`, {});
 }

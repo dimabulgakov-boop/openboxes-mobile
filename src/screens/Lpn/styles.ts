@@ -7,8 +7,7 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 20
+    padding: Theme.spacing.large
   },
   select: {
     width: '100%',
@@ -17,8 +16,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     borderColor: 'grey',
     backgroundColor: 'white',
-    borderRadius: 5,
-    marginTop: 10
+    borderRadius: 5
   },
   arrowDownIcon: {
     height: 15,
@@ -46,17 +44,13 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
-    marginTop: 8,
-    height: ratio.height * 100
+    marginTop: Theme.spacing.small
   },
   button: {
     width: '80%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.headerColor,
     borderRadius: 5,
-    padding: 15,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

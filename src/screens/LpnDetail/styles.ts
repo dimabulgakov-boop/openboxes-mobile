@@ -1,13 +1,12 @@
 import { StyleSheet } from 'react-native';
-import Theme from '../../utils/Theme';
 import { ratio } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   contentContainer: {
     display: 'flex',
     flex: 1,
-    flexDirection: 'column',
-    padding: 8
+    flexDirection: 'column'
   },
   bottom: {
     width: '100%',
@@ -25,9 +24,9 @@ export default StyleSheet.create({
     borderRadius: Theme.roundness,
     borderColor: Theme.colors.backdrop,
     borderWidth: 1,
-    margin: 4,
-    padding: 4,
-    justifyContent: 'center'
+    margin: 0,
+    padding: 0,
+    marginTop: 5
   },
   listItemNameContainer: {
     display: 'flex',
@@ -73,6 +72,13 @@ export default StyleSheet.create({
     marginStart: 4,
     width: '50%'
   },
+  col100: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '95%'
+  },
   label: {
     fontSize: 12,
     color: Theme.colors.placeholder
@@ -82,17 +88,56 @@ export default StyleSheet.create({
     color: Theme.colors.text
   },
   arrowDownIcon: {
-    height: 15,
-    width: 15
+    height: 12,
+    width: 12,
+    marginRight: Theme.spacing.medium
   },
   select: {
     width: '100%',
-    borderWidth: 2,
-    height: 40,
+    borderWidth: 1,
+    height: 55,
     alignSelf: 'center',
     borderColor: 'grey',
     backgroundColor: 'white',
-    borderRadius: 5,
+    borderRadius: Theme.roundness,
     marginTop: 10
+  },
+  lpnDetailsContainer: {
+    padding: Theme.spacing.large,
+    backgroundColor: Theme.colors.surface
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.small / 2
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8,
+    backgroundColor: Theme.colors.background
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  contentDivider: {
+    marginVertical: Theme.spacing.small
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: Theme.spacing.small,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginBottom: Theme.spacing.large
+  },
+  containerDetails: {
+    padding: Theme.spacing.large
   }
 });

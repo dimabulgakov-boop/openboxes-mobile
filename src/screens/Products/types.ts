@@ -11,24 +11,26 @@ export interface StateProps {
 }
 
 export interface DispatchProps {
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
-  getProductsAction: (callback: (products: any) => void) => void;
+  getProductsAction: (callback: (products: any) => void, suppressLoading?: boolean) => void;
   searchProductsByNameAction: (
     name: string,
-    callback: (searchedProducts: any) => void
+    callback: (searchedProducts: any) => void,
+    suppressLoading?: boolean
   ) => void;
   searchProductByCodeAction: (
     productCode: string,
-    callback: (data: any) => void
+    callback: (data: any) => void,
+    suppressLoading?: boolean
   ) => void;
   searchProductGloballyAction: (
     value: string,
-    callback: (data: any) => void
+    callback: (data: any) => void,
+    suppressLoading?: boolean
   ) => void;
   searchProductSByCategoryAction: (
     category: any,
-    callback: (data: any) => void
+    callback: (data: any) => void,
+    suppressLoading?: boolean
   ) => void;
 }
 
@@ -57,4 +59,6 @@ export interface State {
     results: Product[] | null;
   } | null;
   barcodeNo: string | '';
+  loading: boolean;
+  searchTerm: string;
 }

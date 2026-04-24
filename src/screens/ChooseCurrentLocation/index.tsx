@@ -1,47 +1,57 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import styles from './styles';
-import Location from '../../data/location/Location';
 import _, { Dictionary } from 'lodash';
+import React from 'react';
 import { ScrollView, View } from 'react-native';
-import { List } from 'react-native-paper';
+import { Card, List, Text } from 'react-native-paper';
+import { connect } from 'react-redux';
+
+import GarageIcon from '../../assets/images/icon_garage.svg';
+import EmptyView from '../../components/EmptyView';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import Location from '../../data/location/Location';
 import { getLocationsAction, setCurrentLocationAction } from '../../redux/actions/locations';
+import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
+import LocationCardSkeleton from './LocationCardSkeleton';
+import styles from './styles';
 
 const NO_ORGANIZATION_NAME = 'No organization';
+const NO_LOCATION_GROUP_NAME = 'NO_LOCATION_GROUP_PROVIDED';
 
 export interface OwnProps {
   navigation: any;
-}
-
-interface StateProps {
-  //no-op
+  groupLocationEntries?: boolean;
+  currentLocation?: Location | null;
 }
 
 interface DispatchProps {
-  getLocationsAction: (callback: (locations: any) => void) => void;
-  setCurrentLocationAction: (location: Location, callback: (data: any) => void) => void;
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
+  getLocationsAction: (callback: (locations: any) => void, suppressLoading?: boolean) => void;
+  setCurrentLocationAction: (
+    location: Location,
+    callback: (data: any) => void,
+    suppressLoading?: boolean
+  ) => void;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = OwnProps & DispatchProps;
 
 interface State {
-  orgNameAndLocationsDictionary: Dictionary<Location[]>;
+  availableLocations: Location[];
+  loading: boolean;
 }
 
 class ChooseCurrentLocation extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      orgNameAndLocationsDictionary: {}
+      availableLocations: [],
+      loading: true
     };
   }
 
   componentDidMount = () => {
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Failed to load locations' : 'Error',
@@ -49,126 +59,171 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.getLocationsAction(actionCallback);
+              this.setState({ loading: true });
+              this.props.getLocationsAction(actionCallback, true);
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        const orgNameAndLocationsDictionary = this.getSortedOrgNameAndLocationsDictionary(data);
-        this.setState({
-          orgNameAndLocationsDictionary: orgNameAndLocationsDictionary
-        });
-        this.props.hideScreenLoading();
+        return;
       }
+      const sortedLocations = _.sortBy(data, ['name']);
+      this.setState({ availableLocations: sortedLocations });
     };
-    this.props.getLocationsAction(actionCallback);
+    this.props.getLocationsAction(actionCallback, true);
+  };
+
+  setCurrentLocation = async (location: Location) => {
+    const actionCallback = (data: any) => {
+      if (data?.error) {
+        showPopup({
+          message: 'Failed to set current location',
+          positiveButton: {
+            text: 'Try Again',
+            callback: () => {
+              this.setCurrentLocation(location);
+            }
+          },
+          negativeButtonText: 'Cancel'
+        });
+        return;
+      }
+      global.location = location;
+      this.props.navigation.navigate('Dashboard');
+    };
+
+    this.props.setCurrentLocationAction(location, actionCallback);
   };
 
   getSortedOrgNameAndLocationsDictionary = (locations: Location[]): Dictionary<Location[]> => {
-    let orgNameAndLocationsDictionary = _.groupBy(locations, (location: Location) => {
-      if (location.organizationName) {
-        return location.organizationName;
-      } else {
-        return NO_ORGANIZATION_NAME;
-      }
-    });
-    return _.keys(orgNameAndLocationsDictionary)
-      .sort((leftOrgName: string, rightOrgName: string) => {
-        if (leftOrgName === NO_ORGANIZATION_NAME && rightOrgName === NO_ORGANIZATION_NAME) {
-          return 0;
-        } else if (leftOrgName === NO_ORGANIZATION_NAME) {
-          return 1;
-        } else if (rightOrgName === NO_ORGANIZATION_NAME) {
-          return -1;
-        } else {
-          if (leftOrgName === rightOrgName) {
-            return 0;
-          } else if (leftOrgName > rightOrgName) {
-            return 1;
-          } else {
-            return -1;
-          }
-        }
-      })
-      .reduce(
-        (acc: {}, orgName: string) => ({
-          ...acc,
-          [orgName]: orgNameAndLocationsDictionary[orgName]
-        }),
-        {}
-      );
-  };
+    // Group locations by organization name or 'No organization' if no name is provided
+    const orgNameAndLocationsDictionary = _.groupBy(
+      locations,
+      (location: Location) => location.organizationName || NO_ORGANIZATION_NAME
+    );
 
-  setCurrentLocation = async (orgName: string, location: Location) => {
-    showPopup({
-      message: `Do you want to select current location as ${location.name}?`,
-      positiveButton: {
-        text: 'Yes',
-        callback: () => {
-          const actionCallback = (data: any) => {
-            if (data?.error) {
-              showPopup({
-                message: 'Failed to set current location',
-                positiveButton: {
-                  text: 'Try Again',
-                  callback: () => {
-                    this.props.setCurrentLocationAction(location, actionCallback);
-                  }
-                },
-                negativeButtonText: 'Cancel'
-              });
-            } else {
-              global.location = location;
-              this.props.navigation.navigate('Dashboard');
-            }
-          };
+    // Sort the organization names alphabetically, with 'No organization' at the end
+    const sortedOrgNames = _.orderBy(
+      Object.keys(orgNameAndLocationsDictionary),
+      [(orgName) => (orgName === NO_ORGANIZATION_NAME ? Infinity : orgName)],
+      ['asc']
+    );
 
-          this.props.setCurrentLocationAction(location, actionCallback);
-        }
+    // Rebuild the dictionary with sorted keys
+    return _.reduce(
+      sortedOrgNames,
+      (acc: Dictionary<Location[]>, orgName: string) => {
+        const sortedLocations = _.orderBy(orgNameAndLocationsDictionary[orgName], ['name'], ['asc']);
+        acc[orgName] = sortedLocations;
+        return acc;
       },
-      negativeButtonText: 'No'
-    });
+      {}
+    );
   };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        {/*<Header title="Choose Location" backButtonVisible={false} />*/}
-        <ScrollView style={styles.scrollView}>
-          <List.AccordionGroup>
-            {_.map(_.keys(this.state.orgNameAndLocationsDictionary), (orgName: string) => {
+  renderGroupedLocations = (locations: Dictionary<Location[]>, currentLocation: Location | null | undefined) => (
+    <List.AccordionGroup>
+      {_.map(_.keys(locations), (orgName: string) => {
+        return (
+          <List.Accordion
+            title={orgName}
+            description={`${locations[orgName].length} Location(s)`}
+            id={`orgName_${orgName}`}
+            left={(props) => <List.Icon {...props} color={Theme.colors.primary} icon="office-building" />}
+            key={`orgName_${orgName}`}
+            style={{ backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness }}
+          >
+            {_.map(locations[orgName], (location) => {
+              const isSelected = currentLocation && location.id === currentLocation.id;
               return (
-                <List.Accordion
-                  title={orgName}
-                  id={`orgName_${orgName}`}
-                  left={(props) => <List.Icon {...props} icon="office-building" />}
-                  key={`orgName_${orgName}`}
-                >
-                  {_.map(this.state.orgNameAndLocationsDictionary[orgName], (location) => {
-                    return (
-                      <List.Item
-                        title={location.name}
-                        key={`orgName_${orgName}_locationName_${location.name}`}
-                        onPress={() => this.setCurrentLocation(orgName, location)}
-                      />
-                    );
-                  })}
-                </List.Accordion>
+                <List.Item
+                  title={location.name}
+                  description={location.locationGroup?.name ?? NO_LOCATION_GROUP_NAME}
+                  key={`orgName_${orgName}_locationName_${location.name}`}
+                  hasTVPreferredFocus={false}
+                  tvParallaxProperties={undefined}
+                  style={[
+                    { backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness },
+                    isSelected && styles.selectedItem
+                  ]}
+                  onPress={() => this.setCurrentLocation(location)}
+                />
               );
             })}
-          </List.AccordionGroup>
+          </List.Accordion>
+        );
+      })}
+    </List.AccordionGroup>
+  );
+
+  renderAllLocations = (locations: Location[], currentLocation: Location | null | undefined) =>
+    locations.map((location) => {
+      const isSelected = currentLocation && location.id === currentLocation.id;
+      return (
+        <Card
+          key={location.id}
+          style={[styles.cardContainer, isSelected && styles.selectedCard]}
+          onPress={() => this.setCurrentLocation(location)}
+        >
+          <Card.Content style={styles.cardContent}>
+            <View style={styles.contentContainer}>
+              <GarageIcon width={48} height={48} />
+              <View style={styles.textContainer}>
+                <Text style={styles.cardTitle}>{location.name}</Text>
+                <Text style={styles.cardSubtitle}>{location.locationGroup?.name || NO_LOCATION_GROUP_NAME}</Text>
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
+      );
+    });
+
+  render() {
+    const { availableLocations, loading } = this.state;
+    const { groupLocationEntries, currentLocation } = this.props;
+
+    if (loading) {
+      return (
+        <View style={styles.scrollView}>
+          <ListLoadingSkeleton visible count={4} CardComponent={LocationCardSkeleton} />
+        </View>
+      );
+    }
+
+    if (!availableLocations || availableLocations.length === 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <EmptyView
+            title="No Locations Available"
+            description="Please contact your administrator to set up locations."
+          />
+        </View>
+      );
+    }
+
+    return (
+      <View>
+        <ScrollView style={styles.scrollView}>
+          {groupLocationEntries
+            ? this.renderGroupedLocations(
+                this.getSortedOrgNameAndLocationsDictionary(availableLocations),
+                currentLocation
+              )
+            : this.renderAllLocations(availableLocations, currentLocation)}
         </ScrollView>
       </View>
     );
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  groupLocationEntries: state.settingsReducer.groupLocationEntries,
+  currentLocation: state.mainReducer.currentLocation
+});
+
 const mapDispatchToProps: DispatchProps = {
   getLocationsAction,
-  setCurrentLocationAction,
-  showScreenLoading,
-  hideScreenLoading
+  setCurrentLocationAction
 };
 
-export default connect(null, mapDispatchToProps)(ChooseCurrentLocation);
+export default connect(mapStateToProps, mapDispatchToProps)(ChooseCurrentLocation);

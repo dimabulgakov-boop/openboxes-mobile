@@ -2,116 +2,105 @@ import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
-  contentContainer: {
-    display: 'flex',
+  screenContainer: {
+    flex: 1
+  },
+  emptyContainer: {
     flex: 1,
-    flexDirection: 'column',
-    padding: 8
-  },
-  title: {},
-  itemView: {
-    marginStart: 10,
-    marginEnd: 10,
-    marginTop: 5,
-    marginBottom: 10
-  },
-  rowItem: {
-    flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    marginTop: 1,
-    padding: 2,
-    marginStart: 4,
-    width: '100%',
+    justifyContent: 'center',
     alignItems: 'center'
   },
-  name: {
-    fontSize: 17,
-    color: Theme.colors.text,
-    fontWeight: 'bold'
+  header: {
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.large
   },
-  boxHeading: {
-    fontSize: 15,
-    color: Theme.colors.text,
-    fontWeight: 'bold',
-    marginTop: 8
-  },
-  box: {
-    borderColor: Theme.colors.background,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: 8,
-    padding: 8
-  },
-  descriptionLabel: {
-    fontSize: 20,
-    color: Theme.colors.text,
-    fontWeight: 'bold',
-    marginTop: 8
-  },
-  descriptionText: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    borderColor: Theme.colors.background,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: 8,
-    padding: 8
-  },
-  detailsLabel: {
-    fontSize: 20,
-    color: Theme.colors.text,
-    fontWeight: 'bold',
-    marginTop: 8
-  },
-  detailsContainer: {
-    padding: 8,
-    borderColor: Theme.colors.background,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: 8
-  },
-  detailsItemContainer: {
-    display: 'flex',
+  headerRow: {
     flexDirection: 'row',
-    flex: 0
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  detailsItemName: {
+  contentDivider: {
+    marginVertical: 8
+  },
+  title: {
+    fontSize: 18,
+    color: Theme.colors.text,
+    fontWeight: '600'
+  },
+  subtitle: {
+    marginTop: -4
+  },
+  sectionTitle: {
     fontSize: 16,
     color: Theme.colors.text,
-    fontWeight: 'bold'
+    fontWeight: 'normal'
   },
-  detailsItemValue: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    marginStart: 8
+  chipDefault: {
+    height: 28,
+    justifyContent: 'flex-start',
+    borderRadius: 4,
+    alignItems: 'center'
   },
-  container: {
-    flexWrap: 'wrap',
-    alignItems: 'flex-start', // if you want to fill rows left to right
-    borderColor: Theme.colors.background,
-    borderWidth: 1,
-    borderRadius: 8
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  actionButtons: {
+    flexDirection: 'column',
+    marginTop: Theme.spacing.large
+  },
+  fieldGap: {
+    marginTop: Theme.spacing.medium
+  },
+  detailsSection: {
+    paddingHorizontal: Theme.spacing.small
+  },
+  sectionCard: {
+    marginTop: Theme.spacing.small
   },
   row: {
     flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    borderBottomWidth: 1,
+    justifyContent: 'space-between',
+    width: '100%',
+    alignItems: 'center',
+    padding: Theme.spacing.small
+  },
+  itemView: {
+    marginTop: Theme.spacing.small
+  },
+  cardContainer: {
+    backgroundColor: Theme.colors.background,
+    borderRadius: 8
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
     marginTop: 8,
-    padding: 8,
-    width: '100%'
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap'
   },
-  label: {
-    width: '50%' // is 50% of container width
+  printButton: {
+    marginVertical: Theme.spacing.small
   },
-  value: {
-    width: '50%', // is 50% of container width
-    textAlign: 'right'
+  subheading: {
+    fontWeight: 'bold',
+    fontSize: 16
   },
-  textAlign: {
-    textAlign: 'right'
+  bottomSeparator: {
+    marginBottom: Theme.spacing.small
   },
-  logo: {
-    width: 66,
-    height: 58
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: 'white',
+    padding: Theme.spacing.large,
+    borderRadius: Theme.roundness * 2
   }
 });

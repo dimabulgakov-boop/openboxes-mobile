@@ -1,7 +1,10 @@
-interface LabeledDataProps {
+import { ReactElement } from 'react';
+
+type LabeledDataProps = {
   label: string;
-  data: string | number;
+  value?: string | number | ReactElement | null;
   defaultValue?: string | number;
-}
+  style?: any;
+} | null;
 
 export type Props = LabeledDataProps;

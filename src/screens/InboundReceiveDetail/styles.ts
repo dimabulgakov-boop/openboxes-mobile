@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { colors, ratio } from '../../constants';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
@@ -7,12 +6,47 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 20
+    paddingVertical: 16,
+    paddingHorizontal: 16
+  },
+  dividerHorizontal: {
+    marginVertical: 8
+  },
+  dividerVertical: {
+    width: 1,
+    marginHorizontal: 8,
+    height: '50%'
+  },
+  chipWarning: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: Theme.roundness,
+    alignItems: 'center',
+    backgroundColor: Theme.colors.warning
+  },
+  chipWarningText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: Theme.roundness,
+    alignItems: 'center',
+    marginRight: Theme.spacing.small
+  },
+  chipDefaultText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  inboundDetailsContainer: {
+    padding: 16,
+    backgroundColor: '#fff'
   },
   arrowDownIcon: {
-    height: 15,
-    width: 15
+    height: 12,
+    width: 12,
+    marginRight: Theme.spacing.medium
   },
   select: {
     width: '100%',
@@ -21,19 +55,19 @@ export default StyleSheet.create({
     alignSelf: 'center',
     borderColor: 'grey',
     backgroundColor: 'white',
-    borderRadius: 5,
+    borderRadius: Theme.roundness,
     marginTop: 10
   },
   from: {
-    flex: 1,
-    marginTop: 10
+    flex: 1
   },
   bottom: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    height: ratio.height * 100,
-    marginBottom: 10
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.medium,
+    backgroundColor: '#fff'
   },
   itemView: {
     marginTop: 5
@@ -42,16 +76,14 @@ export default StyleSheet.create({
     flexDirection: 'row',
     borderColor: Theme.colors.background,
     marginTop: 1,
-    padding: 2,
-    marginStart: 4,
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   columnItem: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 0,
-    width: '50%'
+    flex: 0
   },
   label: {
     fontSize: 11,
@@ -59,12 +91,7 @@ export default StyleSheet.create({
   },
   value: {
     fontSize: 12,
-    color: Theme.colors.text,
-    width: '90%'
-  },
-  inputSpinner: {
-    flex: 1,
-    alignItems: 'center'
+    color: Theme.colors.text
   },
   datePickerContainer: {
     marginVertical: 5
@@ -72,10 +99,15 @@ export default StyleSheet.create({
   datePicker: {
     width: '100%',
     flex: 1,
-    marginTop: 10,
-    height: 40
+    height: 55,
+    justifyContent: 'center',
+    marginBottom: Theme.spacing.small
   },
   datePickerCustomStyle: {
+    dateTouchBody: {
+      width: '100%',
+      height: '100%'
+    },
     dateIcon: {
       display: 'none'
     },
@@ -89,20 +121,21 @@ export default StyleSheet.create({
       fontSize: 16
     },
     dateInput: {
+      height: '100%',
       alignItems: 'flex-start',
       justifyContent: 'center',
       textAlign: 'left',
       borderColor: 'grey',
       borderWidth: 1,
-      borderRadius: 5
+      borderRadius: Theme.roundness
     }
   },
   imageIcon: {
     position: 'absolute',
-    end: 10,
+    end: Theme.spacing.medium,
     width: 30,
     height: 30,
-    bottom: 5,
+    bottom: 20,
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -111,15 +144,31 @@ export default StyleSheet.create({
   lotStatusSelectStyle: {
     width: '100%',
     borderWidth: 1,
-    height: 42,
+    height: 55,
     alignSelf: 'center',
-    borderColor: '#909090',
-    borderRadius: 5,
-    marginTop: 10
+    borderColor: Theme.colors.backdrop,
+    borderRadius: Theme.roundness,
+    marginBottom: Theme.spacing.small
   },
   lotStatusSelectTextStyle: {
     textAlign: 'left',
     fontSize: 15,
-    color: '#808080'
+    color: '#000000'
+  },
+  lastChild: {
+    marginRight: 0
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  dividedValues: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 });

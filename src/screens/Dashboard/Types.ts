@@ -3,7 +3,7 @@ export interface OwnProps {
 }
 
 export interface StateProps {
-  //no-op
+  dashboardEntriesVisibility: { [key: string]: boolean };
 }
 
 export interface DispatchProps {

@@ -1,19 +1,24 @@
 /* eslint-disable complexity */
 import _ from 'lodash';
-import { DispatchProps, Props, State } from './types';
 import React from 'react';
-import { getOrdersAction } from '../../redux/actions/orders';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import styles from './styles';
-import PutAwayItems from '../../data/putaway/PutAwayItems';
-import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
-import PutAway from '../../data/putaway/PutAway';
-import EmptyView from '../../components/EmptyView';
-import { Card } from 'react-native-paper';
-import InputBox from '../../components/InputBox';
+
 import { LayoutStyle } from '../../assets/styles';
+import EmptyView from '../../components/EmptyView';
+import InputBox from '../../components/InputBox';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import { HYPHEN } from '../../constants';
+import PutAway from '../../data/putaway/PutAway';
+import PutAwayItems from '../../data/putaway/PutAwayItems';
+import { getOrdersAction } from '../../redux/actions/orders';
+import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
+import { RootState } from '../../redux/reducers';
+import { emptyStateMessage } from '../../utils/emptyStateMessage';
+import PutawayItemCardSkeleton from './PutawayItemCardSkeleton';
+import styles from './styles';
+import { DispatchProps, Props, State } from './types';
 
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -26,7 +31,9 @@ class PutawayList extends React.Component<Props, State> {
       orderId: null,
       showList: false,
       showDetail: false,
-      lpnFilter: ''
+      lpnFilter: '',
+      loading: true,
+      searchTerm: ''
     };
   }
 
@@ -36,36 +43,37 @@ class PutawayList extends React.Component<Props, State> {
 
   componentDidUpdate() {
     // @ts-ignore
-    if (this.props.route.params.refetchPutaways) {
+    if (this.props?.route?.params?.refetchPutaways) {
       this.fetchPutAways(null);
     }
   }
 
   fetchPutAways = (query: any) => {
     this.props.navigation.setParams({ refetchPutaways: false });
+    this.setState({ loading: true });
     const actionCallback = (putAwayList: any) => {
+      this.setState({ loading: false });
       if (!putAwayList || putAwayList?.error) {
+        this.setState({ showList: true, putAwayList: [] });
         return Promise.resolve(null);
-      } else {
-        this.setState({
-          showList: true,
-          putAwayList: _.flatten(
-            _.map(putAwayList, (putaway) =>
-              _.map(putaway.putawayItems, (item) => ({
-                ...putaway,
-                putawayItem: {
-                  ...item
-                }
-              }))
-            )
-          ),
-          putAway: null
-        });
       }
-      this.props.hideScreenLoading();
+      this.setState({
+        showList: true,
+        putAwayList: _.flatten(
+          _.map(putAwayList, (putaway) =>
+            _.map(putaway.putawayItems, (item) => ({
+              ...putaway,
+              putawayItem: {
+                ...item
+              }
+            }))
+          )
+        ),
+        putAway: null
+      });
     };
 
-    this.props.fetchPutAwayFromOrderAction(query, actionCallback);
+    this.props.fetchPutAwayFromOrderAction(query, actionCallback, true);
   };
 
   goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
@@ -76,7 +84,7 @@ class PutawayList extends React.Component<Props, State> {
   };
 
   onChangeLpnFilter = (text: string) => {
-    this.setState({ lpnFilter: text }, () => {
+    this.setState({ lpnFilter: text, searchTerm: text }, () => {
       if (text) {
         const exactPutaway = _.find(
           this.state.putAwayList,
@@ -84,7 +92,7 @@ class PutawayList extends React.Component<Props, State> {
         );
 
         if (exactPutaway) {
-          this.setState({ lpnFilter: '', putAwayListFiltered: [] }, () =>
+          this.setState({ lpnFilter: '', searchTerm: '', putAwayListFiltered: [] }, () =>
             this.goToPutawayItemDetailScreen(exactPutaway, exactPutaway.putawayItem)
           );
         } else {
@@ -100,26 +108,40 @@ class PutawayList extends React.Component<Props, State> {
   };
 
   render() {
-    const { showList, putAwayList, putAwayListFiltered, lpnFilter } = this.state;
+    const { showList, putAwayList, putAwayListFiltered, lpnFilter, loading, searchTerm } = this.state;
+    const { productSummaryConfig } = this.props;
+    const showLotNumber = productSummaryConfig?.lotNumber !== false;
+    const visibleData = putAwayListFiltered?.length ? putAwayListFiltered : putAwayList;
 
     return (
       <View style={styles.screenContainer}>
-        {showList ? (
+        {loading ? (
+          <ListLoadingSkeleton visible count={5} CardComponent={PutawayItemCardSkeleton} />
+        ) : showList ? (
           <View style={styles.contentContainer}>
-            {putAwayList?.length ? (
-              <InputBox
-                style={styles.lpnFilter}
-                value={lpnFilter}
-                disabled={false}
-                editable={false}
-                label={'Scan Lot Number'}
-                onChange={this.onChangeLpnFilter}
-              />
-            ) : null}
+            <View style={styles.headerContainer}>
+              {putAwayList?.length ? (
+                <InputBox
+                  style={styles.lpnFilter}
+                  value={lpnFilter}
+                  disabled={false}
+                  editable={false}
+                  label={'Scan Lot Number'}
+                  onChange={this.onChangeLpnFilter}
+                />
+              ) : null}
+            </View>
+            <Divider />
             <FlatList
-              data={putAwayListFiltered?.length ? putAwayListFiltered : putAwayList}
+              data={visibleData}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
               ListEmptyComponent={
-                <EmptyView title="Putaway" description="There are no items to putaway" isRefresh={false} />
+                <EmptyView
+                  title="Putaway"
+                  description={emptyStateMessage('items', searchTerm, 'There are no items to putaway')}
+                  isRefresh={false}
+                />
               }
               renderItem={(listRenderItemInfo: ListRenderItemInfo<any>) => (
                 <Card
@@ -129,33 +151,30 @@ class PutawayList extends React.Component<Props, State> {
                   }
                 >
                   <Card.Content>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Product Code</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['product.productCode']}
-                        </Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Lot Number</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] || 'Default'}
-                        </Text>
-                      </View>
+                    <View style={styles.headerRow}>
+                      <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                        {`Location: ${listRenderItemInfo.item?.putawayItem?.['currentLocation.name']}`}
+                      </Chip>
                     </View>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Current Location</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']??'Default'}
-                        </Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Putaway Location</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']??'Default'}
-                        </Text>
-                      </View>
+                    <Divider style={styles.contentDivider} />
+
+                    <Subheading style={styles.destinationSubheading}>
+                      {`${listRenderItemInfo.item?.putawayItem?.['product.productCode']} - ${listRenderItemInfo.item?.putawayItem?.['product.name']}`}
+                    </Subheading>
+                    {showLotNumber && (
+                      <Caption style={styles.caption}>
+                        {`Lot Number: ${
+                          listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] ?? 'Default'
+                        }`}
+                      </Caption>
+                    )}
+
+                    <View style={styles.rowItem}>
+                      <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                        {`Putaway Location: ${
+                          listRenderItemInfo.item?.putawayItem?.['putawayLocation.name'] ?? HYPHEN
+                        }`}
+                      </Chip>
                     </View>
                   </Card.Content>
                 </Card>
@@ -170,10 +189,13 @@ class PutawayList extends React.Component<Props, State> {
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  productSummaryConfig: state.settingsReducer.productSummaryConfig
+});
+
 const mapDispatchToProps: DispatchProps = {
-  showScreenLoading,
-  hideScreenLoading,
   getOrdersAction,
   fetchPutAwayFromOrderAction
 };
-export default connect(null, mapDispatchToProps)(PutawayList);
+
+export default connect(mapStateToProps, mapDispatchToProps)(PutawayList);

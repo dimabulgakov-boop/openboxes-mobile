@@ -3,43 +3,80 @@ import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   screenContainer: {
-    display: 'flex',
-    flexDirection: 'column',
     flex: 1
   },
-  cardContainer: {
-    height: 150,
-    borderRadius: 5,
+  emptyScreenContainer: {
     flex: 1,
-    backgroundColor: 'white',
-    margin: 5
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Theme.spacing.large
+  },
+  emptyScreenTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: Theme.spacing.medium,
+    color: Theme.colors.primary
+  },
+  emptyScreenDescription: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: Theme.spacing.small,
+    color: Theme.colors.placeholder
+  },
+  emptyScreenButton: {
+    marginTop: Theme.spacing.large
+  },
+  flatListContentContainer: {
+    padding: Theme.spacing.small / 2
+  },
+  cardContainer: {
+    margin: Theme.spacing.small / 2
+  },
+  cardContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Theme.spacing.medium,
+    flexGrow: 1
+  },
+  iconWrapper: {
+    marginBottom: Theme.spacing.small
+  },
+  icon: {
+    width: 48,
+    height: 48
   },
   cardLabel: {
-    flex: 1,
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginTop: 5,
-    marginBottom: 3,
-    textAlign: 'center',
-    textAlignVertical: 'center'
+    color: Theme.colors.primary,
+    fontWeight: '600'
   },
-  cardImage: {
-    flex: 2,
-    height: 100,
-    width: 100,
-    alignSelf: 'center'
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.small
+  },
+  toggleTextContainer: {
+    flex: 1,
+    marginRight: Theme.spacing.large
+  },
+  lastChild: {
+    marginBottom: Theme.spacing.large
   },
   card: {
-    height: '100%',
-    padding: 5,
-    shadowColor: '#00000021',
-    shadowOffset: {
-      width: 0,
-      height: 6
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 12,
-    backgroundColor: 'white'
+    margin: Theme.spacing.small,
+    elevation: Theme.spacing.small / 2
+  },
+  resetButton: {
+    marginRight: Theme.spacing.small
+  },
+  groupSection: {
+    marginBottom: Theme.spacing.medium
+  },
+  groupHeader: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Theme.colors.disabled,
+    paddingHorizontal: Theme.spacing.small,
+    paddingTop: Theme.spacing.small
   }
 });

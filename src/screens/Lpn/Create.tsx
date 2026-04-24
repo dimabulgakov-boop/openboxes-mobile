@@ -1,16 +1,18 @@
 import React from 'react';
-import showPopup from '../../components/Popup';
-import { saveAndUpdateLpn } from '../../redux/actions/lpn';
-import { DispatchProps, Props } from './Types';
-import { connect } from 'react-redux';
 import { ScrollView, Text, ToastAndroid, View } from 'react-native';
-import { Order } from '../../data/order/Order';
-import styles from './styles';
-import InputBox from '../../components/InputBox';
-import Button from '../../components/Button';
-import { getShipmentOrigin, getShipmentPacking } from '../../redux/actions/packing';
-import { RootState } from '../../redux/reducers';
+import { connect } from 'react-redux';
+
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import Button from '../../components/Button';
+import InputBox from '../../components/InputBox';
+import showPopup from '../../components/Popup';
+import { Order } from '../../data/order/Order';
+import { saveAndUpdateLpn } from '../../redux/actions/lpn';
+import { getShipmentOrigin } from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
+import styles from './styles';
+import { DispatchProps, Props } from './Types';
+import Theme from '../../utils/Theme';
 
 export interface State {
   stockMovements: Order[] | null;
@@ -42,21 +44,6 @@ class CreateLpn extends React.Component<Props, State> {
     this.getShipmentOrigin();
   }
 
-  fetchContainerList = () => {
-    const actionCallback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.errorMessage ? 'Container' : 'Error',
-          message: data.errorMessage ?? 'Failed to fetch Container List',
-          positiveButton: {
-            text: 'Ok'
-          }
-        });
-      }
-    };
-    this.props.getShipmentPacking('OUTBOUND', actionCallback);
-  };
-
   getShipmentOrigin = () => {
     const { selectedLocation } = this.props;
     const actionCallback = (data: any) => {
@@ -69,7 +56,7 @@ class CreateLpn extends React.Component<Props, State> {
           }
         });
       } else {
-        let stockMovementList: string[] = [];
+        let stockMovementList: any = [];
         data.map((item: any) => {
           const shipmentData = {
             name: item.shipmentNumber,
@@ -139,14 +126,20 @@ class CreateLpn extends React.Component<Props, State> {
             label="AutoInputInternalLocation"
             data={this.state.stockMovementList}
             initValue={this.state.stockMovements}
-            selectedData={(selectedItem: any, index: number) => {
+            selectedData={(selectedItem: any) => {
               this.setState({
                 stockMovement: selectedItem.name,
                 stockMovementId: selectedItem?.id
               });
             }}
           />
-          <InputBox value={this.state.name} editable={false} label={'Name'} onChange={this.onChangeName} />
+          <InputBox
+            value={this.state.name}
+            style={{ marginBottom: Theme.spacing.small }}
+            editable={false}
+            label={'Name'}
+            onChange={this.onChangeName}
+          />
           <InputBox
             value={this.state.containerNumber}
             editable={false}
@@ -155,7 +148,7 @@ class CreateLpn extends React.Component<Props, State> {
           />
         </View>
         <View style={styles.bottom}>
-          <Button title="Submit" onPress={this.saveLpn} />
+          <Button title="Submit" size="100%" onPress={this.saveLpn} disabled={false} />
         </View>
       </ScrollView>
     );
@@ -166,7 +159,6 @@ const mapStateToProps = (state: RootState) => ({
   selectedLocation: state.mainReducer.currentLocation
 });
 const mapDispatchToProps: DispatchProps = {
-  getShipmentPacking,
   getShipmentOrigin,
   saveAndUpdateLpn
 };

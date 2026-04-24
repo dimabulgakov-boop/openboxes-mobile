@@ -1,16 +1,19 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
+import locationsReducer from './locationsReducer';
 import mainReducer from './mainReducer';
 import productsReducer from './productsReducer';
 import putawayReducer from './putawayReducer';
-import locationsReducer from './locationsReducer';
+import settingsReducer from './settingsReducer';
 
-const rootRducer = combineReducers({
+const rootReducer = combineReducers({
   mainReducer,
   productsReducer,
   putawayReducer,
-  locationsReducer
+  locationsReducer,
+  settingsReducer
 });
 
-export type RootState = ReturnType<typeof rootRducer>;
+// eslint-disable-next-line no-undef
+export type RootState = ReturnType<typeof rootReducer>;
 
-export default rootRducer;
+export default rootReducer;

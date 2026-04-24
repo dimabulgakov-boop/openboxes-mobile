@@ -14,6 +14,7 @@ export function setCurrentLocation(location: any) {
 export function searchLocationByLocationNumber(locationNumber: string) {
   return apiClient.get(`/locations/${locationNumber}`);
 }
+
 export function getBinLocations() {
   return apiClient.get('/internalLocations');
 }
@@ -38,6 +39,10 @@ export function internalLocationsDetails(id: string, location: string) {
 
 export function internalLocationDetails(id: string) {
   return apiClient.get(`/internalLocations/${id}/details`);
+}
+
+export function getAlternativeDestinations(facilityId: string, taskId: string) {
+  return apiClient.get(`/facilities/${facilityId}/putaway-tasks/${taskId}/alternate-destinations`);
 }
 
 export function fetchProductSummary(id: string) {

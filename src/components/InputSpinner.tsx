@@ -1,9 +1,17 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import Spinner from 'react-native-input-spinner';
-import { StyleSheet, Text, View } from 'react-native';
-import { colors, device } from '../constants';
+import { device } from '../constants';
+import Theme from '../utils/Theme';
 
-const InputSpinner = ({ title, value, max, setValue }: any) => {
+const DEFAULT_RATIO = 1.08;
+
+const InputSpinner = ({ title, value, max, setValue, ratio = DEFAULT_RATIO }: any) => {
+  if (ratio < 1) {
+    console.warn('Ratio should be greater than or equal to 1');
+    ratio = DEFAULT_RATIO;
+  }
+
   return (
     <>
       <View style={styles.container}>
@@ -11,13 +19,13 @@ const InputSpinner = ({ title, value, max, setValue }: any) => {
           selectTextOnFocus
           showBorder
           step={1}
-          color={colors.headerColor}
+          color={Theme.colors.primary}
           max={max}
           skin={'square'}
           min={0}
           longStep={10}
           speed={1}
-          width={device.windowWidth / 1.16}
+          width={device.windowWidth / ratio}
           value={value}
           onChange={(num: any) => {
             setValue(num);
@@ -30,10 +38,9 @@ const InputSpinner = ({ title, value, max, setValue }: any) => {
 export default InputSpinner;
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20
-  },
-  textView: {
-    marginTop: 10,
-    marginStart: 5
+    marginTop: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });

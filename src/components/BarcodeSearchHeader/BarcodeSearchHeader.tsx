@@ -1,22 +1,53 @@
-import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import _ from 'lodash';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View } from 'react-native';
 import { Searchbar } from 'react-native-paper';
+import { useSelector } from 'react-redux';
+
+import { appConfig } from '../../constants';
+import { RootState } from '../../redux/reducers';
 import styles from './styles';
-import { Props } from './types';
 
-const BarcodeSearchHeader = (props: Props) => {
+interface OwnProps {
+  subtitle?: string | null;
+  placeholder?: string;
+  searchBox: boolean;
+  onSearchTermSubmit: (query: string) => void;
+  resetSearch?: () => void;
+  autoSearch: boolean;
+  autoFocus?: boolean;
+  /**
+   * Override the debounce time (in ms) applied when autoSearch is enabled.
+   * Defaults to the `searchDebounceTime` from settings, or DEFAULT_SEARCH_DEBOUNCE_TIME.
+   */
+  debounceTime?: number;
+  loading?: boolean;
+  accessibilityLabel?: string;
+}
+
+const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
-
   const navigation = useNavigation<any>();
+  const storedDebounceTime = useSelector(
+    (state: RootState) => state.settingsReducer.searchDebounceTime ?? appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME
+  );
+  const searchDebounceTime = props.debounceTime !== undefined ? props.debounceTime : storedDebounceTime;
 
-  // If autoSearch is true, then trigger onSearchTermSubmit on a searchTerm change
+  const onSubmitRef = useRef(props.onSearchTermSubmit);
   useEffect(() => {
-    if (props.autoSearch) {
-      onSearchTermSubmit();
-    }
-  }, [searchTerm]);
+    onSubmitRef.current = props.onSearchTermSubmit;
+  }, [props.onSearchTermSubmit]);
 
-  // Resets the search bar's search term on the navigation change
+  const debouncedSubmit = useMemo(
+    () => _.debounce((query: string) => onSubmitRef.current(query), searchDebounceTime),
+    [searchDebounceTime]
+  );
+
+  useEffect(() => {
+    return () => debouncedSubmit.cancel();
+  }, [debouncedSubmit]);
+
   useEffect(() => {
     return navigation.addListener('focus', () => {
       setSearchTerm('');
@@ -24,22 +55,37 @@ const BarcodeSearchHeader = (props: Props) => {
         props.resetSearch();
       }
     });
-  }, [navigation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation, props.resetSearch]);
 
-  const onSearchTermSubmit = () => {
+  const onChangeText = (text: string) => {
+    setSearchTerm(text);
+    if (props.autoSearch) {
+      debouncedSubmit(text);
+    }
+  };
+
+  const onSubmitEditing = () => {
+    debouncedSubmit.cancel();
     props.onSearchTermSubmit(searchTerm);
   };
 
   return (
-    <Searchbar
-      theme={{}}
-      placeholder={props.placeholder ? props.placeholder : 'Search by barcode'}
-      value={searchTerm}
-      style={styles.searchBar}
-      autoFocus={props.autoFocus}
-      onSubmitEditing={onSearchTermSubmit}
-      onChangeText={setSearchTerm}
-    />
+    <View style={styles.container}>
+      <Searchbar
+        autoCompleteType="off"
+        theme={{}}
+        placeholder={props.placeholder ? props.placeholder : 'Search...'}
+        value={searchTerm}
+        style={styles.searchBar}
+        autoFocus={props.autoFocus}
+        loading={props.loading}
+        returnKeyType="search"
+        accessibilityLabel={props.accessibilityLabel ?? 'Search'}
+        onSubmitEditing={onSubmitEditing}
+        onChangeText={onChangeText}
+      />
+    </View>
   );
 };
 

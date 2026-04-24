@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView } from 'react-native';
-import styles from './styles';
-import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import InputBox from '../../components/InputBox';
-import { useDispatch } from 'react-redux';
-import { submitPutawayItem } from '../../redux/actions/putaways';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ScrollView, View } from 'react-native';
+import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+
 import Button from '../../components/Button';
-import LabledData from "../../components/LabeledData";
+import InputBox from '../../components/InputBox';
+import showPopup from '../../components/Popup';
+import { submitPutawayItem } from '../../redux/actions/putaways';
+import { RootState } from '../../redux/reducers';
+import styles from './styles';
 
 const PutawayItemDetail = () => {
   const route = useRoute();
@@ -17,15 +19,16 @@ const PutawayItemDetail = () => {
     error: null,
     putAway: null,
     putAwayItem: null,
-    scannedPutawayLocation: '',
+    scannedPutawayLocation: ''
   });
-  const {putAway, putAwayItem}: any = route.params;
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
+  const { putAway, putAwayItem }: any = route.params;
 
   useEffect(() => {
     setState({
       ...state,
       putAway: putAway,
-      putAwayItem: putAwayItem,
+      putAwayItem: putAwayItem
     });
   }, []);
 
@@ -36,7 +39,7 @@ const PutawayItemDetail = () => {
       showPopup({
         title: errorTitle,
         message: errorMessage,
-        negativeButtonText: 'Cancel',
+        negativeButtonText: 'Cancel'
       });
       return Promise.resolve(null);
     }
@@ -47,44 +50,38 @@ const PutawayItemDetail = () => {
       putawayStatus: 'COMPLETED',
       putawayDate: state.putAway?.putawayDate ?? '',
       putawayAssignee: '',
-      'origin.id': state.putAway?.['origin.id'],
-      'destination.id': state.putAway?.['destination.id'],
+      origin: state.putAway?.['origin.id'],
+      destination: state.putAway?.['destination.id'],
       putawayItems: [
         {
           id: state.putAwayItem?.id,
           putawayStatus: 'COMPLETED',
-          'currentFacility.id': state.putAwayItem?.['currentFacility.id'],
-          'currentLocation.id': state.putAwayItem?.['currentLocation.id'],
-          'product.id': state.putAwayItem?.['product.id'],
-          'inventoryItem.id': state.putAwayItem?.['inventoryItem.id'],
-          'putawayFacility.id': state.putAwayItem?.['putawayFacility.id'],
-          'putawayLocation.id': state.putAwayItem?.['putawayLocation.id'] || "",
+          currentFacility: state.putAwayItem?.['currentFacility.id'],
+          currentLocation: state.putAwayItem?.['currentLocation.id'],
+          product: state.putAwayItem?.['product.id'],
+          inventoryItem: state.putAwayItem?.['inventoryItem.id'],
+          putawayFacility: state.putAwayItem?.['putawayFacility.id'],
+          putawayLocation: state.putAwayItem?.['putawayLocation.id'] || '',
           quantity: state.putAwayItem?.quantity,
-          scannedPutawayLocation: state.scannedPutawayLocation,
-        },
+          scannedPutawayLocation: state.scannedPutawayLocation
+        }
       ],
-      'orderedBy.id': '',
-      sortBy: '',
+      orderedBy: '',
+      sortBy: ''
     };
 
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Failed to submit' : "Error",
+          title: data.errorMessage ? 'Failed to submit' : 'Error',
           message: data.errorMessage ?? 'Failed to submit details',
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(
-                submitPutawayItem(
-                  state.putAwayItem?.id as string,
-                  requestBody,
-                  actionCallback,
-                ),
-              );
-            },
+              dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         showPopup({
@@ -93,62 +90,81 @@ const PutawayItemDetail = () => {
           positiveButton: {
             text: 'ok',
             callback: () => {
-              navigation.navigate('Dashboard');
-            },
-          },
+              navigation.navigate('PutawayCandidates');
+            }
+          }
         });
       }
     };
-    dispatch(
-      submitPutawayItem(
-        state.putAwayItem?.id as string,
-        requestBody,
-        actionCallback,
-      ),
-    );
+    dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
   };
 
   const onChangeScannedPutawayLocation = (text: string) => {
-    setState({...state, scannedPutawayLocation: text});
+    setState({ ...state, scannedPutawayLocation: text });
   };
+
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
+  const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
 
   return (
     <ScrollView>
-      <View style={styles.contentContainer}>
-        <View style={styles.rowItem}>
-          <LabledData label="Putaway Identifier" data={state.putAway?.putawayNumber} />
-          <LabledData label="Quantity to Putaway" data={state.putAwayItem?.quantity.toString()} />
+      <View style={styles.dataContainer}>
+        <View style={styles.headerRow}>
+          <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+            {state.putAway?.putawayNumber}
+          </Chip>
+          {showExpirationDate && (
+            <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+              {`Expiry Date: ${state.putAwayItem?.['inventoryItem.expirationDate'] || 'Never'}`}
+            </Chip>
+          )}
         </View>
+        <Divider style={styles.dividerHorizontal} />
+
+        <Subheading style={{ fontWeight: 'bold' }}>
+          {`${state.putAwayItem?.['product.productCode']} - ${state.putAwayItem?.['product.name']}`}
+        </Subheading>
+        {showLotNumber && (
+          <Caption> {`Lot Number: ${state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}`} </Caption>
+        )}
+
         <View style={styles.rowItem}>
-          <LabledData label="Product Code" data={state.putAwayItem?.['product.productCode']} />
-          <LabledData label="Product Name" data={state.putAwayItem?.['product.name']} />
+          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+            {`Quantity To Putaway: ${state.putAwayItem?.quantity.toString()}`}
+          </Chip>
         </View>
-        <View style={styles.rowItem}>
-          <LabledData label="Lot Number" data={state.putAwayItem?.['inventoryItem.lotNumber']} defaultValue='Default' />
-          <LabledData label="Expiry Date" data={state.putAwayItem?.['inventoryItem.expiryDate']} defaultValue='Never' />
-        </View>
-        <View style={styles.rowItem}>
-          <LabledData label="Current Location" data={state.putAwayItem?.['currentLocation.name']} defaultValue="Default"/>
-          <LabledData label="Putaway Location" data={state.putAwayItem?.['putawayLocation.name']} defaultValue="Default"/>
+        <Divider style={styles.dividerHorizontal} />
+
+        <View style={styles.additionalInfoRow}>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>Current Location</Text>
+            <Text style={styles.value}>{state.putAwayItem?.['currentLocation.name'] || 'Default'}</Text>
+          </View>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>Putaway Location</Text>
+            <Text style={styles.value}>{state.putAwayItem?.['putawayLocation.name'] || 'Default'}</Text>
+          </View>
         </View>
       </View>
+      <Divider />
       <View style={styles.contentContainer}>
-        <View style={styles.from}>
-          <InputBox
-            label={'Scan Putaway Location'}
-            value={state.scannedPutawayLocation}
-            onChange={onChangeScannedPutawayLocation}
-            editable={false}
-            disabled={false}
-          />
-        </View>
+        <Text style={styles.scanPutawayLabel}>Scan Putaway Location</Text>
+        <InputBox
+          placeholder="Default"
+          label="Default"
+          value={state.scannedPutawayLocation}
+          onChange={onChangeScannedPutawayLocation}
+          editable={false}
+          disabled={false}
+        />
+        <Button
+          size="100%"
+          title="Confirm Putaway"
+          style={styles.buttonContainer}
+          onPress={formSubmit}
+          disabled={false}
+        />
       </View>
-      <Button
-        title="Confirm Putaway"
-        style={styles.buttonContainer}
-        onPress={formSubmit}
-        disabled={false}
-      />
     </ScrollView>
   );
 };

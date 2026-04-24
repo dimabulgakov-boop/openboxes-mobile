@@ -1,34 +1,54 @@
 import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
-import { ratio } from '../../constants';
 
 export default StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
+  screenContainer: {
     flex: 1
   },
-  from: {
-    flex: 1
+  productDetails: {
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.large
   },
-  rowItem: {
+  headerRow: {
     flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    marginTop: 1,
-    padding: 2,
-    marginStart: 4,
-    width: '100%',
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
-  columnItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    width: '50%'
+  productImage: {
+    width: 36,
+    height: 36,
+    resizeMode: 'contain'
   },
-  button: {
-    flexDirection: 'row',
-    width: '63%',
-    height: ratio.height * 100
+  chipDefault: {
+    height: 28,
+    justifyContent: 'flex-start',
+    borderRadius: 4,
+    alignItems: 'center'
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  chipSpacing: {
+    marginTop: Theme.spacing.small
+  },
+  contentDivider: {
+    marginVertical: 8
+  },
+  title: {
+    fontSize: 18,
+    color: Theme.colors.text,
+    fontWeight: '600'
+  },
+  bold: { fontWeight: 'bold' },
+  spacer: { flex: 1 },
+  bottom: {
+    width: '100%',
+    backgroundColor: Theme.colors.surface,
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.large
+  },
+  buttonSpacing: {
+    marginBottom: Theme.spacing.small
   }
 });

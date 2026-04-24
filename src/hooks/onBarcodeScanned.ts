@@ -15,7 +15,6 @@ const onBarcodeScanned = () => {
   useEffect(() => {
     if (barcodeData && Object.keys(barcodeData).length !== 0) {
       onBarCodeScan(barcodeData.data);
-      console.log('onBarCodeScan');
     }
   }, [barcodeData]);
 
@@ -41,12 +40,8 @@ const onBarcodeScanned = () => {
 
   const onError = (data: any, query: any, callback: (data: any) => void) => {
     showPopup({
-      title:
-        data.errorMessage ??
-        `Failed to load search results with value = "${query}"`,
-      message:
-        data.errorMessage ??
-        `Failed to load search results with value = "${query}"`,
+      title: data.errorMessage ?? `Failed to load search results with value = "${query}"`,
+      message: data.errorMessage ?? `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
         callback: callback
@@ -77,7 +72,6 @@ const onBarcodeScanned = () => {
   };
 
   const onSuccess = (data: any, query: any) => {
-    console.log('Success');
     setState({
       ...state,
       searchProductCode: {

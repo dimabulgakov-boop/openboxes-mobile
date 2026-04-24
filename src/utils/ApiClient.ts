@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 // import {logout} from '../redux/Dispatchers';
 import { createLogger } from './Logger';
-// import {environment} from './Environment';
 import * as NavigationService from '../NavigationService';
 import { store } from '../../App';
 import { hideScreenLoading } from '../redux/actions/main';
@@ -34,6 +33,10 @@ class _ApiClient {
     return await this.client.delete(endpoint, config);
   }
 
+  async patch(endpoint: string, data: any, config = this.client.defaults) {
+    return await this.client.patch(endpoint, data, config);
+  }
+
   handleApiSuccess = (response: AxiosResponse) => {
     const responseBody: string = JSON.stringify(response.data);
     return JSON.parse(responseBody);
@@ -41,7 +44,6 @@ class _ApiClient {
   handleApiFailure = async (error: AxiosError) => {
     let message = error.response?.data?.errorMessage;
     const code = error.response?.status;
-    console.log('ERROR :: ', error);
     switch (code) {
       case 401:
         store.dispatch(hideScreenLoading());
@@ -53,6 +55,9 @@ class _ApiClient {
         break;
       case 404:
         message = message ?? 'Not found';
+        break;
+      case 409:
+        message = error.response?.data ?? 'Conflict: Resource Already Exists';
         break;
       case 500:
         message = message ?? 'Internal Server Error';

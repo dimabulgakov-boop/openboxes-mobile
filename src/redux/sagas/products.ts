@@ -1,9 +1,10 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 import {
   GET_PRODUCT_BY_ID_REQUEST,
   GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
   GET_PRODUCTS_REQUEST,
   GET_PRODUCTS_REQUEST_SUCCESS,
+  GET_SORTATION_DETAILS_BY_BARCODE,
   PRINT_LABEL_REQUEST,
   PRINT_LABEL_REQUEST_SUCCESS,
   SEARCH_BARCODE,
@@ -17,24 +18,33 @@ import {
   SEARCH_PRODUCTS_BY_NAME_REQUEST,
   SEARCH_PRODUCTS_BY_NAME_REQUEST_SUCCESS,
   STOCK_ADJUSTMENT_REQUEST,
-  STOCK_ADJUSTMENT_REQUEST_SUCCESS
+  STOCK_ADJUSTMENT_REQUEST_SUCCESS,
+  UPDATE_PRODUCT_IDENTIFIER_REQUEST,
+  UPDATE_PRODUCT_IDENTIFIER_SUCCESS
 } from '../actions/products';
 
 import * as api from '../../apis';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
+import { userLocation } from '../selectors/auth';
 
 function* getProducts(action: any) {
   try {
-    yield put(showScreenLoading('Loading..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading..'));
+    }
     const response = yield call(api.getProducts);
     yield put({
       type: GET_PRODUCTS_REQUEST_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -46,15 +56,22 @@ function* getProducts(action: any) {
 
 function* searchProductsByName(action: any) {
   try {
-    yield showScreenLoading('Please wait...');
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
     const data = yield call(api.searchProductsByName, action.payload.name);
     yield put({
       type: SEARCH_PRODUCTS_BY_NAME_REQUEST_SUCCESS,
       payload: data
     });
-    yield action.payload.callback(data);
-    yield put(hideScreenLoading());
+    yield action.callback(data);
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code !== 401) {
       yield action.callback({
         error: true,
@@ -66,18 +83,22 @@ function* searchProductsByName(action: any) {
 
 function* searchProductByCode(action: any) {
   try {
-    yield showScreenLoading('Please wait...');
-    const data = yield call(
-      api.searchProductByCode,
-      action.payload.productCode
-    );
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
+    const data = yield call(api.searchProductByCode, action.payload.productCode);
     yield put({
       type: SEARCH_PRODUCT_BY_CODE_REQUEST_SUCCESS,
       payload: data
     });
     yield action.callback(data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -89,15 +110,22 @@ function* searchProductByCode(action: any) {
 
 function* searchProductGlobally(action: any) {
   try {
-    yield showScreenLoading('Please wait..');
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Fetching Products..'));
+    }
     const data = yield call(api.searchProductGlobally, action.payload.value);
     yield put({
       type: SEARCH_PRODUCT_GLOBALY_REQUEST_SUCCESS,
       payload: data
     });
     yield action.callback(data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -109,18 +137,22 @@ function* searchProductGlobally(action: any) {
 
 function* searchProductsByCategory(action: any) {
   try {
-    yield showScreenLoading('Searching..');
-    const data = yield call(
-      api.searchProductsByCategory,
-      action.payload.category
-    );
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Searching..'));
+    }
+    const data = yield call(api.searchProductsByCategory, action.payload.category);
     yield put({
       type: SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS,
       payload: data
     });
     yield action.callback(data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -152,16 +184,13 @@ function* searchBarcode(action: any) {
 
 function* getProductById(action: any) {
   try {
-    yield put(showScreenLoading('Please wait..'));
     const response = yield call(api.getProductById, action.payload.id);
     yield put({
       type: GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (error) {
-    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -196,20 +225,76 @@ function* printLabel(action: any) {
 
 function* stockAdjustments(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.stockAdjustments, action.payload.data);
     yield put({
       type: STOCK_ADJUSTMENT_REQUEST_SUCCESS,
       payload: response
     });
     yield action.callback(response);
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message
     });
+  }
+}
+
+function* getSortationDetailsSaga(action: any) {
+  try {
+    const productResponse: any = yield call(api.getProductByBarcode, action.payload.barcode);
+    const product = productResponse.data;
+
+    if (!product) {
+      throw new Error('Product not found.');
+    }
+
+    const location = yield select(userLocation);
+    if (!location || !location.id) {
+      return;
+    }
+
+    const tasksResponse: any = yield call(api.getPutawayTasks, location.id, product.id);
+    const tasks = tasksResponse?.data ?? [];
+
+    if (!tasks || tasks.length === 0) {
+      yield action.callback({
+        error: true,
+        errorMessage: 'Product found but there is not putaway task for it'
+      });
+      return;
+    }
+
+    yield action.callback({ product, tasks });
+  } catch (error: any) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        errorMessage: error.message
+      });
+    }
+  }
+}
+
+function* updateProductIdentifierSaga(action: any) {
+  try {
+    const response = yield call(
+      api.updateProductIdentifier,
+      action.payload.id,
+      action.payload.type,
+      action.payload.value
+    );
+    yield put({
+      type: UPDATE_PRODUCT_IDENTIFIER_SUCCESS,
+      payload: response.data
+    });
+    if (action.callback) action.callback(response.data);
+  } catch (error: any) {
+    if (action.callback) {
+      action.callback({
+        error: true,
+        errorMessage: error.message
+      });
+    }
   }
 }
 
@@ -218,12 +303,11 @@ export default function* watcher() {
   yield takeLatest(SEARCH_PRODUCTS_BY_NAME_REQUEST, searchProductsByName);
   yield takeLatest(SEARCH_PRODUCT_BY_CODE_REQUEST, searchProductByCode);
   yield takeLatest(SEARCH_PRODUCT_GLOBALY_REQUEST, searchProductGlobally);
-  yield takeLatest(
-    SEARCH_PRODUCTS_BY_CATEGORY_REQUEST,
-    searchProductsByCategory
-  );
+  yield takeLatest(SEARCH_PRODUCTS_BY_CATEGORY_REQUEST, searchProductsByCategory);
   yield takeLatest(GET_PRODUCT_BY_ID_REQUEST, getProductById);
   yield takeLatest(PRINT_LABEL_REQUEST, printLabel);
   yield takeLatest(STOCK_ADJUSTMENT_REQUEST, stockAdjustments);
   yield takeLatest(SEARCH_BARCODE, searchBarcode);
+  yield takeLatest(GET_SORTATION_DETAILS_BY_BARCODE, getSortationDetailsSaga);
+  yield takeLatest(UPDATE_PRODUCT_IDENTIFIER_REQUEST, updateProductIdentifierSaga);
 }

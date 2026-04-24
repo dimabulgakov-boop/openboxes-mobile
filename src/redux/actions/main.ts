@@ -7,24 +7,25 @@ export const REFRESH_SCREEN = 'REFRESH_SCREEN';
 export function showScreenLoading(message?: string) {
   return {
     type: SHOW_SCREEN_LOADING,
-    payload: {message},
+    payload: { message }
   };
 }
 
 export function hideScreenLoading() {
   return {
-    type: HIDE_SCREEN_LOADING,
+    type: HIDE_SCREEN_LOADING
   };
 }
 export function refreshScreenAction() {
   return {
-    type: REFRESH_SCREEN,
+    type: REFRESH_SCREEN
   };
 }
 
-export function getSessionAction(callback: (data: any) => void) {
+export function getSessionAction(callback: (data: any) => void, suppressLoading?: boolean) {
   return {
     type: GET_SESSION_REQUEST,
     callback,
+    suppressLoading
   };
 }

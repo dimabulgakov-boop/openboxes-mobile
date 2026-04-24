@@ -5,12 +5,8 @@ module.exports = {
     commonjs: true,
     es6: true
   },
-  extends: [
-    '@react-native-community',
-    'eslint:recommended',
-    'plugin:react/recommended'
-  ],
-  parser: 'babel-eslint',
+  extends: ['@react-native-community', 'eslint:recommended', 'plugin:react/recommended'],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -53,10 +49,7 @@ module.exports = {
     eqeqeq: ['error', 'always'],
     // react
     'react/no-unescaped-entities': ['error', { forbid: ['>', '"', '}'] }],
-    'react/prop-types': [
-      1,
-      { ignore: ['action', 'dispatch', 'nav', 'navigation'] }
-    ],
+    'react/prop-types': [1, { ignore: ['action', 'dispatch', 'nav', 'navigation'] }],
     'react/display-name': 2,
     'react/jsx-boolean-value': 2,
     'react/jsx-no-undef': 2,

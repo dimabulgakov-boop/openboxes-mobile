@@ -1,44 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
-import { View } from 'react-native';
-import styles from './styles';
+import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Caption, Paragraph, TextInput } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
-import { login } from '../../redux/actions/auth';
-import showPopup from '../../components/Popup';
-import { TextInput } from 'react-native-paper';
+import ProfileCardSkeleton from '../../components/ProfileCardSkeleton';
+import BuildInfoLabel from '../../components/BuildInfoLabel';
+import EyeIcon from '../../assets/images/icon_eye.svg';
+import EyeSlashIcon from '../../assets/images/icon_eye_slash.svg';
 import Button from '../../components/Button';
+import showPopup from '../../components/Popup';
 import * as NavigationService from '../../NavigationService';
-
-import { StackNavigationProp } from '@react-navigation/stack';
-import { StackList } from '../../types/navigationTypes';
-// @ts-ignore
-import EYE_SHOW from '../../assets/images/eye_show.png';
-// @ts-ignore
-import EYE_HIDE from '../../assets/images/eye_hide.png';
-
-type ProfileScreenNavigationProp = StackNavigationProp<StackList, 'Login'>;
-
-interface OwnProps {
-  navigation: ProfileScreenNavigationProp;
-}
-
-interface StateProps {
-  //no-op
-}
-
-interface DispatchProps {
-  login: (data: any) => void;
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
-
-interface State {
-  username: string;
-  password: string;
-}
+import { useProfiles } from '../../hooks/useProfiles';
+import { login } from '../../redux/actions/auth';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const Login = () => {
   const dispatch = useDispatch();
+  const { activeProfile, loading } = useProfiles();
   const [state, setState] = useState<any>({
     username: '',
     password: '',
@@ -97,38 +77,71 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.screenContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput mode="outlined" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
-        <TextInput
-          mode="outlined"
-          placeholder="Password"
-          label={'Password'}
-          secureTextEntry={state.isSeePassword}
-          right={<TextInput.Icon name={state.isSeePassword ? EYE_SHOW : EYE_HIDE} onPress={onPasswordClick} />}
-          style={{
-            marginTop: 8
-          }}
-          onChangeText={onPasswordChange}
-        />
-        <Button
-          title="Login"
-          style={{
-            marginTop: 8
-          }}
-          onPress={onLoginPress}
-        />
-        <Button
-          title="Settings"
-          style={{
-            marginTop: 8
-          }}
-          onPress={() => {
-            NavigationService.navigate('Settings');
-          }}
-        />
+    <ScrollView style={styles.screenContainer} contentContainerStyle={{ flexGrow: 1 }}>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={styles.welcomeContainer}>
+          <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
+        </View>
+        {loading ? (
+          <ProfileCardSkeleton />
+        ) : activeProfile ? (
+          <TouchableOpacity
+            style={styles.profileCard}
+            activeOpacity={0.7}
+            onPress={() => NavigationService.navigate('Profiles')}
+          >
+            <View style={styles.profileCardOuter}>
+              <View style={styles.profileCardInner}>
+                <Caption style={styles.profileCardTitle}>CONNECTED TO</Caption>
+                <View style={styles.profileCardContent}>
+                  <Icon name="server" size={22} color={Theme.colors.primary} style={styles.profileCardServerIcon} />
+                  <View style={styles.profileCardText}>
+                    <Paragraph style={styles.profileCardLabel}>{activeProfile.label}</Paragraph>
+                    <Caption style={styles.profileCardUrl} numberOfLines={1}>
+                      {activeProfile.serverUrl}
+                    </Caption>
+                  </View>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={20} color={Theme.colors.disabled} />
+            </View>
+          </TouchableOpacity>
+        ) : null}
+        <View style={styles.inputsContainer}>
+          <TextInput mode="flat" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
+          <TextInput
+            mode="flat"
+            placeholder="Password"
+            label={'Password'}
+            secureTextEntry={state.isSeePassword}
+            right={
+              <TextInput.Icon
+                icon={() =>
+                  state.isSeePassword ? <EyeIcon width={24} height={24} /> : <EyeSlashIcon width={24} height={24} />
+                }
+                onPress={onPasswordClick}
+              />
+            }
+            style={{
+              marginTop: Theme.spacing.small
+            }}
+            onChangeText={onPasswordChange}
+          />
+        </View>
+        <View style={styles.buttonsContainer}>
+          <Button title="Login" size="100%" style={{ marginBottom: 8 }} onPress={onLoginPress} />
+          <Button
+            title="Settings"
+            size="100%"
+            mode="text"
+            onPress={() => {
+              NavigationService.navigate('Settings');
+            }}
+          />
+        </View>
       </View>
-    </View>
+      <BuildInfoLabel />
+    </ScrollView>
   );
 };
 

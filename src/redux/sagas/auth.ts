@@ -19,24 +19,35 @@ import {
 } from '../actions/main';
 import GetSessionApiResponse from '../../data/auth/Session';
 
-function* getSession() {
+function* getSession(action: any) {
   try {
-    yield put(showScreenLoading('Loading..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading..'));
+    }
     const response: GetSessionApiResponse = yield call(api.getSession);
     yield put({
       type: GET_SESSION_REQUEST_SUCCESS,
       payload: response.data
     });
-    yield put(hideScreenLoading());
+    if (action.callback) {
+      yield action.callback(response.data);
+    }
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
-    console.log('function* auth', e.response);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
+    if (action.callback) {
+      yield action.callback({ error: true, errorMessage: e.message });
+    }
   }
 }
 
 function* login(action: any) {
   try {
-    yield put(showScreenLoading('Logging in'));
+    yield put(showScreenLoading('Logging In...'));
     const data = yield call(api.login, action.payload.data);
     yield put({
       type: LOGIN_REQUEST_SUCCESS,
@@ -45,7 +56,6 @@ function* login(action: any) {
     yield NavigationService.navigate('Drawer');
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* auth', e.response);
     yield put(hideScreenLoading());
     if (e.response) {
       console.debug('e.response status:' + e.response.status);
@@ -76,19 +86,17 @@ function* login(action: any) {
 }
 function* logout(action: any) {
   try {
-    yield put(showScreenLoading('Logging out'));
+    yield put(showScreenLoading('Logging Out...'));
     const data = yield call(api.logout, action.payload.data);
     yield put({
       type: LOGOUT_REQUEST_SUCCESS,
       payload: data
     });
-    yield NavigationService.navigate('Login');
+    yield NavigationService.reset('Login');
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* auth', e.response);
     yield put(hideScreenLoading());
     if (e.response) {
-      console.debug('e.response status:' + e.response.status);
       if (e.response.status === 401) {
         showPopup({
           message: 'Invalid Username and Password',

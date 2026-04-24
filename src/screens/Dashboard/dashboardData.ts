@@ -1,59 +1,209 @@
-const dashboardData = [
+import IconCreateLPN from '../../assets/images/icon_create_lpn.svg';
+import IconGarage from '../../assets/images/icon_garage.svg';
+import IconInventory from '../../assets/images/icon_inventory.svg';
+import IconLoading from '../../assets/images/icon_loading.svg';
+import IconPacking from '../../assets/images/icon_packing.svg';
+import IconPendingPutaways from '../../assets/images/icon_pending_putaways.svg';
+import IconPendingTransfers from '../../assets/images/icon_pending_transfers.svg';
+import IconPicking from '../../assets/images/icon_picking.svg';
+import IconProducts from '../../assets/images/icon_products.svg';
+import IconPutaway from '../../assets/images/icon_putaway.svg';
+import IconPutawayCandidates from '../../assets/images/icon_putaway_candidates.svg';
+import IconReceiving from '../../assets/images/icon_receiving.svg';
+import IconScan from '../../assets/images/icon_scan.svg';
+import IconSettings from '../../assets/images/icon_settings.svg';
+import IconSortation from '../../assets/images/icon_sortation.svg';
+
+export type DashboardEntry = {
+  key: string;
+  screenName: string;
+  entryDescription?: string;
+  icon: any;
+  navigationScreenName: string;
+  subroutesScreenName?: string;
+  defaultVisible?: boolean;
+  subroutes?: DashboardEntry[];
+  group: DashboardGroup;
+};
+
+export type DashboardGroup = 'INBOUND' | 'OUTBOUND' | 'INVENTORY' | 'MISCELLANEOUS';
+
+const dashboardEntries: DashboardEntry[] = [
   {
-    screenName: 'Picking',
-    icon: require('../../assets/images/picking.png'),
-    navigationScreenName: 'Orders'
-  },
-  {
-    screenName: 'Packing',
-    icon: require('../../assets/images/packing.png'),
-    navigationScreenName: 'OutboundStockList'
-  },
-  {
-    screenName: 'Loading',
-    icon: require('../../assets/images/loading.png'),
-    navigationScreenName: 'OutboundStockList'
-  },
-  {
+    key: 'receiving',
     screenName: 'Receiving',
-    icon: require('../../assets/images/receiving.png'),
-    navigationScreenName: 'InboundOrderList'
+    entryDescription: 'Manage inbound orders and receiving tasks',
+    icon: IconReceiving,
+    navigationScreenName: 'InboundOrderList',
+    group: 'INBOUND'
   },
   {
+    key: 'sortation',
+    screenName: 'Sortation',
+    entryDescription: 'Manage sortation tasks and workflows',
+    icon: IconSortation,
+    navigationScreenName: 'Sortation',
+    group: 'INBOUND'
+  },
+  {
+    key: 'sorted-putaway',
+    screenName: 'Sorted Putaway',
+    entryDescription: 'Manage putaway tasks and workflows',
+    icon: IconPutaway,
+    navigationScreenName: 'SortationPutaway',
+    group: 'INBOUND'
+  },
+  {
+    key: 'pendingPutaways',
+    screenName: 'Direct Putaway',
+    entryDescription: 'View and manage pending putaway tasks',
+    icon: IconPendingPutaways,
+    navigationScreenName: 'PutawayList',
+    group: 'INBOUND'
+  },
+  {
+    key: 'putawayCandidates',
     screenName: 'Putaway Candidates',
-    icon: require('../../assets/images/putaway.png'),
-    navigationScreenName: 'PutawayCandidates'
+    entryDescription: 'View and manage putaway candidates',
+    icon: IconPutawayCandidates,
+    navigationScreenName: 'PutawayCandidates',
+    group: 'INBOUND'
   },
   {
-    screenName: 'Pending Putaways',
-    icon: require('../../assets/images/putaway.png'),
-    navigationScreenName: 'PutawayList'
+    key: 'pickUpAllocation',
+    screenName: 'Allocation',
+    entryDescription: 'Manage pick-up allocations and tasks',
+    icon: IconPicking,
+    navigationScreenName: 'PickUpEntryScreen',
+    group: 'OUTBOUND'
   },
   {
-    screenName: 'Products',
-    icon: require('../../assets/images/product.png'),
-    navigationScreenName: 'Products'
+    key: 'picking',
+    screenName: 'Picking',
+    entryDescription: 'Manage and group picking tasks',
+    icon: IconPicking,
+    navigationScreenName: 'PickingPickType',
+    group: 'OUTBOUND'
   },
   {
-    screenName: 'Inventory',
-    icon: require('../../assets/images/inventory.png'),
-    navigationScreenName: 'Product Summary'
+    key: 'packing',
+    screenName: 'Packing',
+    entryDescription: 'Manage packing tasks and shipments',
+    icon: IconPacking,
+    navigationScreenName: 'OutboundStockList',
+    group: 'OUTBOUND'
   },
   {
+    key: 'createLPN',
     screenName: 'Create LPN',
-    icon: require('../../assets/images/lookup.png'),
-    navigationScreenName: 'CreateLpn'
+    entryDescription: 'Create a new License Plate Number (LPN)',
+    icon: IconCreateLPN,
+    navigationScreenName: 'CreateLpn',
+    group: 'OUTBOUND'
   },
   {
-    screenName: 'Pending Transfers',
-    icon: require('../../assets/images/transfer.png'),
-    navigationScreenName: 'Transfers'
+    key: 'moveToStaging',
+    screenName: 'Move To Staging',
+    entryDescription: 'Manage moving picked items to staging area.',
+    icon: IconGarage,
+    navigationScreenName: 'PickingMoveToStaging',
+    group: 'OUTBOUND'
   },
   {
+    key: 'loading',
+    screenName: 'Loading',
+    entryDescription: 'Manage loading tasks and shipments',
+    icon: IconLoading,
+    navigationScreenName: 'OutboundLoadingList',
+    group: 'OUTBOUND'
+  },
+  {
+    key: 'legacy-picking',
+    screenName: 'Legacy Picking',
+    entryDescription: 'Manage orders and picking tasks',
+    icon: IconPicking,
+    navigationScreenName: 'Orders',
+    defaultVisible: false,
+    group: 'OUTBOUND'
+  },
+  {
+    key: 'products',
+    screenName: 'Search Products',
+    entryDescription: 'Manage products and product details',
+    icon: IconProducts,
+    navigationScreenName: 'Products',
+    group: 'INVENTORY'
+  },
+  {
+    key: 'legacy-inventory',
+    screenName: 'Search Inventory',
+    entryDescription: 'View and manage the current inventory',
+    icon: IconInventory,
+    navigationScreenName: 'Product Summary',
+    group: 'INVENTORY'
+  },
+  {
+    key: 'transfers',
+    screenName: 'Transfer Stock',
+    entryDescription: 'Manage pending internal transfers',
+    icon: IconPendingTransfers,
+    navigationScreenName: 'Transfers',
+    group: 'INVENTORY'
+  },
+  {
+    key: 'cycleCount',
+    screenName: 'Cycle Count',
+    entryDescription: 'Manage inventory cycle counts',
+    icon: IconInventory,
+    navigationScreenName: 'CycleCountListEntry',
+    group: 'INVENTORY'
+  },
+  {
+    key: 'replenishment',
+    screenName: 'Replenishment',
+    entryDescription: 'Manage inventory replenishment tasks',
+    icon: IconProducts,
+    navigationScreenName: 'ReplenishmentPickingLocation',
+    group: 'INVENTORY'
+  },
+  {
+    key: 'scan',
     screenName: 'Scan',
-    icon: require('../../assets/images/scan.jpg'),
-    navigationScreenName: 'Scan'
+    entryDescription: 'Scan barcodes and QR codes for quick access',
+    icon: IconScan,
+    navigationScreenName: 'Scan',
+    group: 'MISCELLANEOUS'
+  },
+  {
+    key: 'settings',
+    screenName: 'Settings',
+    entryDescription: 'Manage application settings and preferences',
+    icon: IconSettings,
+    navigationScreenName: 'Settings',
+    group: 'MISCELLANEOUS'
   }
 ];
 
-export default dashboardData;
+export function getDashboardEntries() {
+  return dashboardEntries;
+}
+
+export function getDashboardEntriesKeys() {
+  return dashboardEntries.map((entry) => entry.key);
+}
+
+export function getGroupDisplayName(group: DashboardGroup): string {
+  const groupNames: Record<DashboardGroup, string> = {
+    INBOUND: 'INBOUND',
+    OUTBOUND: 'OUTBOUND',
+    INVENTORY: 'INVENTORY',
+    MISCELLANEOUS: 'MISCELLANEOUS'
+  };
+  return groupNames[group];
+}
+
+export function getDashboardEntriesByGroup(group: DashboardGroup): DashboardEntry[] {
+  return dashboardEntries.filter((entry) => entry.group === group);
+}
+
+export const GROUP_ORDER: DashboardGroup[] = ['INBOUND', 'OUTBOUND', 'INVENTORY', 'MISCELLANEOUS'];

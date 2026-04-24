@@ -1,153 +1,204 @@
-/* eslint-disable no-undef */
-import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View, ScrollView, ListRenderItemInfo, ToastAndroid } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import styles from './styles';
-import { Card } from 'react-native-paper';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, ListRenderItemInfo, RefreshControl, ToastAndroid, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Text, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import showPopup from '../../components/Popup';
-import { getStockTransfersSummary, completeStockTransfer } from '../../redux/actions/transfers';
-import EmptyView from '../../components/EmptyView';
-import Button from '../../components/Button';
-import { LayoutStyle } from '../../assets/styles';
 
-const TransferDetails = () => {
-  const route = useRoute();
+import ArrowRight from '../../assets/images/arrow_right.svg';
+import Button from '../../components/Button';
+import { TransferDetailsSkeleton } from '../../components/ContentSkeleton';
+import EmptyView from '../../components/EmptyView';
+import { EMPTY_FALLBACK } from '../../constants';
+import { completeStockTransfer, getStockTransfersSummary } from '../../redux/actions/transfers';
+import styles from './styles';
+
+type TransferDetailsRouteParams = {
+  TransferDetails: {
+    transfers: any;
+    onCallBackHandler: (data: any) => void;
+  };
+};
+
+type TransferDetailsRouteProp = RouteProp<TransferDetailsRouteParams, 'TransferDetails'>;
+
+const COMPLETABLE_STATUSES = ['PENDING', 'APPROVED'];
+
+export default function TransferDetails() {
+  const route = useRoute<TransferDetailsRouteProp>();
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
-  const [transferDetail, setTransferDetails] = useState<any>({
-    stockTransferItems: []
-  });
-  const { transfers }: any = route.params;
-  useEffect(() => {
-    getTransferSummary(transfers?.id);
-  }, []);
+  const { transfers, onCallBackHandler } = route.params;
 
-  const getTransferSummary = (id: string) => {
-    const callback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.errorMessage ? 'Transfer Details' : null,
-          message: data.errorMessage ?? `Failed to load Transfer details ${id}`,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(getStockTransfersSummary(id, callback));
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        if (data && Object.keys(data).length !== 0) {
-          setTransferDetails(data);
+  const [transferDetail, setTransferDetail] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchTransferSummary = useCallback(() => {
+    setIsLoading(true);
+    dispatch(
+      getStockTransfersSummary(transfers?.id, (data: any) => {
+        setIsLoading(false);
+        if (data?.error) {
+          Alert.alert('Failed to Load', data.errorMessage ?? 'Could not load transfer details.', [
+            { text: 'Retry', onPress: fetchTransferSummary },
+            { text: 'Cancel', style: 'cancel' }
+          ]);
+        } else if (data) {
+          setTransferDetail(data);
         }
-      }
-    };
-    dispatch(getStockTransfersSummary(id, callback));
-  };
+      })
+    );
+  }, [dispatch, transfers?.id]);
 
-  const completeTransfers = (stockTransfer: any) => {
-    const callback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.errorMessage ? 'Failed to Save' : null,
-          message: data.errorMessage ?? 'Failed to Transfer details',
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(completeStockTransfer(stockTransfer?.id, callback));
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        ToastAndroid.show('Stock Transferred successfully', ToastAndroid.SHORT);
-        navigation.goBack();
-        route?.params?.onCallBackHandler(data);
-      }
-    };
-    dispatch(completeStockTransfer(stockTransfer?.id, callback));
-  };
+  useEffect(() => {
+    fetchTransferSummary();
+  }, [fetchTransferSummary]);
 
-  const RenderData = ({ title, subText }: any): JSX.Element => {
+  const handleComplete = useCallback(() => {
+    if (!transferDetail) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    dispatch(
+      completeStockTransfer(transferDetail, (data: any) => {
+        setIsSubmitting(false);
+        if (data?.error) {
+          Alert.alert('Transfer Failed', data.errorMessage ?? 'Failed to complete transfer.', [
+            { text: 'Retry', onPress: handleComplete },
+            { text: 'Cancel', style: 'cancel' }
+          ]);
+        } else {
+          ToastAndroid.show('Stock transferred successfully', ToastAndroid.SHORT);
+          onCallBackHandler?.(data);
+          navigation.goBack();
+        }
+      })
+    );
+  }, [transferDetail, dispatch, navigation, onCallBackHandler]);
+
+  const items = transferDetail?.stockTransferItems ?? [];
+  const canComplete = transferDetail && COMPLETABLE_STATUSES.includes(transferDetail.status);
+
+  const renderItem = ({ item }: ListRenderItemInfo<any>) => (
+    <Card style={styles.card}>
+      <Card.Content style={styles.cardContent}>
+        <View style={styles.cardTopRow}>
+          <View style={styles.cardProductInfo}>
+            <Text style={styles.cardProductCode}>{item?.product?.productCode}</Text>
+            <Text style={styles.cardProductName} numberOfLines={2}>
+              {item?.product?.name}
+            </Text>
+            {item.quantityOnHand !== null && (
+              <Text style={styles.cardOnHand}>
+                On Hand: <Text style={styles.cardOnHandValue}>{item.quantityOnHand}</Text>
+              </Text>
+            )}
+          </View>
+          <View style={styles.cardQuantityBlock}>
+            <Text style={styles.cardQuantityValue}>{item.quantity}</Text>
+            <Text style={styles.cardQuantityLabel}>TRANSFER QTY</Text>
+          </View>
+        </View>
+
+        <View style={styles.binFlow}>
+          <View style={styles.binBlock}>
+            <Text style={styles.binLabel}>From</Text>
+            <Text style={styles.binValue} numberOfLines={1}>
+              {item?.originBinLocation?.name ?? EMPTY_FALLBACK}
+            </Text>
+          </View>
+          <ArrowRight width={20} height={20} />
+          <View style={styles.binBlock}>
+            <Text style={styles.binLabel}>To</Text>
+            <Text style={styles.binValue} numberOfLines={1}>
+              {item?.destinationBinLocation?.name ?? EMPTY_FALLBACK}
+            </Text>
+          </View>
+        </View>
+      </Card.Content>
+    </Card>
+  );
+
+  if (isLoading) {
+    return <TransferDetailsSkeleton />;
+  }
+
+  if (!transferDetail) {
     return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
+      <View style={styles.loadingContainer}>
+        <EmptyView
+          isRefresh
+          title="Transfer Not Found"
+          description="Could not load transfer details."
+          onPress={fetchTransferSummary}
+        />
       </View>
     );
-  };
+  }
 
-  const renderTransferItem = (): JSX.Element => {
-    return (
-      <Card style={LayoutStyle.listItemContainer}>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Order Number'} subText={transferDetail?.stockTransferNumber} />
-            <RenderData title={'Status'} subText={transferDetail?.status} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin'} subText={transferDetail?.['origin.name']} />
-            <RenderData title={'Destination'} subText={transferDetail?.['destination.name']} />
-          </View>
-
-          <View style={styles.rowItem}>
-            <RenderData title={'Description'} subText={transferDetail?.description} />
-            <RenderData title={'Number of Items'} subText={transferDetail?.stockTransferItems?.length} />
-          </View>
-
-          <View style={styles.rowItem}>
-            <RenderData title={'Created Date'} subText={transferDetail?.dateCreated} />
-          </View>
-        </Card.Content>
-      </Card>
-    );
-  };
-
-  const renderListItem = (item: any, index: any) => {
-    return (
-      <Card key={index} style={LayoutStyle.listItemContainer}>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={item?.['product.productCode']} />
-            <RenderData title={'Product Name'} subText={item?.['product.name']} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin Bin Location'} subText={item?.['originBinLocation.name']} />
-            <RenderData title={'Destination Bin Location'} subText={item?.['destinationBinLocation.name']} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Quantity'} subText={item.quantity} />
-            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
-          </View>
-
-          <View style={styles.rowItem}>
-            <RenderData title={'Status'} subText={item.status} />
-          </View>
-        </Card.Content>
-      </Card>
-    );
-  };
   return (
-    <View style={styles.mainContainer}>
-      <ScrollView contentContainerStyle={styles.mainContainer}>
-        {renderTransferItem()}
+    <View style={styles.screenContainer}>
+      <View style={styles.detailsContainer}>
+        <View style={styles.headerRow}>
+          <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipText}>
+            {transferDetail.stockTransferNumber}
+          </Chip>
+          <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+            {transferDetail.status}
+          </Chip>
+        </View>
 
-        {transferDetail?.stockTransferItems?.length > 0 ? (
-          <FlatList
-            data={transferDetail?.stockTransferItems}
-            horizontal={false}
-            numColumns={1}
-            ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
-            renderItem={(item: ListRenderItemInfo<any>) => renderListItem(item?.item, item.index)}
-          />
-        ) : null}
-      </ScrollView>
+        <Divider style={styles.contentDivider} />
 
-      <View style={styles.bottom}>
-        <Button title="Complete Transfer" onPress={() => completeTransfers(transferDetail)} />
+        <Title style={styles.title}>{`Created on: ${transferDetail.dateCreated}`}</Title>
+        <Caption>{`Description: ${transferDetail.description ?? EMPTY_FALLBACK}`}</Caption>
+
+        <View style={styles.binFlow}>
+          <View style={styles.binBlock}>
+            <Text style={styles.binLabel}>Origin</Text>
+            <Text style={styles.binValue} numberOfLines={1}>
+              {transferDetail.origin?.name ?? EMPTY_FALLBACK}
+            </Text>
+          </View>
+          <ArrowRight width={18} height={18} />
+          <View style={styles.binBlock}>
+            <Text style={styles.binLabel}>Destination</Text>
+            <Text style={styles.binValue} numberOfLines={1}>
+              {transferDetail.destination?.name ?? EMPTY_FALLBACK}
+            </Text>
+          </View>
+        </View>
       </View>
+
+      <Divider />
+
+      <FlatList
+        style={styles.contentContainer}
+        data={items}
+        keyExtractor={(item, index) => item?.id ?? String(index)}
+        ListHeaderComponent={
+          items.length > 0 ? (
+            <Text style={styles.listSectionLabel}>{`Items To Transfer (${items.length})`}</Text>
+          ) : null
+        }
+        ListEmptyComponent={<EmptyView title="No Items" description="There are no items in this transfer." />}
+        renderItem={renderItem}
+        contentContainerStyle={styles.itemListContainer}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchTransferSummary} />}
+      />
+
+      {canComplete && (
+        <View style={styles.bottom}>
+          <Button
+            title={isSubmitting ? 'Completing...' : 'Complete Transfer'}
+            mode="contained"
+            size="100%"
+            disabled={items.length === 0 || isSubmitting}
+            onPress={handleComplete}
+          />
+        </View>
+      )}
     </View>
   );
-};
-export default TransferDetails;
+}

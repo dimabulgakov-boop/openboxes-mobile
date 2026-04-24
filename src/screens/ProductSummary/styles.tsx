@@ -6,40 +6,37 @@ export default StyleSheet.create({
     flex: 1,
     zIndex: -1
   },
-  itemView: {
-    marginStart: 10,
-    marginEnd: 10,
-    marginTop: 5
+  subheading: {
+    fontWeight: 'bold',
+    color: Theme.colors.text
   },
-  rowItem: {
+  headerRow: {
     flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    marginTop: 1,
-    padding: 2,
-    marginStart: 4,
-    width: '100%',
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
-  columnItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    width: '50%'
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8,
+    backgroundColor: Theme.colors.background
   },
-  label: {
+  contentDivider: {
+    marginVertical: 8
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    marginTop: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  chipText: {
     fontSize: 12,
-    color: Theme.colors.placeholder
+    color: Theme.colors.text
   },
-  value: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    width: '90%'
-  },
-  headerTitle: {
-    fontWeight: 'bold',
-    backgroundColor: 'white',
-    margin: 10,
-    padding: 5,
-    fontSize: 16
+  skeletonContainer: {
+    padding: Theme.spacing.large
   }
 });

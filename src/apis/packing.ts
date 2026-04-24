@@ -2,20 +2,20 @@ import apiClient from '../utils/ApiClient';
 
 export function getShipmentsReadyToBePacked(locationId: string, shipmentStatusCode: string) {
   return apiClient.get(
-    '/shipments?origin.id=' + locationId + '&shipmentStatusCode=' + shipmentStatusCode + '&requisitionStatus=PICKED'
+    '/shipments?origin=' +
+      locationId +
+      '&shipmentStatusCode=' +
+      shipmentStatusCode +
+      '&requisitionStatus=PICKED&requisitionStatus=CHECKING'
   );
 }
 
-export function getShipmentReadyToBePacked(id: string) {
-  return apiClient.get('/shipments/' + id);
-}
-
-export function getShipmentPacking(id: string) {
+export function getShipment(id: string) {
   return apiClient.get(`/shipments/${id}`);
 }
 
 export function getShipmentOrigin(id: string) {
-  return apiClient.get(`/shipments/?origin.id=${id}`);
+  return apiClient.get(`/shipments/?origin=${id}`);
 }
 export const getContainerDetails = (id: string) => {
   return apiClient.get(`/generic/container/${id}`);
@@ -26,5 +26,5 @@ export const getContainerType = () => {
 };
 
 export const submitShipmentItems = (id: string, requestBody: any) => {
-  return apiClient.post(`/shipmentItems/${id}`, requestBody);
+  return apiClient.post(`/shipments/${id}`, requestBody);
 };

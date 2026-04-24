@@ -14,45 +14,40 @@ export const GET_PICKLIST_REQUEST_SUCCESS_FAIL = 'GET_PICKLIST_REQUEST_SUCCESS_F
 export const SUBMIT_PACKING_LOCATION_REQUEST = 'SUBMIT_PACKING_LOCATION_REQUEST';
 export const SUBMIT_PACKING_LOCATION_SUCCESS = 'SUBMIT_PACKING_LOCATION_SUCCESS';
 
-export function getOrdersAction(value: string | null, callback: (products: any) => void) {
+export function getOrdersAction(
+  value: string | null,
+  callback: (products: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: GET_ORDERS_REQUEST,
     payload: value,
     callback,
+    suppressLoading
   };
 }
 
-export function getPickListAction(
-  id: string,
-  callback: (products: any) => void,
-) {
+export function getPickListAction(id: string, callback: (products: any) => void) {
   return {
     type: GET_PICKLIST_REQUEST,
     payload: { id },
-    callback,
+    callback
   };
 }
 
-export function getPickListItemAction(
-    id: string,
-    callback: (products: any) => void,
-) {
+export function getPickListItemAction(id: string, callback: (products: any) => void) {
   return {
     type: GET_PICKLIST_ITEM_REQUEST,
     payload: { id },
-    callback,
+    callback
   };
 }
 
-export function submitPickListItem(
-    id: string,
-    requestBody: any,
-    callback: (data: any) => void,
-) {
+export function submitPickListItem(id: string, requestBody: any, callback: (data: any) => void) {
   return {
     type: SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST,
     payload: { id, requestBody },
-    callback,
+    callback
   };
 }
 
@@ -60,18 +55,14 @@ export function getStockMovements(direction: string | null, status: string | nul
   return {
     type: GET_STOCK_MOVEMENT_LIST,
     payload: { direction, status },
-    callback,
+    callback
   };
 }
 
-export function submitPackingLocation(
-  id: string,
-  requestBody: any,
-  callback: (data: any) => void,
-) {
+export function submitPackingLocation(id: string, requestBody: any, callback: (data: any) => void) {
   return {
     type: SUBMIT_PACKING_LOCATION_REQUEST,
     payload: { id, requestBody },
-    callback,
+    callback
   };
 }

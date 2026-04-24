@@ -1,29 +1,60 @@
-/* eslint-disable complexity */
-/* eslint-disable prettier/prettier */
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import styles from './styles';
-import PrintModal from '../../components/PrintModal';
-import Refresh from '../../components/Refresh';
-import { DispatchProps, Props, State } from './types';
-import { vmMapper } from './VMMapper';
-import { getProductByIdAction } from '../../redux/actions/products';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Button as PaperButton, Paragraph, Subheading, Title } from 'react-native-paper';
 import { connect } from 'react-redux';
-import showPopup from '../../components/Popup';
-import { RootState } from '../../redux/reducers';
-import { Card } from 'react-native-paper';
-import RenderData from '../../components/RenderData';
+
 import Button from '../../components/Button';
+import { ProductDetailsSkeleton, CardSkeleton } from '../../components/ContentSkeleton';
+import EmptyView from '../../components/EmptyView';
+import PrintModal from '../../components/PrintModal';
+import { HYPHEN } from '../../constants';
+import { getProductByIdAction, updateProductIdentifierAction } from '../../redux/actions/products';
+import { RootState } from '../../redux/reducers';
+import EditBarcodeModal from './EditBarcodeModal';
+import styles from './styles';
+import { DispatchProps, Props, State } from './Types';
+import { vmMapper } from './VMMapper';
+
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card style={styles.sectionCard}>
+      <Card.Title titleStyle={styles.sectionTitle} title={title} />
+      <Card.Content>{children}</Card.Content>
+    </Card>
+  );
+}
+
+function RowDetail({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.row}>
+      <Paragraph>{label}</Paragraph>
+      <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+        {value}
+      </Chip>
+    </View>
+  );
+}
 
 class ProductDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       visible: false,
-      productDetails: {}
+      productDetails: {},
+      editBarcodeVisible: false,
+      isLoading: true
     };
+  }
+
+  componentDidMount() {
+    this.getProduct();
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.route.params.refetchProduct && !prevProps.route.params.refetchProduct) {
+      const { product } = this.props.route.params;
+      this.getProductDetails(product.id);
+    }
   }
 
   getProduct = () => {
@@ -31,63 +62,54 @@ class ProductDetails extends React.Component<Props, State> {
     this.getProductDetails(product.id);
   };
 
-  closeModal = () => {
-    this.setState({ visible: false });
-  };
+  getProductDetails = (id: string) => {
+    this.props.navigation.setParams({ refetchProduct: false });
 
-  handleClick = () => {
-    const { product } = this.props.route.params;
-    this.props.getProductByIdAction(product.id, data => {
-      this.setState({ visible: true });
-    });
-  };
-
-  componentDidMount() {
-    this.getProduct();
-  }
-
-  componentDidUpdate() {
-    if (this.props.route.params.refetchProduct) {
-      const { product } = this.props.route.params;
-      this.getProductDetails(product.id);
-    }
-  }
-
-  getProductDetails(id: string) {
-    this.props.navigation.setParams({ refetchProduct : false });
-    this.props.showScreenLoading('');
     if (!id) {
-      showPopup({
-        message: 'Product id is empty',
-        positiveButton: { text: 'Ok' }
-      });
+      Alert.alert('Error', 'Product ID is empty.');
       return;
     }
 
+    this.setState({ isLoading: true });
+
     const actionCallback = (data: any) => {
+      this.setState({ isLoading: false });
       if (data?.error) {
-        showPopup({
-          title: data.errorMessage
-            ? `Failed to load product details with value = "${id}"`
-            : null,
-          message:
-            data.errorMessage ??
-            `Failed to load product details with value = "${id}"`,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              this.props.getProductByIdAction(id, actionCallback);
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
+        Alert.alert('Failed to Load', data.errorMessage ?? 'Failed to load product details.', [
+          { text: 'Retry', onPress: () => this.getProductDetails(id) },
+          { text: 'Cancel', style: 'cancel' }
+        ]);
       } else {
         this.setState({ productDetails: data });
       }
     };
-    this.props.hideScreenLoading();
+
     this.props.getProductByIdAction(id, actionCallback);
-  }
+  };
+
+  handlePrint = () => {
+    const { product } = this.props.route.params;
+    this.props.getProductByIdAction(product.id, () => {
+      this.setState({ visible: true });
+    });
+  };
+
+  handleSaveBarcode = (newBarcode: string) => {
+    const { productDetails } = this.state;
+    const id = productDetails.id;
+    if (!id) {
+      return;
+    }
+
+    this.props.updateProductIdentifierAction(id, 'upc', newBarcode, (response: any) => {
+      if (response?.error) {
+        Alert.alert('Error', response.errorMessage ?? 'Product identifier update failed.');
+        return;
+      }
+      this.setState({ editBarcodeVisible: false });
+      this.getProductDetails(id);
+    });
+  };
 
   navigateToDetails = (item: any) => {
     this.props.navigation.navigate('ViewAvailableItem', {
@@ -96,199 +118,160 @@ class ProductDetails extends React.Component<Props, State> {
     });
   };
 
-  renderListItem = (item: any, index: any) => (
-    <TouchableOpacity
-      key={index}
-      style={styles.itemView}
-      onPress={() => this.navigateToDetails(item)}>
-      <Card>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData
-              title={'Bin Location'}
-              subText={item?.binLocation?.name ?? 'Default'}
-            />
-            {item.quantityOnHand ? (
-              <RenderData
-                title={'Quantity OnHand'}
-                subText={item.quantityOnHand}
-              />
-            ) : null}
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData
-              title={'Lot Number'}
-              subText={item?.inventoryItem?.lotNumber ?? 'Default'}
-            />
-            {item.quantityAvailable ? (
-              <RenderData
-                title={'Quantity Available'}
-                subText={item.quantityAvailable}
-              />
-            ) : null}
-          </View>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
-  );
+  renderAvailableItem = (item: any, index: number) => {
+    const { productSummaryConfig } = this.props;
+    const showLotNumber = productSummaryConfig?.lotNumber !== false;
+
+    return (
+      <TouchableOpacity key={index} style={styles.itemView} onPress={() => this.navigateToDetails(item)}>
+        <Card style={styles.cardContainer}>
+          <Card.Content>
+            <View style={styles.headerRow}>
+              <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
+                {`Bin Location: ${item?.binLocation?.name ?? 'Default'}`}
+              </Chip>
+            </View>
+            <Divider style={styles.contentDivider} />
+
+            <Subheading style={styles.subheading}>{item?.product?.name}</Subheading>
+            {showLotNumber && <Caption>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>}
+
+            <View style={styles.additionalInfoRow}>
+              {item.quantityOnHand ? (
+                <Chip icon="package-variant" style={styles.chipDefault} textStyle={styles.chipText}>
+                  {`Qty On Hand: ${item.quantityOnHand}`}
+                </Chip>
+              ) : null}
+              {item.quantityAvailable ? (
+                <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+                  {`Qty Available: ${item.quantityAvailable}`}
+                </Chip>
+              ) : null}
+            </View>
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
+    );
+  };
 
   render() {
-    const vm = vmMapper(this.state.productDetails, this.state);
+    const { isLoading, productDetails, visible, editBarcodeVisible } = this.state;
     const product = this.props.selectedProduct;
-    const { visible } = this.state;
+
+    if (isLoading) {
+      return (
+        <View style={styles.screenContainer}>
+          <ProductDetailsSkeleton />
+          <View style={styles.detailsSection}>
+            <CardSkeleton />
+            <CardSkeleton />
+          </View>
+        </View>
+      );
+    }
+
+    if (!productDetails?.id) {
+      return (
+        <View style={styles.emptyContainer}>
+          <EmptyView
+            isRefresh
+            title="Product Not Found"
+            description="Could not load product details."
+            onPress={this.getProduct}
+          />
+        </View>
+      );
+    }
+
+    const vm = vmMapper(productDetails);
+    const filteredItems =
+      vm?.availableItems?.filter((item: any) => item.quantityOnHand > 0 || item.quantityAvailable > 0) ?? [];
+
     return (
-      <View
-        style={{
-          flexDirection: 'column',
-          flex: 1
-        }}>
+      <View style={styles.screenContainer}>
         <PrintModal
           visible={visible}
-          closeModal={this.closeModal}
+          closeModal={() => this.setState({ visible: false })}
           product={product}
-          type={'products'}
+          type="products"
           defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
         />
-        <View style={styles.contentContainer}>
-          <Refresh onRefresh={this.getProduct}>
-            <View style={styles.header}>
-              <View style={styles.rowItem}>
-                <View style={{ width: '75%' }}>
-                  <Text style={styles.name}>{vm.productCode}</Text>
-                  <Text style={styles.name}>{vm.name}</Text>
-                </View>
-                <View style={{ width: '25%', alignItems: 'flex-end', flex: 1 }}>
-                  <Image
-                    style={{ width: 50, height: 50, resizeMode: 'contain' }}
-                    source={{ uri: vm.defaultImageUrl }}
-                  />
-                </View>
-              </View>
+        <EditBarcodeModal
+          visible={editBarcodeVisible}
+          currentBarcode={productDetails?.upc}
+          onClose={() => this.setState({ editBarcodeVisible: false })}
+          onSave={this.handleSaveBarcode}
+        />
+
+        <ScrollView>
+          <View style={styles.header}>
+            <View style={styles.headerRow}>
+              <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+                {vm.productCode || HYPHEN}
+              </Chip>
             </View>
-          </Refresh>
-          <ScrollView>
-            <Text style={styles.boxHeading}>Availability</Text>
-            <Card>
-              <View style={styles.container}>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Status'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.status}</Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Quantity On Hand'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityOnHand} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Quantity Available'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityAvailable} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Allocated to Order'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityAllocated} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'On Order'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>
-                      {vm.quantityOnOrder} {vm.unitOfMeasure}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-            <Text style={styles.boxHeading}>Details</Text>
-            <Card>
-              <View style={styles.container}>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Product Code'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.productCode}</Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Category'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.category.name}</Text>
-                  </View>
-                </View>
-                {vm?.attributes?.map((item, index) => {
-                  return (
-                    <View key={index} style={styles.row}>
-                      <Text style={styles.label}>{item.name}</Text>
-                      <Text style={styles.value}>{item.value}</Text>
-                    </View>
-                  );
-                })}
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Product Type'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.productType.name}</Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.label}>
-                    <Text>{'Price per unit'}</Text>
-                  </View>
-                  <View style={styles.value}>
-                    <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-            <Text style={styles.boxHeading}>Available Items</Text>
-            <Card>
-              {vm?.availableItems?.map((item, index) => {
-                return this.renderListItem(item, index);
-              })}
-              <Button
-                title={'Print Barcode Label'}
-                onPress={this.handleClick}
-              />
-            </Card>
-          </ScrollView>
-        </View>
+
+            <Divider style={styles.contentDivider} />
+
+            <Title style={styles.title}>{vm.name}</Title>
+            <Caption style={styles.subtitle}>{`Barcode: ${vm.upc}`}</Caption>
+
+            <View style={styles.actionButtons}>
+              <PaperButton icon="barcode" mode="contained" onPress={() => this.setState({ editBarcodeVisible: true })}>
+                Edit Barcode
+              </PaperButton>
+              <PaperButton style={styles.fieldGap} icon="refresh" mode="contained" onPress={this.getProduct}>
+                Refresh Availability
+              </PaperButton>
+            </View>
+          </View>
+
+          <Divider />
+
+          <View style={styles.detailsSection}>
+            <SectionCard title="Availability">
+              {[
+                { label: 'Status', value: vm.status },
+                { label: 'Quantity On Hand', value: `${vm.quantityOnHand} ${vm.unitOfMeasure}` },
+                { label: 'Quantity Available', value: `${vm.quantityAvailable} ${vm.unitOfMeasure}` }
+              ].map((item) => (
+                <RowDetail key={item.label} label={item.label} value={item.value} />
+              ))}
+            </SectionCard>
+
+            <SectionCard title="Details">
+              {[
+                { label: 'Product Code', value: vm.productCode || HYPHEN },
+                { label: 'Category', value: vm.category.name || HYPHEN },
+                { label: 'Product Type', value: vm.productType.name || 'Default' },
+                { label: 'Price Per Unit', value: String(vm.pricePerUnit) || HYPHEN }
+              ].map((item) => (
+                <RowDetail key={item.label} label={item.label} value={item.value} />
+              ))}
+            </SectionCard>
+
+            {filteredItems.length > 0 && (
+              <SectionCard title={`Available Items (${filteredItems.length})`}>
+                {filteredItems.map((item: any, index: number) => this.renderAvailableItem(item, index))}
+              </SectionCard>
+            )}
+
+            <Button style={styles.printButton} title="Print Barcode Label" size="100%" onPress={this.handlePrint} />
+          </View>
+        </ScrollView>
       </View>
     );
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
-  selectedProduct: state.productsReducer.selectedProduct
+  selectedProduct: state.productsReducer.selectedProduct,
+  productSummaryConfig: state.settingsReducer.productSummaryConfig
 });
+
 const mapDispatchToProps: DispatchProps = {
   getProductByIdAction,
-  showScreenLoading,
-  hideScreenLoading
+  updateProductIdentifierAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDetails);

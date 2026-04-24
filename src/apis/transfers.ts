@@ -5,15 +5,13 @@ export function stockTransfers(data: any) {
 }
 
 export function getStockTransfers(data: any) {
-  return apiClient.get('/stockTransfers', data);
+  return apiClient.get('/stockTransfers/', data);
 }
 
 export function fetchStockTransferSummary(id: string) {
   return apiClient.get(`/stockTransfers/${id}`);
 }
 
-export function completeStockTransfer(id: string) {
-  return apiClient.post(`/stockTransfers/${id}/status`, {
-    status: 'COMPLETED'
-  });
+export function completeStockTransfer(data: any) {
+  return apiClient.post(`/stockTransfers/${data.id}`, data);
 }

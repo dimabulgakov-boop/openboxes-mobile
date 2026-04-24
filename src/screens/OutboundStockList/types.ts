@@ -4,6 +4,8 @@ export interface State {
   error: string | null;
   shipments: Shipment[];
   filteredShipments: Shipment[];
+  loading: boolean;
+  searchTerm: string;
 }
 
 export interface OwnProps {
@@ -12,17 +14,15 @@ export interface OwnProps {
 }
 
 export interface StateProps {
-  outboundStockList: any;
   currentLocation: any;
 }
 
 export interface DispatchProps {
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
   getShipmentsReadyToBePacked: (
     locationId: string,
     shipmentStatusCode: string,
-    callback: (data: any) => void
+    callback: (data: any) => void,
+    suppressLoading?: boolean
   ) => void;
 }
 

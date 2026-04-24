@@ -8,10 +8,14 @@ export function fetchContainer(id: string) {
   return apiClient.get('/generic/container/' + id);
 }
 
+export function getAllContainers() {
+  return apiClient.get(`/containers`);
+}
+
 export function getContainerDetail(id: string) {
   return apiClient.get(`/containers/${id}/details`);
 }
 
-export function updateContainerStatus(id: string, status: any) {
-  return apiClient.post(`/containers/${id}/status`, { status });
+export function updateContainerStatus(id: string, requestBody: any) {
+  return apiClient.post(`/containers/${id}/status`, requestBody);
 }
