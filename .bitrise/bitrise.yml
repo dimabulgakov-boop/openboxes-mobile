@@ -5,7 +5,7 @@ project_type: react-native
 
 trigger_map:
 - push_branch: develop
-  workflow: android_only
+  workflow: android-only
 - push_branch: master
   workflow: app_distribution_to_uat_testers
 - pull_request_target_branch: develop
