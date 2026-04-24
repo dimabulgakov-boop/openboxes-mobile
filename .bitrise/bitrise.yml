@@ -4,10 +4,10 @@ default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: react-native
 
 trigger_map:
-- push_branch: master
-  workflow: app_distribution_to_testers
 - push_branch: develop
-  workflow: android-only
+  workflow: android_only
+- push_branch: master
+  workflow: app_distribution_to_uat_testers
 - pull_request_target_branch: develop
   enabled: false
   workflow: android-only
@@ -106,6 +106,7 @@ step_bundles:
   release-steps-android:
     description: |-
       Assemble the Android app and copy the APK to $BITRISE_DEPLOY_DIR.
+      Deploy to Bitrise.io and Appetize.io for internal QA.
       Currently, filenames are hardcoded, but they could be parameterized.
     steps:
       - yarn@0:
@@ -129,13 +130,49 @@ step_bundles:
       - deploy-to-bitrise-io@2:
           inputs:
           - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
-          - notify_email_list: "$UAT_TESTERS"
+          - notify_email_list: "$TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
       - appetize-deploy@0:
           inputs:
-            - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
-            - appetize_token: $APPETIZE_API_TOKEN
+          - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
+          - appetize_token: $APPETIZE_API_TOKEN
+  release-steps-android-signed:
+    description: |-
+      Assemble the Android app and copy the signed APK to $BITRISE_DEPLOY_DIR.
+      Currently, filenames are hardcoded, but they could be parameterized.
+    steps:
+      - yarn@0:
+          inputs:
+          - command: bundle:android
+          title: Run yarn command - bundle:android
+      - restore-gradle-cache@2: {}
+      - gradle-runner@3:
+          inputs:
+          - apk_file_exclude_filter: "*-unaligned.apk\n\n"
+          - cache_level: all
+          - gradle_task: assembleRelease
+          title: Gradle Runner - assembleRelease
+      - save-gradle-cache@1: {}
+      - sign-apk@2:
+          inputs:
+          - keystore_url: $BITRISEIO_ANDROID_KEYSTORE_1_URL
+          - keystore_password: $BITRISEIO_ANDROID_KEYSTORE_1_PASSWORD
+          - keystore_alias: $BITRISEIO_ANDROID_KEYSTORE_1_ALIAS
+          - private_key_password: $BITRISEIO_ANDROID_KEYSTORE_1_PRIVATE_KEY_PASSWORD
+      - script@1:
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_uat_b$BITRISE_BUILD_NUMBER.apk
+          title: Script - copy APK for deploy-to-bitrise-io step
+      - deploy-to-bitrise-io@2:
+          inputs:
+          - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_uat_b$BITRISE_BUILD_NUMBER.apk"
+          - notify_email_list: "$UAT_TESTERS"
+          - notify_user_groups: owner, admins
+          is_always_run: false
+      # TODO: Send to private GPS
   release-steps-ios:
     description: |-
       Assemble the iOS app and copy the *.app package to $BITRISE_DEPLOY_DIR.
@@ -177,6 +214,14 @@ workflows:
     - bundle::setup-steps-ios: {}
     - bundle::release-steps-android: {}
     - bundle::release-steps-ios: {}
+    triggers:
+      enabled: false
+  app_distribution_to_uat_testers:
+    steps:
+    - bundle::setup-steps: {}
+    - bundle::setup-steps-android: {}
+    - bundle::branding: {}
+    - bundle::release-steps-android-signed: {}
     triggers:
       enabled: false
   android-only:
