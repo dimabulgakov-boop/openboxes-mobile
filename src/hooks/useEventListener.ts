@@ -34,6 +34,8 @@ const useEventListener = () => {
     sendCommandResult: 'false'
   });
   const broadcastReceiver = (intent: any) => {
+    // [SCAN-DEBUG] TEMP: full DataWedge intent (intent-output path) incl. version / active-profile / barcode extras. Remove before release.
+    console.info('[SCAN-DEBUG] broadcastReceiver intent =', JSON.stringify(intent));
     //  Broadcast received
     if (intent.hasOwnProperty(PROPERTY.RESULT_INFO)) {
       var commandResult =
@@ -48,6 +50,8 @@ const useEventListener = () => {
       //  The version has been returned (DW 6.3 or higher).  Includes the DW version along with other subsystem versions e.g MX
       var versionInfo = intent[PROPERTY.VERSION_INFO];
       var datawedgeVersion = versionInfo[PROPERTY.DATAWEDGE];
+      // [SCAN-DEBUG] TEMP: detected DataWedge version drives which profile config is applied. Remove before release.
+      console.info('[SCAN-DEBUG] DataWedge version =', JSON.stringify(datawedgeVersion));
       //  Fire events sequentially so the application can gracefully degrade the functionality available on earlier DW versions
       if (datawedgeVersion >= VERSION.V06_3) {
         datawedge63();
@@ -162,6 +166,8 @@ const useEventListener = () => {
   };
 
   const activeProfile = (theActiveProfile: string) => {
+    // [SCAN-DEBUG] TEMP: should read "OPENBOXES" once our intent profile is in effect. Remove before release.
+    console.info('[SCAN-DEBUG] activeProfile =', JSON.stringify(theActiveProfile));
     state.activeProfileText = theActiveProfile;
     setState({ ...state });
   };
@@ -169,6 +175,11 @@ const useEventListener = () => {
   const barcodeScanned = (scanData: any, timeOfScan: string) => {
     var scannedData = scanData[ACTION.DATA_STRING] ?? scanData.data;
     var scannedType = scanData[ACTION.LABEL_TYPE] ?? scanData.labelType;
+    // [SCAN-DEBUG] TEMP: extracted payload; accepted only when BOTH data and type are truthy. Remove before release.
+    console.info(
+      '[SCAN-DEBUG] barcodeScanned extracted',
+      JSON.stringify({ data: scannedData, type: scannedType, accepted: !!(scannedData && scannedType) })
+    );
     if (scannedData && scannedType) {
       let dataScanned = {
         data: scannedData,

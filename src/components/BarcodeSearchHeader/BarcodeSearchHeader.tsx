@@ -59,6 +59,8 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
   }, [navigation, props.resetSearch]);
 
   const onChangeText = (text: string) => {
+    // [SCAN-DEBUG] TEMP: Scan-screen keystroke/wedge text incl. any trailing \n or \r. Remove before release.
+    console.info('[SCAN-DEBUG] BarcodeSearchHeader.onChangeText', JSON.stringify(text), 'len=' + text.length);
     setSearchTerm(text);
     if (props.autoSearch) {
       debouncedSubmit(text);
@@ -66,6 +68,8 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
   };
 
   const onSubmitEditing = () => {
+    // [SCAN-DEBUG] TEMP: fires only when an ENTER/return suffix is received. Remove before release.
+    console.info('[SCAN-DEBUG] BarcodeSearchHeader.onSubmitEditing', JSON.stringify(searchTerm), 'len=' + searchTerm.length);
     debouncedSubmit.cancel();
     props.onSearchTermSubmit(searchTerm);
   };

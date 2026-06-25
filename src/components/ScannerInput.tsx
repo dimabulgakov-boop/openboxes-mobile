@@ -175,6 +175,8 @@ export function ScannerInput({
   };
 
   const handleChangeText = (text: string) => {
+    // [SCAN-DEBUG] TEMP: raw keystroke/wedge text incl. any trailing \n or \r. Remove before release.
+    console.info('[SCAN-DEBUG] ScannerInput.onChangeText', JSON.stringify(text), 'len=' + text.length);
     if (!shouldBeFocused) {
       return;
     }
@@ -182,6 +184,8 @@ export function ScannerInput({
   };
 
   const handleSubmitEditing = () => {
+    // [SCAN-DEBUG] TEMP: fires only when an ENTER/return suffix is received. Remove before release.
+    console.info('[SCAN-DEBUG] ScannerInput.onSubmitEditing', JSON.stringify(value), 'len=' + value.length);
     if (!shouldBeFocused) {
       return;
     }
