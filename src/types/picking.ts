@@ -14,6 +14,7 @@ export enum DeliveryTypeCode {
   LOCAL_DELIVERY = 'LOCAL_DELIVERY',
   SERVICE = 'SERVICE',
   WILL_CALL = 'WILL_CALL',
+  STOCK_TRANSFER_IBT = 'STOCK_TRANSFER_IBT',
   SHIP_TO = 'SHIP_TO',
   DEFAULT = 'DEFAULT'
 }
@@ -70,6 +71,12 @@ export type DeliveryType = {
   priority: number;
   label: string;
   code: DeliveryTypeCode;
+};
+
+export type DeliveryTypeOrderCount = {
+  deliveryTypeCode: DeliveryTypeCode;
+  availableCount: number;
+  totalCount: number;
 };
 
 export type AvailableItem = {

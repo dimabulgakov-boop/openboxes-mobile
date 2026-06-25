@@ -71,6 +71,12 @@ export default function SortationContainerScreen() {
 
     const expectedContainer = task?.container?.locationNumber;
 
+    // We need to send `override` as true if the expected container is not defined, otherwise we will show the mismatch dialog.
+    if (!expectedContainer) {
+      confirmContainer(code, true);
+      return;
+    }
+
     if (code !== expectedContainer) {
       setPendingContainerCode(code);
       setIsDialogVisible(true);
@@ -80,7 +86,7 @@ export default function SortationContainerScreen() {
     confirmContainer(code, false);
   }
 
-  function handleDialogScan(resolvedCode: string) {
+  function handleContainerOverride(resolvedCode: string) {
     setIsDialogVisible(false);
     setPutawayContainerBarcode(EMPTY_STRING);
     setPendingContainerCode('');
@@ -175,7 +181,7 @@ export default function SortationContainerScreen() {
           setPutawayContainerBarcode(EMPTY_STRING);
           setPendingContainerCode('');
         }}
-        onScan={handleDialogScan}
+        onConfirm={handleContainerOverride}
       />
     </ScrollView>
   );

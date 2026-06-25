@@ -5,6 +5,8 @@ import { Text } from 'react-native-paper';
 import Button from '../../components/Button';
 import { ContainerIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { appConfig, EMPTY_STRING, HYPHEN } from '../../constants';
 import Theme from '../../utils/Theme';
 import styles from './styles';
@@ -14,7 +16,7 @@ type ContainerMismatchDialogProps = {
   scannedContainer: string;
   expectedContainer: string | null | undefined;
   onDismiss: () => void;
-  onScan: (code: string) => void;
+  onConfirm: (code: string) => void;
 };
 
 export function ContainerMismatchDialog({
@@ -22,36 +24,25 @@ export function ContainerMismatchDialog({
   scannedContainer,
   expectedContainer,
   onDismiss,
-  onScan
+  onConfirm
 }: ContainerMismatchDialogProps) {
   const [dialogInput, setDialogInput] = useState<string>(EMPTY_STRING);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setDialogInput });
 
   const handleDismiss = () => {
     setDialogInput(EMPTY_STRING);
     onDismiss();
   };
 
-  const handleOverride = () => {
-    setDialogInput(EMPTY_STRING);
-    onScan(scannedContainer);
-  };
-
-  const handleScanSubmit = () => {
-    const trimmedInput = dialogInput?.trim();
+  const handleConfirm = (code: string) => {
+    const trimmedInput = code?.trim();
     if (!trimmedInput) {
+      Alert.alert('Container Required', 'Please scan, type, or search for the putaway container to use.');
       return;
     }
 
-    if (trimmedInput !== scannedContainer) {
-      Alert.alert(
-        'Container Mismatch',
-        'The scanned container does not match. Please scan the same container to confirm the override.'
-      );
-      setDialogInput(EMPTY_STRING);
-      return;
-    }
-
-    onScan(trimmedInput);
+    setDialogInput(EMPTY_STRING);
+    onConfirm(trimmedInput);
   };
 
   const displayExpectedContainer = expectedContainer || HYPHEN;
@@ -63,19 +54,24 @@ export function ContainerMismatchDialog({
           <Text style={styles.dialogTitle}>Wrong Container Number</Text>
           <Text style={styles.dialogText}>
             The scanned container ({scannedContainer}) didn't match the expected container ({displayExpectedContainer}).
-            Scan again or use the button to confirm.
+            Scan, type, or search for the container you want to use, then confirm.
           </Text>
           <View style={styles.bottomSpace}>
-            <ScannerInput
-              danger
-              leftIcon={<ContainerIcon size={24} color={Theme.colors.danger} />}
-              label="Container"
-              placeholder="Scan or type the container"
-              value={dialogInput}
-              autoSubmitTimeout={appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}
-              onChange={setDialogInput}
-              onSubmit={handleScanSubmit}
-            />
+            <View style={styles.scannerRow}>
+              <ScannerInput
+                danger
+                style={styles.scannerInput}
+                leftIcon={<ContainerIcon size={24} color={Theme.colors.danger} />}
+                label="Container"
+                placeholder="Scan or type the container"
+                value={dialogInput}
+                isEnabled={!isSearchOpen}
+                autoSubmitTimeout={appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}
+                onChange={setDialogInput}
+                onSubmit={handleConfirm}
+              />
+              <SearchButton searchType="container" {...searchButtonProps} />
+            </View>
           </View>
           <View style={[styles.dialogActions, styles.topSpace]}>
             <Button
@@ -92,7 +88,7 @@ export function ContainerMismatchDialog({
               style={styles.dialogButton}
               title="Override"
               mode="contained"
-              onPress={handleOverride}
+              onPress={() => handleConfirm(dialogInput || scannedContainer)}
             />
           </View>
         </View>
