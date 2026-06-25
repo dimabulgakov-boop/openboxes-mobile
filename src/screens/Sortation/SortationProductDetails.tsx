@@ -40,8 +40,8 @@ export default function SortationProductDetails({
 
       <Divider style={styles.contentDivider} />
 
-      <Title style={styles.title}>{name}</Title>
-      <Caption style={styles.caption}>{productCode}</Caption>
+      <Title style={styles.title}>{productCode}</Title>
+      <Caption style={styles.caption}>{name}</Caption>
 
       {product.description ? <Paragraph style={[styles.paragraphMuted]}>{product.description}</Paragraph> : null}
 
