@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Caption, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
 import ArrowRight from '../../assets/images/arrow_right.svg';
+import { Badge } from '../../components/Badge';
 import { SegmentedControl, SegmentedOption } from '../../components/SegmentedControl';
 import { EMPTY_FALLBACK } from '../../constants';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
@@ -65,7 +66,8 @@ export default function SortationProductDetails({
   onToggleDirectPutaway
 }: SortationProductDetailsProps) {
   const { productCode, name } = product;
-  const { shipmentNumber } = task ?? {};
+  const { shipmentNumber, backorderReference } = task ?? {};
+  const isCrossDock = Boolean(backorderReference);
 
   return (
     <View style={styles.productDetails}>
@@ -80,7 +82,16 @@ export default function SortationProductDetails({
 
       <Divider style={styles.contentDivider} />
 
-      <Title style={styles.title}>{productCode}</Title>
+      <View style={styles.titleRow}>
+        <Title style={styles.title}>{productCode}</Title>
+        <Badge
+          variant={isCrossDock ? 'success' : 'info'}
+          icon={isCrossDock ? 'swap-horizontal' : 'home'}
+          label={isCrossDock ? 'Cross-Dock' : 'Putaway'}
+          size="small"
+          style={styles.titleBadge}
+        />
+      </View>
       <Caption style={styles.caption}>{name}</Caption>
 
       {product.description ? <Paragraph style={[styles.paragraphMuted]}>{product.description}</Paragraph> : null}
@@ -88,6 +99,12 @@ export default function SortationProductDetails({
       <Chip icon="receipt" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
         ASN: <Text style={[styles.bold, styles.chipText]}>{shipmentNumber ?? EMPTY_FALLBACK}</Text>
       </Chip>
+
+      {backorderReference ? (
+        <Chip icon="link-variant" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+          Sales Link: <Text style={[styles.bold, styles.chipText]}>{backorderReference}</Text>
+        </Chip>
+      ) : null}
 
       {detailsChips.map(({ icon, value, label, isActive }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace, isActive && styles.chipActive]}>
