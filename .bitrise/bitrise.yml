@@ -8,8 +8,8 @@ trigger_map:
   workflow: android-only
 - push_branch: master
   workflow: app_distribution_to_uat_testers
+# Build a preview (APK + Appetize deploy) for every pull request into develop.
 - pull_request_target_branch: develop
-  enabled: false
   workflow: android-only
 - pull_request_source_branch: "*"
   enabled: false
@@ -133,10 +133,57 @@ step_bundles:
           - notify_email_list: "$TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
+      # Pick which Appetize app to deploy to based on build type: PR builds go to
+      # the PR preview app, everything else (e.g. develop push) to the main app.
+      # BITRISE_PULL_REQUEST is set (to the PR number) only on pull request builds.
+      - script@1:
+          title: Select Appetize app by build type
+          inputs:
+          - content: |-
+              set -euo pipefail
+              if [ -n "${BITRISE_PULL_REQUEST:-}" ]; then
+                echo "PR build - deploying to PR preview app"
+                envman add --key APPETIZE_PUBLIC_KEY --value "${APPETIZE_PR_PUBLIC_KEY:-}"
+              else
+                echo "Push build - deploying to main app"
+                envman add --key APPETIZE_PUBLIC_KEY --value "${APPETIZE_DEVELOP_PUBLIC_KEY:-}"
+              fi
       - appetize-deploy@0:
+          # Skip the deploy when no target app key is configured, so we never fall
+          # back to creating a new app (which would overwrite the main app).
+          run_if: '{{enveq "APPETIZE_PUBLIC_KEY" "" | not}}'
           inputs:
           - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
           - appetize_token: $APPETIZE_API_TOKEN
+          - public_key: $APPETIZE_PUBLIC_KEY
+      # Annotate the deployed Appetize app with build context (PR/branch/commit).
+      # The appetize-deploy step can't set a note, so call the v1 API directly.
+      # v1 supports "note" but not "tags"; failures here are non-fatal.
+      - script@1:
+          title: Set Appetize note with build context
+          run_if: '{{enveq "APPETIZE_PUBLIC_KEY" "" | not}}'
+          inputs:
+          - content: |-
+              set -euo pipefail
+              SHA="${BITRISE_GIT_COMMIT:-}"
+              SHA="${SHA:0:8}"
+              if [ -n "${BITRISE_PULL_REQUEST:-}" ]; then
+                NOTE="PR #${BITRISE_PULL_REQUEST} - ${BITRISE_GIT_BRANCH:-} - ${SHA} - build ${BITRISE_BUILD_NUMBER:-}"
+              else
+                NOTE="${BITRISE_GIT_BRANCH:-} - ${SHA} - build ${BITRISE_BUILD_NUMBER:-}"
+              fi
+              # Build the JSON body without jq (which may be skipped) so this step
+              # is self-contained. Escape backslashes and double quotes for JSON.
+              ESCAPED="$(printf '%s' "$NOTE" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')"
+              BODY="{\"note\":\"${ESCAPED}\"}"
+              if curl -fsS -X POST "https://api.appetize.io/v1/apps/${APPETIZE_PUBLIC_KEY}" \
+                   -H "X-API-KEY: ${APPETIZE_API_TOKEN}" \
+                   -H "Content-Type: application/json" \
+                   -d "$BODY" > /dev/null; then
+                echo "Set Appetize note: ${NOTE}"
+              else
+                echo "Warning: failed to set Appetize note (non-fatal)"
+              fi
   release-steps-android-signed:
     description: |-
       Assemble the Android app and copy the signed APK to $BITRISE_DEPLOY_DIR.
@@ -229,6 +276,26 @@ workflows:
     - bundle::setup-steps: {}
     - bundle::setup-steps-android: {}
     - bundle::branding: {}
+    # On PR builds only, mark the build as experimental: append "(Experimental)"
+    # to the app name AND give it a distinct applicationId. Appetize keys apps by
+    # applicationId, so the suffix makes the PR build a separate Appetize app
+    # (its own URL) instead of overwriting the stable app. Runs after branding
+    # (which sets app_name) and before the release assemble.
+    - script@1:
+        title: Mark PR builds as experimental (name + applicationId)
+        run_if: '{{getenv "BITRISE_PULL_REQUEST" | ne ""}}'
+        inputs:
+        - content: |-
+            set -euo pipefail
+            STRINGS_FILE="android/app/src/main/res/values/strings.xml"
+            GRADLE_FILE="android/app/build.gradle"
+            sed -i.bak -E 's#(<string name="app_name">)([^<]*)(</string>)#\1\2 (Experimental)\3#' "$STRINGS_FILE"
+            rm -f "$STRINGS_FILE.bak"
+            sed -i.bak -E 's#(applicationId "com\.openboxes\.android)(")#\1.experimental\2#' "$GRADLE_FILE"
+            rm -f "$GRADLE_FILE.bak"
+            echo "app_name and applicationId are now:"
+            grep app_name "$STRINGS_FILE"
+            grep applicationId "$GRADLE_FILE"
     - bundle::release-steps-android: {}
     triggers:
       enabled: false
@@ -283,6 +350,17 @@ app:
   - opts:
       is_expand: false
     VARIANT: staging
+  # Appetize app public keys (from the app's share URL: appetize.io/app/<key>).
+  # These are not secrets. The main app is used by develop; PR builds deploy to a
+  # separate PR preview app. Leave APPETIZE_PR_PUBLIC_KEY empty until the PR
+  # preview app exists — the appetize-deploy run_if guard skips the deploy while
+  # it is empty, so PR builds never overwrite the main app.
+  - opts:
+      is_expand: false
+    APPETIZE_DEVELOP_PUBLIC_KEY: 67t5r4akxrtgvujo7adbiifau4
+  - opts:
+      is_expand: false
+    APPETIZE_PR_PUBLIC_KEY: "b_wchsvah7t6ytekpcvd2pvqavty"
 
 meta:
   bitrise.io:
