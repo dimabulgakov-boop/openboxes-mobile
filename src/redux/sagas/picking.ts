@@ -15,6 +15,9 @@ import {
   GET_PICK_TASKS_BY_REQUISITION_REQUEST,
   GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS,
   GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL,
+  GET_OPEN_PICK_TASKS_REQUEST,
+  GET_OPEN_PICK_TASKS_REQUEST_FAIL,
+  GET_OPEN_PICK_TASKS_REQUEST_SUCCESS,
   GET_PICK_TASK_COUNTS_REQUEST,
   GET_PICK_TASK_COUNTS_REQUEST_FAIL,
   GET_PICK_TASK_COUNTS_REQUEST_SUCCESS,
@@ -58,6 +61,27 @@ function* getPickTasksAction(action: any) {
     yield put({ type: GET_PICK_TASKS_REQUEST_FAIL, payload: errorMessage });
     yield action.callback({ errorMessage });
     yield put(hideScreenLoading());
+  }
+}
+
+function* getOpenPickTasksAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // Call API to get all open pick tasks across every queue type.
+    // No full-screen loading indicator here on purpose: the list screen renders its own
+    // inline skeleton / pull-to-refresh state so the screen never blocks on the fetch.
+    // @ts-ignore
+    const response = yield call(api.getOpenPickTasksApi, currentLocation.id);
+    yield action.callback({ response });
+    yield put({ type: GET_OPEN_PICK_TASKS_REQUEST_SUCCESS, payload: response.data });
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Fetching Orders';
+    yield put({ type: GET_OPEN_PICK_TASKS_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
   }
 }
 
@@ -346,6 +370,7 @@ function* reallocatePickTaskAction(action: any) {
 
 export default function* watcher() {
   yield takeLatest(GET_PICK_TASKS_REQUEST, getPickTasksAction);
+  yield takeLatest(GET_OPEN_PICK_TASKS_REQUEST, getOpenPickTasksAction);
   yield takeLatest(GET_PICK_TASK_COUNTS_REQUEST, getPickTaskCountsAction);
   yield takeLatest(START_PICK_TASK_REQUEST, startPickTaskAction);
   yield takeLatest(PICK_PICK_TASK_REQUEST, pickPickTaskAction);

@@ -36,6 +36,7 @@ export type PickTask = {
   requisitionStatus?: string;
   requisitionType?: string;
   destination?: string;
+  destinationLocationType?: string;
 
   deliveryTypeCode?: DeliveryTypeCode;
 
@@ -72,6 +73,24 @@ export type DeliveryType = {
   priority: number;
   label: string;
   code: DeliveryTypeCode;
+};
+
+// A single open order in the Discrete Picking list, derived by grouping open pick
+// tasks that share a requisition.
+export type DiscretePickingOrder = {
+  requisitionId: string;
+  requisitionNumber?: string;
+  destination?: string;
+  destinationLocationType?: string;
+  deliveryTypeCode?: DeliveryTypeCode;
+  /** requisition.priority (lower = higher priority) */
+  priority?: number;
+  /** number of open pick tasks (line items) in this order */
+  taskCount: number;
+  /** true when at least one task is already being picked */
+  inProgress: boolean;
+  /** lowercased blob of order number, destination and product names for real-time search */
+  searchIndex: string;
 };
 
 export type DeliveryTypeOrderCount = {
