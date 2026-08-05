@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { DeviceEventEmitter, Platform } from 'react-native';
+import { DeviceEventEmitter, EmitterSubscription, Platform } from 'react-native';
 import DataWedgeIntents from 'react-native-datawedge-intents';
 
 import {
@@ -17,7 +17,21 @@ export type ScanResult = {
   labelType?: string;
 };
 
+type ScanCallback = (result: ScanResult) => void;
+
 let profileConfigured = false;
+
+// The scanner is owned by a single listener at a time. Enabled consumers are
+// tracked as a stack and only the most recently enabled one (top of stack)
+// receives scans, behind one shared DeviceEventEmitter subscription.
+//
+// A single hardware scan produces exactly one intent broadcast, which the
+// emitter dispatches to every registered listener. Without single-owner
+// delivery, when two ScannerInputs are momentarily mounted together — e.g. a
+// screen input and a modal dialog input during a dialog open/close transition —
+// both would handle the same scan and the value would be applied twice.
+const scanCallbacks: ScanCallback[] = [];
+let sharedSubscription: EmitterSubscription | null = null;
 
 function sendDataWedgeCommand(extraName: string, extraValue: unknown): void {
   DataWedgeIntents.sendBroadcastWithExtras({
@@ -45,7 +59,35 @@ function extractScan(intent: Record<string, any>): ScanResult | null {
   return { data: String(data).trim(), labelType: labelType ? String(labelType) : undefined };
 }
 
-export function useScanListener(onScan: (result: ScanResult) => void, enabled = true): void {
+function ensureSubscribed(): void {
+  if (sharedSubscription) {
+    return;
+  }
+  configureProfileOnce();
+  DataWedgeIntents.registerBroadcastReceiver({
+    filterActions: FILTER_ACTIONS,
+    filterCategories: FILTER_CATEGORY
+  });
+  sharedSubscription = DeviceEventEmitter.addListener(LISTENER.BROADCAST_INTENT, (intent: Record<string, any>) => {
+    const activeCallback = scanCallbacks[scanCallbacks.length - 1];
+    if (!activeCallback) {
+      return;
+    }
+    const result = extractScan(intent);
+    if (result) {
+      activeCallback(result);
+    }
+  });
+}
+
+function teardownIfIdle(): void {
+  if (scanCallbacks.length === 0 && sharedSubscription) {
+    sharedSubscription.remove();
+    sharedSubscription = null;
+  }
+}
+
+export function useScanListener(onScan: ScanCallback, enabled = true): void {
   const onScanRef = useRef(onScan);
   onScanRef.current = onScan;
 
@@ -54,20 +96,16 @@ export function useScanListener(onScan: (result: ScanResult) => void, enabled = 
       return;
     }
 
-    configureProfileOnce();
-    DataWedgeIntents.registerBroadcastReceiver({
-      filterActions: FILTER_ACTIONS,
-      filterCategories: FILTER_CATEGORY
-    });
+    const callback: ScanCallback = (result) => onScanRef.current(result);
+    scanCallbacks.push(callback);
+    ensureSubscribed();
 
-    const handleIntent = (intent: Record<string, any>) => {
-      const result = extractScan(intent);
-      if (result) {
-        onScanRef.current(result);
+    return () => {
+      const index = scanCallbacks.indexOf(callback);
+      if (index !== -1) {
+        scanCallbacks.splice(index, 1);
       }
+      teardownIfIdle();
     };
-
-    const subscription = DeviceEventEmitter.addListener(LISTENER.BROADCAST_INTENT, handleIntent);
-    return () => subscription.remove();
   }, [enabled]);
 }
