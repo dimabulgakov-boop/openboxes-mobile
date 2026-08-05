@@ -58,7 +58,11 @@ export const PROFILE_CONFIG2 = {
     PLUGIN_NAME: 'INTENT',
     RESET_CONFIG: 'true',
     PARAM_LIST: {
-      intent_output_enabled: 'true',
+      // OBLS-822 workaround: DataWedge intent output is disabled so scans are
+      // not captured via the intent broadcast (useScanListener). Scanning falls
+      // back to DataWedge keystroke output typing into the focused field, which
+      // avoids the duplicate scan while a developer works on a proper fix.
+      intent_output_enabled: 'false',
       intent_action: 'com.openboxes.android.ACTION',
       intent_delivery: '2'
     }
