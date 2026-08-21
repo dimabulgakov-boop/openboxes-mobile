@@ -8,6 +8,7 @@ export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATIO
 export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS';
 export const PATCH_PUTAWAY_TASK_REQUEST = 'PATCH_PUTAWAY_TASK_REQUEST';
 export const PATCH_PUTAWAY_TASK_REQUEST_SUCCESS = 'PATCH_PUTAWAY_TASK_REQUEST_SUCCESS';
+export const PUTAWAY_CANDIDATE_PUT_AWAY = 'PUTAWAY_CANDIDATE_PUT_AWAY';
 export const GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST = 'GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST';
 export const GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST_SUCCESS =
   'GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST_SUCCESS';
@@ -63,6 +64,13 @@ export function patchPutawayTaskAction(
     type: PATCH_PUTAWAY_TASK_REQUEST,
     payload: { facilityId, putawayItemId, payload },
     callback
+  };
+}
+
+export function markCandidatePutAway(key: string, remainingQuantity: number) {
+  return {
+    type: PUTAWAY_CANDIDATE_PUT_AWAY,
+    payload: { key, remainingQuantity }
   };
 }
 
