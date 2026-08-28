@@ -127,12 +127,109 @@ step_bundles:
               set -euxo pipefail
               cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
           title: Script - copy APK for deploy-to-bitrise-io step
+      # Publish a public install page for PR builds only, so the build can be
+      # installed by opening a link on the device itself (or scanning the QR
+      # code Bitrise renders on that page) instead of going through adb. The URL
+      # is long and random but unauthenticated: anyone who has it can install
+      # the build. Develop and UAT builds keep the public page switched off.
+      - script@1:
+          title: Enable the public install page for PR builds
+          inputs:
+          - content: |-
+              set -euo pipefail
+              if [ -n "${BITRISE_PULL_REQUEST:-}" ]; then
+                envman add --key IS_ENABLE_PUBLIC_PAGE --value "true"
+              else
+                envman add --key IS_ENABLE_PUBLIC_PAGE --value "false"
+              fi
       - deploy-to-bitrise-io@2:
           inputs:
           - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
           - notify_email_list: "$TESTERS"
           - notify_user_groups: owner, admins, developers
+          - is_enable_public_page: "$IS_ENABLE_PUBLIC_PAGE"
           is_always_run: false
+      # Post the install link back to the pull request, replacing the comment
+      # from the previous build so the thread keeps a single, current link.
+      # Requires GITHUB_ACCESS_TOKEN (a secret with repo scope) on the Bitrise
+      # app; the step is skipped while that is unset.
+      - script@1:
+          title: Comment the install link on the pull request
+          run_if: '{{and (ne (getenv "BITRISE_PULL_REQUEST") "") (ne (getenv "GITHUB_ACCESS_TOKEN") "") (ne (getenv "BITRISE_PUBLIC_INSTALL_PAGE_URL") "")}}'
+          is_skippable: true
+          inputs:
+          - content: |-
+              set -euo pipefail
+              python3 - <<'PYTHON'
+              import json, os, re, urllib.error, urllib.request
+
+              MARKER = "<!-- openboxes-mobile-apk-install -->"
+              API = "https://api.github.com"
+
+              token = os.environ["GITHUB_ACCESS_TOKEN"]
+              pr = os.environ["BITRISE_PULL_REQUEST"]
+              install_url = os.environ["BITRISE_PUBLIC_INSTALL_PAGE_URL"]
+              build = os.environ.get("BITRISE_BUILD_NUMBER", "")
+              build_url = os.environ.get("BITRISE_BUILD_URL", "")
+              sha = os.environ.get("BITRISE_GIT_COMMIT", "")[:8]
+
+              repository = re.search(r"github\.com[:/]+([^/]+)/(.+?)(?:\.git)?$",
+                                     os.environ.get("GIT_REPOSITORY_URL", ""))
+              if not repository:
+                  raise SystemExit("Could not parse GIT_REPOSITORY_URL; skipping comment.")
+              repo = "%s/%s" % repository.groups()
+
+              body = "\n".join([
+                  "### Test build for this pull request",
+                  "",
+                  "**[Install on a device](%s)** - open that link on the device (or scan the"
+                  % install_url,
+                  "QR code on the page) and tap the download. Bitrise build [%s](%s)%s."
+                  % (build, build_url, (", commit `%s`" % sha) if sha else ""),
+                  "",
+                  "Installs as **OpenBoxes (Experimental)**, applicationId",
+                  "`com.openboxes.android.experimental`, so it sits alongside the regular app",
+                  "rather than replacing it.",
+                  "",
+                  "<details><summary>Install over adb instead</summary>",
+                  "",
+                  "```",
+                  "yarn adb:connect            # reconnect the Zebra devices",
+                  "yarn apk:install --pr %s  # install this build on all of them" % pr,
+                  "```",
+                  "</details>",
+                  "",
+                  MARKER,
+              ])
+
+              def call(url, data=None, method=None):
+                  request = urllib.request.Request(
+                      url,
+                      data=json.dumps(data).encode() if data is not None else None,
+                      method=method,
+                      headers={"Authorization": "token " + token,
+                               "Accept": "application/vnd.github+json",
+                               "Content-Type": "application/json",
+                               "User-Agent": "openboxes-mobile-bitrise"})
+                  with urllib.request.urlopen(request) as response:
+                      return json.loads(response.read() or "null")
+
+              try:
+                  existing = next(
+                      (comment for comment in
+                       call("%s/repos/%s/issues/%s/comments?per_page=100" % (API, repo, pr))
+                       if MARKER in (comment.get("body") or "")), None)
+                  if existing:
+                      call("%s/repos/%s/issues/comments/%s" % (API, repo, existing["id"]),
+                           {"body": body}, method="PATCH")
+                      print("Updated the install link comment on PR #%s." % pr)
+                  else:
+                      call("%s/repos/%s/issues/%s/comments" % (API, repo, pr), {"body": body})
+                      print("Commented the install link on PR #%s." % pr)
+              except urllib.error.HTTPError as error:
+                  print("Warning: could not comment on PR #%s: %s %s"
+                        % (pr, error.code, error.read().decode("utf-8", "replace")))
+              PYTHON
       # Pick which Appetize app to deploy to based on build type: PR builds go to
       # the PR preview app, everything else (e.g. develop push) to the main app.
       # BITRISE_PULL_REQUEST is set (to the PR number) only on pull request builds.

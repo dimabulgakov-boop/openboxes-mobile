@@ -1,0 +1,28 @@
+# udev rules for the Zebra test devices (TC20, TC52) on Linux.
+#
+# Install with:
+#   sudo cp scripts/51-zebra-adb.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# Two things are fixed here:
+#
+#  1. MODE/TAG - lets adb talk to the device without sudo. (The Ubuntu package
+#     android-sdk-platform-tools-common ships a broader version of this list; if
+#     it is installed, these rules just add the power settings below.)
+#
+#  2. power/control - USB autosuspend is a common cause of a device that is
+#     connected through a hub or a charging cradle "disappearing" after a while:
+#     the port is suspended and adb loses the transport. Pinning it to "on"
+#     keeps the link up.
+#
+# 05c6 is the vendor ID Zebra's Android devices enumerate with. Confirm the ID
+# for a device that is not matched here with `lsusb` while it is plugged in, and
+# add a line for it.
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="05c6", MODE="0664", GROUP="plugdev", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTR{idVendor}=="05c6", TEST=="power/control", ATTR{power/control}="on"
+
+# Keep the hub the cradle is plugged into awake as well; a suspended hub takes
+# the downstream ports with it. Restrict this to the hub in use by adding its
+# idVendor/idProduct if you would rather not cover every hub.
+SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", TEST=="power/control", ATTR{power/control}="on"

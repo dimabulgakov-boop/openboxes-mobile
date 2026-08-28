@@ -122,6 +122,114 @@ yarn ios
 
 [**Sentry**](https://sentry.io/organizations/openboxes/projects/openboxes-mobile) - for error logging
 
+## 📲 Installing a PR build on a device
+
+Every pull request against `develop` builds an APK on Bitrise and deploys it to
+Appetize. The same build can be installed on a real device (a Zebra TC20/TC52,
+say) in one of two ways.
+
+PR builds are given the applicationId `com.openboxes.android.experimental` and
+the app name "OpenBoxes (Experimental)", so they install **alongside** the
+regular app instead of replacing it.
+
+### Without adb: the install link on the pull request
+
+When the build finishes, Bitrise comments on the pull request with a public
+install page link. Open that link on the device - or scan the QR code the page
+shows - and tap the download to install. Nothing needs to be connected.
+
+> The install page URL is unauthenticated: anyone who has it can install that
+> build. The comment is only posted once `GITHUB_ACCESS_TOKEN` (a secret with
+> `repo` scope) is set on the Bitrise app; until then the step is skipped and no
+> public page is published.
+
+### With adb: install straight to the connected devices
+
+```bash
+yarn apk:install --pr 443     # latest successful build for PR 443
+yarn apk:install --build 1234 # a specific Bitrise build number
+yarn apk:install --branch develop
+yarn apk:install --list       # recent builds, with their PR numbers
+```
+
+The APK is downloaded once (cached under `~/.cache/openboxes-mobile/apk`) and
+installed on every connected device. Useful flags:
+
+| Flag | Effect |
+| :--- | :----- |
+| `-d, --device tc52` | Only this device. Matches the model name or an adb serial; repeatable. |
+| `-l, --launch` | Launch the app after installing. |
+| `-r, --reinstall` | Uninstall first when the install is rejected over a signature or version conflict. |
+| `--download-only` | Print the path to the downloaded APK and stop. |
+| `--open-on-device` | Open the public install page on the device browser instead of installing over adb. |
+
+This needs a Bitrise personal access token, created at
+[app.bitrise.io/me/profile#/security](https://app.bitrise.io/me/profile#/security):
+
+```bash
+mkdir -p ~/.config/openboxes-mobile
+echo 'BITRISE_API_TOKEN=<your token>' >> ~/.config/openboxes-mobile/apk.env
+chmod 600 ~/.config/openboxes-mobile/apk.env
+```
+
+The Bitrise app slug is looked up from the API on first use and cached in the
+same file.
+
+### Keeping the devices connected
+
+```bash
+yarn adb:connect         # reconnect everything we know about
+yarn adb:connect status  # what is connected, and over which transport
+```
+
+Android 11+ "Wireless debugging" (the toggle under Developer options) listens on
+a random port and switches itself off when the device reboots, which is why it
+keeps needing to be re-enabled by hand. `yarn adb:connect` bootstraps from
+whatever transport is available at that moment - USB, a previously saved
+address, or mDNS discovery of a device that has wireless debugging on - and then
+switches the device to plain `adb tcpip 5555`. That is a fixed port that
+survives Wi-Fi drops and the toggle turning itself off again, and the address is
+remembered in `~/.config/openboxes-mobile/devices` so later runs need no
+interaction on the device at all.
+
+After a device reboots, adbd goes back to USB-only mode. Plug it in once (or
+enable wireless debugging once), re-run `yarn adb:connect`, and it is back on
+the fixed port. `yarn apk:install` runs this automatically when it finds no
+connected device.
+
+`yarn adb:connect` never restarts the adb server, so it will not drop a
+[Vysor](https://www.vysor.io/) session. If adb reports a client/server version
+mismatch, that is usually Vysor's bundled adb competing with the system one -
+use one or the other.
+
+### When a cradle or USB hub keeps dropping the connection
+
+USB autosuspend suspending a hub port is the usual cause of a device that is
+connected but goes missing after a while. The udev rules in
+`scripts/51-zebra-adb.rules` pin the Zebra devices and USB hubs to
+`power/control=on` and grant adb access without sudo:
+
+```bash
+sudo cp scripts/51-zebra-adb.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+If that does not settle it, check in this order:
+
+1. `lsusb` while the device sits in the cradle - if it does not appear at all,
+   the problem is below adb. Confirm the vendor ID matches the udev rules.
+2. `sudo dmesg -w` while re-seating the device, watching for
+   `device descriptor read/64, error -71` or repeated resets: that is a power or
+   cabling fault. A charging cradle wants a powered hub, not a bus-powered one.
+3. Check the cradle is a data cradle (some are charge-only) and that the device
+   is seated squarely on the pogo pins.
+4. `udevadm monitor --udev` to see whether the connect/disconnect events are
+   actually arriving.
+
+Wireless is the more reliable path with a flaky cradle: bootstrap once over USB
+while it is behaving, and `adb tcpip 5555` keeps working from then on without
+the cradle.
+
 ## App Customization via Branding
 
 This project uses a branding system to allow easy customization of app assets (icons, logos, splash screens) and configurations (like the app display name) for different project builds (e.g., "vipr", "default", etc.).

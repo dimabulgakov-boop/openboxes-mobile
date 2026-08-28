@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "adb:connect": "./scripts/adb-connect.sh",
     "android": "react-native run-android",
+    "apk:install": "./scripts/install-apk.sh",
     "branding:vipr": "./scripts/apply_branding.sh vipr",
     "bundle:android": "mkdir -p android/app/src/main/assets && npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev true",
     "bundle:ios": "mkdir -p ios/build && (xattr -w com.apple.xcode.CreatedByBuildSystem true ios/build || true) && npx react-native bundle --entry-file index.js --platform ios --bundle-output ios/main.jsbundle --assets-dest ios/build --dev true",
