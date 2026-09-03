@@ -85,7 +85,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const allTasksCount = tasks.length;
   const currentTask = allTasksCount > 0 && currentTaskIndex < allTasksCount ? tasks[currentTaskIndex] : undefined;
   // Move to staging only applies to facilities that track internal transactions.
-  const skipStagingStep = currentTask?.facility?.hasInternalTransactionSupport === false;
+  const skipStagingStep = currentTask?.internalTransactionsEnabled === false;
 
   const startSession = async (deliveryType: DeliveryType, ordersCount: number): Promise<boolean> => {
     setEntryPoint('BATCH');

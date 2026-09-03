@@ -32,9 +32,7 @@ export default function PickingMoveToStagingScreen() {
         }
 
         // Tasks whose facility does not track internal transactions don't need to be staged.
-        const stagingEligibleTasks = response.data.filter(
-          (task) => task.facility?.hasInternalTransactionSupport !== false
-        );
+        const stagingEligibleTasks = response.data.filter((task) => task.internalTransactionsEnabled !== false);
 
         if (stagingEligibleTasks.length === 0) {
           Alert.alert('Staging Not Required', 'The picked items for this container do not require a move to staging.');
