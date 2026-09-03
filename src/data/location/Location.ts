@@ -16,6 +16,7 @@ interface Location {
   hasBinLocationSupport: boolean;
   hasPackingSupport: boolean;
   hasPartialReceivingSupport: boolean;
+  hasInternalTransactionSupport: boolean;
   locationType: LocationType;
   locationNumber: string;
   isDisplay: boolean;
